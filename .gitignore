@@ -1,0 +1,13 @@
+.DS_Store
+
+# Lens Studio generated/local files
+Cache/
+PluginsUserPreferences/
+
+# Local dependency folders
+node_modules/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
