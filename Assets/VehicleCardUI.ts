@@ -269,6 +269,23 @@ export class VehicleCardUI extends BaseScriptComponent {
         }
     }
 
+    /** Applies a decoded copy of the scan photo, which is more stable in Spectacles recordings. */
+    applyItemPhotoBase64(base64: string): void {
+        if (!base64 || base64.length === 0) return;
+        try {
+            Base64.decodeTextureAsync(
+                base64,
+                (texture: Texture) => {
+                    print('VehicleCardUI: applying fixed scan photo texture');
+                    this.applyItemPhoto(texture);
+                },
+                () => { print('VehicleCardUI: failed to decode fixed scan photo'); }
+            );
+        } catch (e) {
+            print('VehicleCardUI: applyItemPhotoBase64 error: ' + e);
+        }
+    }
+
     /**
      * Sets the main UI state (loading / error / results / idle).
      * Manages Vehicle Card visibility and delegates status text to callbacks.
@@ -330,6 +347,7 @@ export class VehicleCardUI extends BaseScriptComponent {
         for (let i = 0; i < scripts.length; i++) {
             const script = scripts[i];
             if (!script) continue;
+            if (script.enabled === false) continue;
 
             // PinchButton (SIK)
             if (script.onButtonPinched && typeof script.onButtonPinched.add === 'function') {

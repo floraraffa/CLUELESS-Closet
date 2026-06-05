@@ -462,6 +462,7 @@ export class CarScanner extends BaseScriptComponent {
             this.welcomeManager.onSoloModeSelected = () => {
                 print('CarScanner: Solo mode selected — starting game');
                 this.showScanInterface();
+                this.startScanAfterDelay(0.25, 'Scan Clothes');
             };
             this.welcomeManager.onConnectedLensModeSelected = () => {
                 print('CarScanner: Connected Lens mode selected');
@@ -955,18 +956,28 @@ export class CarScanner extends BaseScriptComponent {
             return;
         }
 
+        if (this.vehicleCardUI) {
+            const connected = this.vehicleCardUI.connectButton(this.scanButton, () => {
+                print('CarScanner: Scan button pressed');
+                this.onScanButtonPressed();
+            }, 'ScanLook');
+            if (connected) {
+                print('CarScanner: Scan button connected');
+                return;
+            }
+        }
+
         const btnScript = this.scanButton.getComponent('Component.ScriptComponent') as any;
-        if (btnScript?.onTriggerUp && typeof btnScript.onTriggerUp.add === 'function') {
+        if (btnScript && btnScript.enabled !== false && btnScript.onTriggerUp && typeof btnScript.onTriggerUp.add === 'function') {
             btnScript.onTriggerUp.add(() => {
                 print('CarScanner: Scan button pressed');
                 this.onScanButtonPressed();
             });
-            print('CarScanner: Scan button connected');
-        } else {
-            this.createEvent('TapEvent').bind(() => {
-                this.onScanButtonPressed();
-            });
+            print('CarScanner: Scan button connected via direct fallback');
+            return;
         }
+
+        print('CarScanner: Scan button could not connect - no compatible button event found');
     }
 
     // =====================================================================
@@ -1037,12 +1048,33 @@ export class CarScanner extends BaseScriptComponent {
         }
     }
 
+    private startScanAfterDelay(seconds: number, source: string): void {
+        const delayedScan = this.createEvent('DelayedCallbackEvent') as any;
+        delayedScan.bind(() => {
+            if (this.carScanInterface && !this.carScanInterface.enabled) {
+                print('CarScanner: Auto scan canceled — scan interface is closed');
+                return;
+            }
+            print('CarScanner: Auto scan requested from ' + source);
+            this.onScanButtonPressed();
+        });
+        delayedScan.reset(seconds);
+    }
+
     // =====================================================================
     // SCAN FLOW — Orchestrates the full scan pipeline
     // =====================================================================
 
     private async onScanButtonPressed(): Promise<void> {
-        if (!this.vehicleScanner || this.vehicleScanner.getIsScanning() || this.isScanInProgress) return;
+        if (!this.vehicleScanner) {
+            print('CarScanner: Scan ignored — vehicleScanner not assigned');
+            return;
+        }
+        if (this.vehicleScanner.getIsScanning() || this.isScanInProgress) {
+            print('CarScanner: Scan ignored — scan already in progress');
+            return;
+        }
+        print('CarScanner: Scan flow started');
         this.isScanInProgress = true;
         this.startWaitingSfx(this.sfxScanWaiting, 'scan_wait');
 
@@ -1095,7 +1127,10 @@ export class CarScanner extends BaseScriptComponent {
             // Display results on Vehicle Card
             if (this.vehicleCardUI) {
                 this.vehicleCardUI.displayResults(vehicleData);
-                this.vehicleCardUI.applyItemPhoto(this.vehicleScanner ? this.vehicleScanner.getLastCapturedTexture() : null);
+                if (this.vehicleScanner) {
+                    this.vehicleCardUI.applyItemPhoto(this.vehicleScanner.getLastCapturedTexture());
+                    this.vehicleCardUI.applyItemPhotoBase64(this.vehicleScanner.getLastCapturedBase64ForEdit());
+                }
             }
 
             // Show Vehicle Card

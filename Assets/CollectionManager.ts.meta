@@ -41,8 +41,13 @@
     confirmShareContainer: false
     confirmShareYesButton: false
     deleteCardButton: false
+    garmentPlaceholderColumns: false
+    garmentPlaceholderContainer: false
+    garmentPlaceholderSpacing: false
+    generateGarmentCutoutOnSave: false
     leftPalmAnchor: false
     maxCollectionSize: false
+    maxGarmentPlaceholders: false
     openCollectionButton: false
     openCollectionButtonText: false
     resetCollectionButton: false
@@ -69,6 +74,11 @@
       useWorldClosetView: false
       closetViewDistance: !<float> 75.000000
       closetViewHeightOffset: !<float> -8.000000
+      garmentPlaceholderContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      generateGarmentCutoutOnSave: true
+      maxGarmentPlaceholders: !<float> 12.000000
+      garmentPlaceholderColumns: !<float> 3.000000
+      garmentPlaceholderSpacing: !<float> 6.000000
       shareCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmShareContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmShareYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
@@ -98,6 +108,11 @@
     - '// @input bool useWorldClosetView {"hint":"Show saved closet cards in front of the user instead of attached to the left wrist"}'
     - '// @input float closetViewDistance = 75 {"hint":"Distance in cm for the virtual closet view"}'
     - '// @input float closetViewHeightOffset = -8 {"hint":"Vertical offset in cm for the virtual closet view"}'
+    - '// @input SceneObject garmentPlaceholderContainer {"hint":"Optional parent with Image/RenderMeshVisual children named Garment 1, Garment 2, etc."}'
+    - '// @input bool generateGarmentCutoutOnSave = true {"hint":"Run GPT Image Edit on Save to remove the background and fill garment placeholders"}'
+    - '// @input float maxGarmentPlaceholders = 12 {"hint":"Maximum number of garment placeholder slots to fill"}'
+    - '// @input float garmentPlaceholderColumns = 3 {"hint":"How many garment cards to place per row inside the closet list"}'
+    - '// @input float garmentPlaceholderSpacing = 6 {"hint":"Spacing in cm between runtime garment placeholders"}'
     - '// @input SceneObject shareCollectionButton {"hint":"\"Share Collection\" button on left hand (inside User Card Info)"}'
     - '// @input SceneObject confirmShareContainer {"hint":"\"Confirm Share Container\" with confirmation text, URL text, Yes/Cancel buttons"}'
     - '// @input SceneObject confirmShareYesButton {"hint":"\"Yes CapsuleButton\" inside Confirm Share Container"}'

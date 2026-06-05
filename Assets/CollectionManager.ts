@@ -92,6 +92,27 @@ export class CollectionManager extends BaseScriptComponent {
     @hint('Vertical offset in cm for the virtual closet view')
     closetViewHeightOffset: number = -8;
 
+    @input
+    @allowUndefined
+    @hint('Optional parent with Image/RenderMeshVisual children named Garment 1, Garment 2, etc.')
+    garmentPlaceholderContainer: SceneObject;
+
+    @input
+    @hint('Run GPT Image Edit on Save to remove the background and fill garment placeholders')
+    generateGarmentCutoutOnSave: boolean = true;
+
+    @input
+    @hint('Maximum number of garment placeholder slots to fill')
+    maxGarmentPlaceholders: number = 12;
+
+    @input
+    @hint('How many garment cards to place per row inside the closet list')
+    garmentPlaceholderColumns: number = 3;
+
+    @input
+    @hint('Spacing in cm between runtime garment placeholders')
+    garmentPlaceholderSpacing: number = 6;
+
     // =====================================================================
     // INPUTS — Delete Card UI
     // =====================================================================
@@ -233,6 +254,7 @@ export class CollectionManager extends BaseScriptComponent {
     // =====================================================================
     private readonly STORAGE_KEY: string = 'clueless_closet_collection';
     private readonly IMAGE_KEY_PREFIX: string = 'clueless_img_';
+    private readonly GARMENT_CUTOUT_KEY_PREFIX: string = 'clueless_cutout_';
     private readonly TRADE_HISTORY_KEY: string = 'dgns_trade_history';
     private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles CarScanner/1.0';
 
@@ -250,6 +272,9 @@ export class CollectionManager extends BaseScriptComponent {
     private cardImageReady: boolean[] = [];
     private cardFrameHooked: boolean[] = [];
     private reviewButtonHooked: boolean[] = [];
+    private garmentPlaceholderObjects: SceneObject[] = [];
+    private garmentPlaceholderRuntimeCreated: boolean[] = [];
+    private garmentPlaceholderButtonConnected: boolean[] = [];
     private saveButtonConnected: boolean = false;
 
     isCollectionOpen: boolean = false;
@@ -314,6 +339,7 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.confirmDeleteContainer) this.confirmDeleteContainer.enabled = false;
         if (this.confirmShareContainer) this.confirmShareContainer.enabled = false;
         if (this.confirmResetProfileContainer) this.confirmResetProfileContainer.enabled = false;
+        this.hideGarmentPlaceholderContainer();
 
         // Pre-fetch city as early as possible (async callback API)
         this.prefetchCity();
@@ -479,6 +505,11 @@ export class CollectionManager extends BaseScriptComponent {
     /** Sets the last scanned vehicle data (needed for save). */
     setLastVehicleData(data: VehicleData | null): void {
         this.lastVehicleData = data;
+        if (data) {
+            print('CollectionManager: Last scan data set — ' + (data.brand_model || data.item_name || data.type || 'item'));
+        } else {
+            print('CollectionManager: Last scan data cleared');
+        }
     }
 
     /**
@@ -488,6 +519,8 @@ export class CollectionManager extends BaseScriptComponent {
      */
     setLastCapturedImage(base64: string): void {
         this.lastCapturedBase64 = base64;
+        print('CollectionManager: Last captured image set — '
+            + (base64 ? Math.round((base64.length * 0.75) / 1024) : 0) + ' KB');
     }
 
     /** Stores the current runtime-edited wardrobe note before saving. */
@@ -503,7 +536,7 @@ export class CollectionManager extends BaseScriptComponent {
 
     /** Toggles collection open/closed. */
     toggleCollection(): void {
-        if (this.isCollectionOpen) {
+        if (this.isCollectionOpen && this.isCarouselVisuallyOpen()) {
             this.hideCollection();
         } else {
             this.showCollection();
@@ -609,6 +642,7 @@ export class CollectionManager extends BaseScriptComponent {
         for (let i = 0; i < scripts.length; i++) {
             const script = scripts[i];
             if (!script) continue;
+            if (script.enabled === false) continue;
             if (script.onButtonPinched && typeof script.onButtonPinched.add === 'function') {
                 script.onButtonPinched.add(() => callback());
                 print('CollectionManager: [' + debugName + '] fallback connected via onButtonPinched on ' + buttonObj.name);
@@ -836,6 +870,7 @@ export class CollectionManager extends BaseScriptComponent {
             if (savedAt) {
                 try {
                     global.persistentStorageSystem.store.putString(this.IMAGE_KEY_PREFIX + savedAt.toString(), '');
+                    global.persistentStorageSystem.store.putString(this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString(), '');
                 } catch (e) { /* ignore */ }
             }
         }
@@ -847,6 +882,8 @@ export class CollectionManager extends BaseScriptComponent {
         this.cardImageReady = [];
         this.cardFrameHooked = [];
         this.reviewButtonHooked = [];
+        this.garmentPlaceholderButtonConnected = [];
+        this.clearRuntimeGarmentPlaceholders();
 
         if (this.cardInteraction) this.cardInteraction.setGrabbedCardIndex(-1);
 
@@ -920,6 +957,7 @@ export class CollectionManager extends BaseScriptComponent {
         if (savedAt) {
             try {
                 global.persistentStorageSystem.store.putString(this.IMAGE_KEY_PREFIX + savedAt.toString(), '');
+                global.persistentStorageSystem.store.putString(this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString(), '');
             } catch (e) { /* ignore */ }
         }
 
@@ -939,6 +977,8 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         this.saveCollectionToStorage();
+        this.rebuildGarmentPlaceholdersFromStorage();
+        this.updateGarmentPlaceholderVisibility();
         if (this.isCollectionOpen) this.layoutCircularCards();
         this.updateDeleteButtonVisibility();
         this.updateCollectionButtonLabel();
@@ -1139,6 +1179,7 @@ export class CollectionManager extends BaseScriptComponent {
         }
         this.isSavingCard = true;
         if (!this.lastVehicleData) {
+            print('CollectionManager: Save ignored — no lastVehicleData. Scan a garment first.');
             if (this.onShowDescription) this.onShowDescription(t('scan_first_save'));
             this.isSavingCard = false;
             return;
@@ -1180,6 +1221,9 @@ export class CollectionManager extends BaseScriptComponent {
             const userNote = visibleNote.length > 0 && visibleNote !== aiNote ? visibleNote : previousUserNote;
             this.lastVehicleData.user_note = userNote;
             const capturedPhotoBase64 = this.lastCapturedBase64 || '';
+            if (capturedPhotoBase64.length === 0) {
+                print('CollectionManager: Save warning — scan data exists but captured image base64 is empty');
+            }
             const savedData: SavedVehicleData = {
                 vehicle_found: this.lastVehicleData.vehicle_found,
                 clothing_found: this.lastVehicleData.clothing_found,
@@ -1229,6 +1273,8 @@ export class CollectionManager extends BaseScriptComponent {
             print('CollectionManager: Card saved — serial=' + savedData.serial
                 + ' date="' + savedData.dateScanned + '" city="' + savedData.cityScanned + '"');
             this.savedVehicles.push(savedData);
+            const savedSlotIndex = this.savedVehicles.length - 1;
+            this.showGarmentPlaceholderContainer();
             if (capturedPhotoBase64.length > 0) {
                 this.saveCardImageBase64ToStorage(vehicleName, savedData.savedAt, capturedPhotoBase64);
             }
@@ -1255,6 +1301,7 @@ export class CollectionManager extends BaseScriptComponent {
 
             const texture = await this.decodeBase64Texture(capturedPhotoBase64);
             if (texture) this.applyCardImage(cardObj, texture);
+            this.updateGarmentPlaceholderForSavedItem(savedData, savedSlotIndex, capturedPhotoBase64, texture, cardObj);
 
             if (showStatus) showStatus(tf('card_ready', { name: vehicleName }));
             if (this.onCardGenerationSuccess) this.onCardGenerationSuccess();
@@ -1331,6 +1378,7 @@ export class CollectionManager extends BaseScriptComponent {
 
         this.isCollectionOpen = true;
         this.updateCollectionButtonLabel();
+        this.showGarmentPlaceholderContainer();
         if (this.cardInteraction) {
             this.cardInteraction.setGrabbedCardIndex(-1);
             this.cardInteraction.carouselAngleOffset = 0;
@@ -1635,6 +1683,7 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         const name = this.savedVehicles[idx].brand_model || '?';
+        const savedAt = this.savedVehicles[idx].savedAt;
 
         // Cloud delete (fire-and-forget)
         if (this.onCloudDeleteVehicle) this.onCloudDeleteVehicle(serial);
@@ -1644,6 +1693,13 @@ export class CollectionManager extends BaseScriptComponent {
             try { this.collectionCardObjects[idx].destroy(); } catch (e) { /* ignore */ }
         }
 
+        if (savedAt) {
+            try {
+                global.persistentStorageSystem.store.putString(this.IMAGE_KEY_PREFIX + savedAt.toString(), '');
+                global.persistentStorageSystem.store.putString(this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString(), '');
+            } catch (e) { /* ignore */ }
+        }
+
         // Remove from parallel arrays
         this.savedVehicles.splice(idx, 1);
         this.collectionCardObjects.splice(idx, 1);
@@ -1651,7 +1707,10 @@ export class CollectionManager extends BaseScriptComponent {
         this.cardImageReady.splice(idx, 1);
         this.cardFrameHooked.splice(idx, 1);
         this.reviewButtonHooked.splice(idx, 1);
+        this.garmentPlaceholderButtonConnected.splice(idx, 1);
 
+        this.rebuildGarmentPlaceholdersFromStorage();
+        this.updateGarmentPlaceholderVisibility();
         this.saveCollectionToStorage();
         this.updateCollectionButtonLabel();
         print('CollectionManager: Removed card — ' + name + ' (serial: ' + serial + ')');
@@ -2343,6 +2402,639 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     // =====================================================================
+    // GARMENT PLACEHOLDERS — AI cutouts for the closet slots
+    // =====================================================================
+
+    private updateGarmentPlaceholderForSavedItem(
+        data: SavedVehicleData,
+        slotIndex: number,
+        capturedBase64: string,
+        fallbackTexture: Texture | null,
+        sourceCardObj?: SceneObject
+    ): void {
+        if (slotIndex < 0 || slotIndex >= (this.maxGarmentPlaceholders || 12)) return;
+
+        this.showGarmentPlaceholderContainer();
+        const templateImageObj = sourceCardObj ? findChildByName(sourceCardObj, 'Card Image') : null;
+        const placeholder = this.ensureGarmentPlaceholder(slotIndex, templateImageObj);
+        if (!placeholder) return;
+        this.setGarmentPlaceholderText(placeholder, data, slotIndex);
+
+        if (fallbackTexture) {
+            const applied = this.applyTextureToSceneObject(placeholder, fallbackTexture);
+            if (applied) {
+                print('CollectionManager: [GARMENT-CLOSET] Preview scan applied to '
+                    + this.getGarmentPlaceholderName(slotIndex));
+            }
+        }
+
+        if (!this.generateGarmentCutoutOnSave || !capturedBase64 || capturedBase64.length === 0) {
+            return;
+        }
+
+        const statusCb = this.onShowCardStatus || this.onShowAnimatedDescription || this.onShowDescription;
+        const hideStatus = this.onHideCardStatus || null;
+        if (statusCb) statusCb(t('generating_garment_cutout'));
+
+        this.generateGarmentCutoutTexture(data, capturedBase64)
+            .then((cutoutTexture: Texture) => {
+                const currentIndex = this.findSavedVehicleIndexBySerial(data.serial);
+                if (currentIndex < 0) return;
+
+                const currentPlaceholder = this.ensureGarmentPlaceholder(currentIndex, templateImageObj) || placeholder;
+                this.setGarmentPlaceholderText(currentPlaceholder, data, currentIndex);
+                this.applyTextureToSceneObject(currentPlaceholder, cutoutTexture);
+                if (sourceCardObj) this.applyCardImage(sourceCardObj, cutoutTexture);
+                this.saveGarmentCutoutTextureToStorage(data.savedAt, cutoutTexture);
+                data.imageGenerated = true;
+                this.saveCollectionToStorage();
+                if (statusCb) statusCb(tf('garment_cutout_ready', { name: data.brand_model || data.item_name || 'Item' }));
+                if (hideStatus) hideStatus(2.5);
+                print('CollectionManager: [GARMENT-CUTOUT] Applied cutout to ' + this.getGarmentPlaceholderName(currentIndex)
+                    + ' — ' + (data.brand_model || data.item_name || 'item'));
+            })
+            .catch((e) => {
+                print('CollectionManager: [GARMENT-CUTOUT] Failed, keeping original scan image in placeholder: ' + e);
+                if (statusCb) statusCb(t('garment_cutout_failed'));
+                if (hideStatus) hideStatus(3.0);
+            });
+    }
+
+    private async generateGarmentCutoutTexture(data: SavedVehicleData, capturedBase64: string): Promise<Texture> {
+        let imageBytes: Uint8Array;
+        try {
+            imageBytes = Base64.decode(capturedBase64);
+        } catch (decodeErr) {
+            throw new Error('Garment cutout base64 decode failed: ' + String(decodeErr).substring(0, 120));
+        }
+
+        const itemLabel = data.brand_model || data.item_name || data.type || 'clothing item';
+        const editPrompt = 'Edit this image into a clean clothing inventory image for a virtual closet. '
+            + 'Remove the entire background, room, furniture, mirror, floor, wall, shadows that belong to the room, and any non-clothing objects. '
+            + 'Keep only the garment or outfit named "' + itemLabel + '". '
+            + 'If the clothing is worn by a person, keep all visible clothing together as a complete outfit and remove the person/background only where it is safe; never erase the visible garments. '
+            + 'If isolation is ambiguous, keep the full visible clothing silhouette and simply replace the surrounding scene with gray. '
+            + 'Preserve exact colors, fabric texture, logos, seams, folds, wear, condition, pattern, and silhouette. '
+            + 'Place the isolated garment centered on a flat neutral light gray background. '
+            + 'Use soft product-photography lighting and a subtle natural contact shadow only under the garment. '
+            + 'The final image must visibly contain the garment or outfit; do not return an empty background. '
+            + 'Do not invent a new item, do not restyle it, do not add text, borders, labels, hangers, mannequins, or decorative props.';
+
+        const attempts: Array<{ model: string; size: string }> = [
+            { model: 'gpt-image-1', size: '1024x1024' },
+            { model: 'gpt-image-1', size: '1024x1024' },
+        ];
+
+        let lastError = '';
+        for (let i = 0; i < attempts.length; i++) {
+            const attempt = i + 1;
+            const { model, size } = attempts[i];
+            try {
+                print('CollectionManager: [GARMENT-CUTOUT] Attempt ' + attempt + '/' + attempts.length
+                    + ' — ' + itemLabel + ', input=' + Math.round(imageBytes.length / 1024) + 'KB');
+
+                const response = await OpenAI.imagesEdit({
+                    image: imageBytes,
+                    prompt: editPrompt,
+                    model: model,
+                    n: 1,
+                    size: size,
+                });
+
+                return this.extractTextureFromResponse(response);
+            } catch (err) {
+                if (typeof err === 'string') {
+                    lastError = err;
+                } else if (err && typeof err === 'object') {
+                    lastError = (err as any).message || (err as any).error || JSON.stringify(err);
+                } else {
+                    lastError = String(err);
+                }
+                print('CollectionManager: [GARMENT-CUTOUT] Attempt ' + attempt + ' failed: ' + lastError.substring(0, 300));
+                if (i < attempts.length - 1) await this.delay(2.0);
+            }
+        }
+
+        throw new Error('Garment cutout failed: ' + lastError.substring(0, 200));
+    }
+
+    private saveGarmentCutoutTextureToStorage(savedAt: number, texture: Texture): void {
+        if (!savedAt || !texture) return;
+        try {
+            const storageKey = this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString();
+            Base64.encodeTextureAsync(
+                texture,
+                (b64: string) => {
+                    try {
+                        global.persistentStorageSystem.store.putString(storageKey, b64);
+                        print('CollectionManager: [GARMENT-CUTOUT] Saved cutout image — ' + b64.length + ' chars');
+                    } catch (e) {
+                        print('CollectionManager: [GARMENT-CUTOUT] Storage write failed: ' + e);
+                    }
+                },
+                () => { print('CollectionManager: [GARMENT-CUTOUT] PNG encode failed'); },
+                CompressionQuality.IntermediateQuality,
+                EncodingType.Png
+            );
+        } catch (e) {
+            print('CollectionManager: [GARMENT-CUTOUT] Save exception: ' + e);
+        }
+    }
+
+    private loadGarmentCutoutForPlaceholder(
+        slotIndex: number,
+        savedAt: number,
+        sourceCardObj?: SceneObject,
+        data?: SavedVehicleData
+    ): boolean {
+        if (!savedAt) return false;
+        try {
+            const storageKey = this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString();
+            const b64 = global.persistentStorageSystem.store.getString(storageKey);
+            if (!b64 || b64.length === 0) return false;
+
+            const templateImageObj = sourceCardObj ? findChildByName(sourceCardObj, 'Card Image') : null;
+            const placeholder = this.ensureGarmentPlaceholder(slotIndex, templateImageObj);
+            if (!placeholder) return false;
+            if (data) this.setGarmentPlaceholderText(placeholder, data, slotIndex);
+
+            Base64.decodeTextureAsync(
+                b64,
+                (texture: Texture) => { this.applyTextureToSceneObject(placeholder, texture); },
+                () => { print('CollectionManager: [GARMENT-CUTOUT] Failed to decode saved cutout for slot ' + (slotIndex + 1)); }
+            );
+            return true;
+        } catch (e) {
+            print('CollectionManager: [GARMENT-CUTOUT] Load exception: ' + e);
+            return false;
+        }
+    }
+
+    private rebuildGarmentPlaceholdersFromStorage(): void {
+        this.clearRuntimeGarmentPlaceholders();
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            const savedAt = this.savedVehicles[i]?.savedAt;
+            if (savedAt) this.loadGarmentCutoutForPlaceholder(i, savedAt, this.collectionCardObjects[i], this.savedVehicles[i]);
+        }
+        this.updateGarmentPlaceholderVisibility();
+    }
+
+    private clearRuntimeGarmentPlaceholders(): void {
+        for (let i = 0; i < this.garmentPlaceholderObjects.length; i++) {
+            const obj = this.garmentPlaceholderObjects[i];
+            if (obj && this.garmentPlaceholderRuntimeCreated[i]) {
+                try { obj.destroy(); } catch (e) { /* ignore */ }
+            }
+        }
+        this.garmentPlaceholderObjects = [];
+        this.garmentPlaceholderRuntimeCreated = [];
+    }
+
+    private ensureGarmentPlaceholder(slotIndex: number, templateImageObj?: SceneObject | null): SceneObject | null {
+        if (slotIndex < 0 || slotIndex >= (this.maxGarmentPlaceholders || 12)) return null;
+
+        const cached = this.garmentPlaceholderObjects[slotIndex];
+        if (cached) {
+            this.connectGarmentPlaceholderButton(cached, slotIndex);
+            return cached;
+        }
+
+        const existing = this.findExistingGarmentPlaceholder(slotIndex);
+        if (existing) {
+            this.garmentPlaceholderObjects[slotIndex] = existing;
+            this.garmentPlaceholderRuntimeCreated[slotIndex] = false;
+            this.connectGarmentPlaceholderButton(existing, slotIndex);
+            return existing;
+        }
+
+        this.ensureCollectionRoot();
+        const parent = this.garmentPlaceholderContainer || this.collectionRoot || this.cardCollectionContainer || null;
+        if (!parent) return null;
+
+        let placeholder: SceneObject | null = null;
+        try {
+            const cardTemplateObj = this.resolveGarmentCardTemplate(templateImageObj);
+            if (cardTemplateObj) {
+                placeholder = parent.copyWholeHierarchy(cardTemplateObj);
+            } else {
+                placeholder = global.scene.createSceneObject(this.getGarmentPlaceholderName(slotIndex));
+                placeholder.setParent(parent);
+                placeholder.createComponent('Component.Image');
+            }
+            placeholder.name = this.getGarmentPlaceholderName(slotIndex);
+            placeholder.enabled = slotIndex < this.savedVehicles.length;
+            this.positionRuntimeGarmentPlaceholder(placeholder, slotIndex, cardTemplateObj);
+            this.garmentPlaceholderObjects[slotIndex] = placeholder;
+            this.garmentPlaceholderRuntimeCreated[slotIndex] = true;
+            this.connectGarmentPlaceholderButton(placeholder, slotIndex);
+            return placeholder;
+        } catch (e) {
+            print('CollectionManager: [GARMENT-CUTOUT] Could not create ' + this.getGarmentPlaceholderName(slotIndex) + ': ' + e);
+            return null;
+        }
+    }
+
+    private showGarmentPlaceholderContainer(): void {
+        if (!this.garmentPlaceholderContainer) return;
+        if (this.savedVehicles.length === 0) {
+            this.hideGarmentPlaceholderContainer();
+            return;
+        }
+        if (!this.garmentPlaceholderContainer.enabled) {
+            this.garmentPlaceholderContainer.enabled = true;
+            print('CollectionManager: [GARMENT-CLOSET] Garment Placeholder enabled');
+        }
+        this.hookGarmentPlaceholderCloseButton();
+        this.updateGarmentPlaceholderVisibility();
+        this.refreshGarmentPlaceholderButtonConnections();
+    }
+
+    private hideGarmentPlaceholderContainer(): void {
+        if (this.garmentPlaceholderContainer) {
+            this.garmentPlaceholderContainer.enabled = false;
+        }
+    }
+
+    private isCarouselVisuallyOpen(): boolean {
+        return !!(this.collectionRoot && this.collectionRoot.enabled);
+    }
+
+    private hookGarmentPlaceholderCloseButton(): void {
+        if (!this.garmentPlaceholderContainer || this._closeHooked.has(this.garmentPlaceholderContainer)) return;
+
+        let attempts = 0;
+        const poll = this.createEvent('UpdateEvent');
+        poll.bind(() => {
+            attempts++;
+            if (!this.garmentPlaceholderContainer || this._closeHooked.has(this.garmentPlaceholderContainer) || attempts > 120) {
+                poll.enabled = false;
+                return;
+            }
+            if (this.deepSearchAndHookClose(this.garmentPlaceholderContainer, () => {
+                print('CollectionManager: Garment Placeholder close pressed');
+                this.hideGarmentPlaceholderContainer();
+            }, 'GarmentPlaceholder')) {
+                this._closeHooked.add(this.garmentPlaceholderContainer);
+                poll.enabled = false;
+            }
+        });
+    }
+
+    private updateGarmentPlaceholderVisibility(): void {
+        if (!this.garmentPlaceholderContainer) return;
+        if (this.savedVehicles.length === 0) {
+            this.hideGarmentPlaceholderContainer();
+            return;
+        }
+
+        const closetObj = this.findDirectChildByName(this.garmentPlaceholderContainer, 'Closet');
+        if (closetObj) closetObj.enabled = true;
+
+        const childCount = this.garmentPlaceholderContainer.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = this.garmentPlaceholderContainer.getChild(i);
+            if (!child || child === closetObj) continue;
+            if (!this.isGarmentCardCandidate(child) && !this.isGeneratedGarmentSlotName(child.name)) continue;
+
+            const slotIndex = this.getGarmentSlotIndexFromName(child.name);
+            child.enabled = slotIndex >= 0 && slotIndex < this.savedVehicles.length;
+            if (child.enabled) this.connectGarmentPlaceholderButton(child, slotIndex);
+        }
+    }
+
+    private refreshGarmentPlaceholderButtonConnections(): void {
+        if (!this.garmentPlaceholderContainer) return;
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            const placeholder = this.ensureGarmentPlaceholder(i);
+            if (placeholder) this.connectGarmentPlaceholderButton(placeholder, i);
+        }
+    }
+
+    private connectGarmentPlaceholderButton(placeholder: SceneObject, slotIndex: number): void {
+        if (!placeholder || slotIndex < 0) return;
+        if (this.garmentPlaceholderButtonConnected[slotIndex]) return;
+
+        const connected = this.connectButtonFallback(placeholder, () => {
+            this.openCardFromGarmentPlaceholder(slotIndex);
+        }, 'GarmentSlot' + (slotIndex + 1));
+
+        if (connected) {
+            this.expandGarmentPlaceholderHitArea(placeholder);
+            this.garmentPlaceholderButtonConnected[slotIndex] = true;
+            print('CollectionManager: [GARMENT-CLOSET] Linked '
+                + this.getGarmentPlaceholderName(slotIndex) + ' to closet card #' + (slotIndex + 1));
+        } else {
+            print('CollectionManager: [GARMENT-CLOSET] '
+                + this.getGarmentPlaceholderName(slotIndex) + ' has no button component to open its card');
+        }
+    }
+
+    private expandGarmentPlaceholderHitArea(root: SceneObject): void {
+        if (!root) return;
+        try {
+            const scripts = root.getComponents('Component.ScriptComponent') as any[];
+            for (let i = 0; i < scripts.length; i++) {
+                const script = scripts[i];
+                if (!script) continue;
+                if (script._inactive !== undefined) script._inactive = false;
+                if (typeof script._width === 'number') script._width = Math.max(script._width, 6.0);
+                if (script._size && script._size.x !== undefined) {
+                    script._size = new vec3(
+                        Math.max(script._size.x, 6.0),
+                        Math.max(script._size.y, 6.0),
+                        script._size.z || 1.0
+                    );
+                }
+            }
+        } catch (e) { /* button hit area is best-effort */ }
+
+        const childCount = root.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = root.getChild(i);
+            if (child) this.expandGarmentPlaceholderHitArea(child);
+        }
+    }
+
+    private openCardFromGarmentPlaceholder(slotIndex: number): void {
+        if (slotIndex < 0 || slotIndex >= this.collectionCardObjects.length || slotIndex >= this.savedVehicles.length) {
+            return;
+        }
+        const data = this.savedVehicles[slotIndex];
+        const name = data ? (data.brand_model || data.item_name || this.getGarmentPlaceholderName(slotIndex)) : this.getGarmentPlaceholderName(slotIndex);
+        this.focusCollectionCard(slotIndex);
+        if (this.onShowDescription) this.onShowDescription(tf('closet_slot_opened', { name: name }));
+        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
+        print('CollectionManager: [GARMENT-CLOSET] Opened card from ' + this.getGarmentPlaceholderName(slotIndex));
+    }
+
+    private focusCollectionCard(cardIndex: number): void {
+        if (cardIndex < 0 || cardIndex >= this.collectionCardObjects.length) return;
+        if (!this.isCollectionOpen || !this.isCarouselVisuallyOpen()) {
+            this.showCollection();
+        }
+        if (!this.collectionCardObjects[cardIndex]) return;
+
+        if (this.cardStates[cardIndex] === this.STATE_PLACED_IN_WORLD || this.cardStates[cardIndex] === this.STATE_PICKED) {
+            this.cardStates[cardIndex] = this.STATE_IN_COLLECTION;
+        }
+
+        let inCollectionCount = 0;
+        let targetCircleIndex = 0;
+        for (let i = 0; i < this.collectionCardObjects.length; i++) {
+            if ((this.cardStates[i] || this.STATE_IN_COLLECTION) !== this.STATE_IN_COLLECTION) continue;
+            if (i === cardIndex) targetCircleIndex = inCollectionCount;
+            inCollectionCount++;
+        }
+
+        if (this.cardInteraction && inCollectionCount > 0) {
+            const angleStep = (2 * Math.PI) / inCollectionCount;
+            this.cardInteraction.carouselAngleOffset = (Math.PI / 2) - targetCircleIndex * angleStep;
+        }
+
+        const card = this.collectionCardObjects[cardIndex];
+        card.enabled = true;
+        enableAllDescendants(card);
+        this.layoutCircularCards();
+        this.startCollectionUpdateLoop();
+    }
+
+    private getGarmentSlotIndexFromName(name: string): number {
+        if (!name) return -1;
+        const normalized = name.toLowerCase().replace(/\s+/g, ' ').trim();
+        const match = normalized.match(/^(garment|photocard|photo card)\s+(\d+)$/);
+        if (!match) return -1;
+        const n = parseInt(match[2], 10);
+        if (!isFinite(n) || n <= 0) return -1;
+        return n - 1;
+    }
+
+    private resolveGarmentCardTemplate(fallbackTemplateObj?: SceneObject | null): SceneObject | null {
+        if (this.garmentPlaceholderContainer) {
+            const namedTemplate = this.findDirectChildByName(this.garmentPlaceholderContainer, 'Garment Template')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'photocard')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'PhotoCard')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'Template')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'photocard 1')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'PhotoCard 1')
+                || this.findDirectChildByName(this.garmentPlaceholderContainer, 'Photocard 1');
+            if (namedTemplate) {
+                namedTemplate.enabled = false;
+                return namedTemplate;
+            }
+
+            const childCount = this.garmentPlaceholderContainer.getChildrenCount();
+            for (let i = 0; i < childCount; i++) {
+                const child = this.garmentPlaceholderContainer.getChild(i);
+                if (!child) continue;
+                if (!this.isGarmentCardCandidate(child)) continue;
+                child.enabled = false;
+                return child;
+            }
+        }
+
+        return fallbackTemplateObj || null;
+    }
+
+    private findDirectChildByName(parent: SceneObject, name: string): SceneObject | null {
+        if (!parent) return null;
+        const childCount = parent.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = parent.getChild(i);
+            if (child && child.name === name) return child;
+        }
+        return null;
+    }
+
+    private isGeneratedGarmentSlotName(name: string): boolean {
+        return !!name && (
+            name.indexOf('Garment ') === 0
+            || name.indexOf('photocard ') === 0
+            || name.indexOf('PhotoCard ') === 0
+            || name.indexOf('Photocard ') === 0
+        );
+    }
+
+    private isGarmentCardCandidate(obj: SceneObject): boolean {
+        if (!obj) return false;
+        if (obj.name === 'Closet') return false;
+        if (this.isGeneratedGarmentSlotName(obj.name)) return true;
+        return !!this.findSceneObjectByName(obj, 'Garment Image') || !!this.findSceneObjectByName(obj, 'Item Name');
+    }
+
+    private findExistingGarmentPlaceholder(slotIndex: number): SceneObject | null {
+        const names = this.getGarmentPlaceholderAliases(slotIndex);
+        const roots: SceneObject[] = [];
+        if (this.garmentPlaceholderContainer) roots.push(this.garmentPlaceholderContainer);
+        if (this.collectionRoot) roots.push(this.collectionRoot);
+        if (this.cardCollectionContainer) roots.push(this.cardCollectionContainer);
+
+        for (let i = 0; i < roots.length; i++) {
+            for (let n = 0; n < names.length; n++) {
+                const found = this.findSceneObjectByName(roots[i], names[n]);
+                if (found) return found;
+            }
+        }
+
+        try {
+            const rootCount = global.scene.getRootObjectsCount();
+            for (let i = 0; i < rootCount; i++) {
+                const root = global.scene.getRootObject(i);
+                for (let n = 0; n < names.length; n++) {
+                    const found = this.findSceneObjectByName(root, names[n]);
+                    if (found) return found;
+                }
+            }
+        } catch (e) { /* ignore */ }
+
+        return null;
+    }
+
+    private findSceneObjectByName(root: SceneObject, name: string): SceneObject | null {
+        if (!root) return null;
+        if (root.name === name) return root;
+        const childCount = root.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = root.getChild(i);
+            if (!child) continue;
+            const found = this.findSceneObjectByName(child, name);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    private setGarmentPlaceholderText(placeholder: SceneObject, data: SavedVehicleData, slotIndex: number): void {
+        if (!placeholder) return;
+        const itemNameObj = this.findSceneObjectByName(placeholder, 'Item Name');
+        if (!itemNameObj) return;
+
+        try {
+            const textComp = itemNameObj.getComponent('Component.Text') as Text;
+            if (!textComp) return;
+            textComp.text = this.getGarmentDisplayName(data, slotIndex);
+            itemNameObj.enabled = true;
+        } catch (e) {
+            print('CollectionManager: [GARMENT-CUTOUT] Could not set Item Name text: ' + e);
+        }
+    }
+
+    private getGarmentDisplayName(data: SavedVehicleData, slotIndex: number): string {
+        const rawName = (data.item_name || data.brand_model || data.brand || data.type || this.getGarmentPlaceholderName(slotIndex)).trim();
+        if (rawName.length <= 34) return rawName;
+        return rawName.substring(0, 31) + '...';
+    }
+
+    private applyTextureToSceneObject(obj: SceneObject, texture: Texture): boolean {
+        if (!obj || !texture) return false;
+        const target = this.findFirstVisualTarget(obj);
+        if (!target) return false;
+
+        try {
+            const imgComp = target.getComponent('Component.Image') as Image;
+            if (imgComp) {
+                if (imgComp.mainMaterial) imgComp.mainMaterial = imgComp.mainMaterial.clone();
+                imgComp.mainPass.baseTex = texture;
+                obj.enabled = true;
+                target.enabled = true;
+                return true;
+            }
+        } catch (e) { /* try mesh */ }
+
+        try {
+            const meshComp = target.getComponent('Component.RenderMeshVisual') as RenderMeshVisual;
+            if (meshComp) {
+                if (meshComp.mainMaterial) meshComp.mainMaterial = meshComp.mainMaterial.clone();
+                meshComp.mainPass.baseTex = texture;
+                obj.enabled = true;
+                target.enabled = true;
+                return true;
+            }
+        } catch (e) { /* ignore */ }
+
+        return false;
+    }
+
+    private findFirstVisualTarget(root: SceneObject): SceneObject | null {
+        if (!root) return null;
+        const preferredNames = ['Garment Image', 'Card Image', 'Item Image', 'Photo'];
+        for (let i = 0; i < preferredNames.length; i++) {
+            const namedTarget = this.findSceneObjectByName(root, preferredNames[i]);
+            if (namedTarget && this.hasTextureVisual(namedTarget)) return namedTarget;
+        }
+
+        if (this.hasTextureVisual(root)) return root;
+
+        const childCount = root.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = root.getChild(i);
+            if (!child) continue;
+            const found = this.findFirstVisualTarget(child);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    private hasTextureVisual(obj: SceneObject): boolean {
+        if (!obj) return false;
+        try {
+            if (obj.getComponent('Component.Image') as Image) return true;
+        } catch (e) { /* ignore */ }
+        try {
+            if (obj.getComponent('Component.RenderMeshVisual') as RenderMeshVisual) return true;
+        } catch (e) { /* ignore */ }
+        return false;
+    }
+
+    private positionRuntimeGarmentPlaceholder(obj: SceneObject, slotIndex: number, templateObj?: SceneObject | null): void {
+        try {
+            const spacing = this.garmentPlaceholderSpacing || 6;
+            const columns = Math.max(1, Math.floor(this.garmentPlaceholderColumns || 3));
+            const col = slotIndex % columns;
+            const row = Math.floor(slotIndex / columns);
+            const transform = obj.getTransform();
+            if (templateObj) {
+                const templateTransform = templateObj.getTransform();
+                const basePosition = templateTransform.getLocalPosition();
+                transform.setLocalPosition(new vec3(
+                    basePosition.x + col * spacing,
+                    basePosition.y - row * spacing * 1.15,
+                    basePosition.z
+                ));
+                transform.setLocalRotation(templateTransform.getLocalRotation());
+                transform.setLocalScale(templateTransform.getLocalScale());
+                return;
+            }
+
+            transform.setLocalPosition(new vec3(-9 + col * spacing, -11 - row * spacing * 0.8, -0.25));
+            transform.setLocalRotation(quat.fromEulerAngles(0, 0, 0));
+            const scale = this.cardInteraction ? this.cardInteraction.collectionCardScale * 0.55 : 0.10;
+            transform.setLocalScale(new vec3(scale, scale, scale));
+        } catch (e) { /* ignore */ }
+    }
+
+    private getGarmentPlaceholderName(slotIndex: number): string {
+        return 'Garment ' + (slotIndex + 1);
+    }
+
+    private getGarmentPlaceholderAliases(slotIndex: number): string[] {
+        const n = slotIndex + 1;
+        return [
+            'Garment ' + n,
+            'photocard ' + n,
+            'PhotoCard ' + n,
+            'Photocard ' + n,
+            'Photo Card ' + n,
+        ];
+    }
+
+    private findSavedVehicleIndexBySerial(serial: string): number {
+        if (!serial || serial.length === 0) return -1;
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            if (this.savedVehicles[i] && this.savedVehicles[i].serial === serial) return i;
+        }
+        return -1;
+    }
+
+    // =====================================================================
     // BACKGROUND VARIETY — Polaroid closet card scenes
     // =====================================================================
 
@@ -2689,6 +3381,9 @@ export class CollectionManager extends BaseScriptComponent {
                     }
                     if (vehicleData.imageGenerated && vehicleData.brand_model && vehicleData.savedAt) {
                         this.loadCardImageFromStorage(vehicleData.brand_model, vehicleData.savedAt, cardObj);
+                    }
+                    if (vehicleData.savedAt) {
+                        this.loadGarmentCutoutForPlaceholder(i, vehicleData.savedAt, cardObj, vehicleData);
                     }
                 }
             }
