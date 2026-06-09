@@ -49,7 +49,7 @@ export class CardInteraction extends BaseScriptComponent {
     // =====================================================================
     @input
     @hint('Scale of cards inside the carousel (small). Default: 0.18')
-    collectionCardScale: number = 0.18;
+    collectionCardScale: number = 0.23;
 
     @input
     @hint('Scale of cards when picked / placed in world (big). Default: 0.36')
@@ -57,15 +57,15 @@ export class CardInteraction extends BaseScriptComponent {
 
     @input
     @hint('Minimum radius (cm) of the carousel circle. Default: 2.5')
-    carouselRadius: number = 2.5;
+    carouselRadius: number = 6.5;
 
     @input
     @hint('Sensitivity of right-hand swipe to rotate carousel (0 = off, 1 = normal)')
-    carouselSwipeSensitivity: number = 1.0;
+    carouselSwipeSensitivity: number = 0.65;
 
     @input
     @hint('Index–thumb distance (cm) below which swipe is blocked (pinch or near-pinch). Increase if carousel still rotates when approaching to grab.')
-    pinchBlockSwipeDistanceCm: number = 6.0;
+    pinchBlockSwipeDistanceCm: number = 7.5;
 
     @input
     @hint('If enabled, carousel only rotates counter-clockwise from swipe; otherwise clockwise only.')
@@ -77,19 +77,19 @@ export class CardInteraction extends BaseScriptComponent {
 
     @input
     @hint('Pinch start distance (cm) between index and thumb')
-    pinchStartDistanceCm: number = 2.2;
+    pinchStartDistanceCm: number = 2.8;
 
     @input
     @hint('Pinch release distance (cm) between index and thumb')
-    pinchReleaseDistanceCm: number = 3.1;
+    pinchReleaseDistanceCm: number = 4.0;
 
     @input
     @hint('Max distance (cm) from pinch center to card to start assist grab')
-    pinchGrabRadiusCm: number = 9.0;
+    pinchGrabRadiusCm: number = 16.0;
 
     @input
     @hint('Hide when sin(angle) < -this (0 = only fade, no hide). Higher = pop/depop further behind wrist. Default 0.5 ≈ ~20° extra hidden each side.')
-    carouselHideThreshold: number = 0.5;
+    carouselHideThreshold: number = 0.75;
 
     // =====================================================================
     // CONSTANTS
@@ -198,6 +198,7 @@ export class CardInteraction extends BaseScriptComponent {
                 for (let si = 0; si < scripts.length; si++) {
                     const script = scripts[si];
                     if (!script) continue;
+                    this.tuneCardFrameHitArea(script);
 
                     if (script.onTranslationStart && typeof script.onTranslationStart.add === 'function'
                         && script.onTranslationEnd && typeof script.onTranslationEnd.add === 'function') {
@@ -223,6 +224,24 @@ export class CardInteraction extends BaseScriptComponent {
                 }
             } catch (e) { /* polling */ }
         });
+    }
+
+    private tuneCardFrameHitArea(script: any): void {
+        try {
+            if (script._inactive !== undefined) script._inactive = false;
+            if (script._onlyInteractOnBorder !== undefined) script._onlyInteractOnBorder = false;
+            if (script.onlyInteractOnBorder !== undefined) script.onlyInteractOnBorder = false;
+            if (typeof script._width === 'number') script._width = Math.max(script._width, 8.0);
+            if (script._size && script._size.x !== undefined) {
+                script._size = new vec3(
+                    Math.max(script._size.x, 8.0),
+                    Math.max(script._size.y, 8.0),
+                    script._size.z || 1.0
+                );
+            }
+        } catch (e) {
+            // Frame internals vary by SpectaclesUIKit version; this is best-effort.
+        }
     }
 
     // =====================================================================

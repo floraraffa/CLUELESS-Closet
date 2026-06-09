@@ -1,5 +1,5 @@
 /**
- * VehicleScanner.ts — Image capture + OpenAI clothing analysis for CLUELESS
+ * VehicleScanner.ts — Image capture + OpenAI clothing analysis for Closet Club
  *
  * Handles:
  *   - High-resolution image capture via CameraModule
@@ -11,7 +11,7 @@
  *
  * Exposes a single public method `scanVehicle()` returning closet item data or null.
  *
- * @author CLUELESS
+ * @author Closet Club
  * @license MIT
  */
 
@@ -375,7 +375,7 @@ catalog page, advertisement, or non-clothing scene, return clothing_found false.
 TESTING MODE: Identify visible garments or outfits even if the image is a screen/photo/reference.
 `;
 
-        const systemPrompt = `You are CLUELESS, an AI wardrobe stylist for Spectacles. Analyze the image and respond ONLY with valid JSON.
+        const systemPrompt = `You are Closet Club, an AI wardrobe stylist for Spectacles. Analyze the image and respond ONLY with valid JSON.
 
 If ONE garment is clearly visible, identify it:
 {

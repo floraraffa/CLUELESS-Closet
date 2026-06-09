@@ -460,9 +460,8 @@ export class CarScanner extends BaseScriptComponent {
                 this.translateAllStaticUI();
             };
             this.welcomeManager.onSoloModeSelected = () => {
-                print('CarScanner: Solo mode selected — starting game');
+                print('CarScanner: Solo mode selected — opening scanner interface');
                 this.showScanInterface();
-                this.startScanAfterDelay(0.25, 'Scan Clothes');
             };
             this.welcomeManager.onConnectedLensModeSelected = () => {
                 print('CarScanner: Connected Lens mode selected');
@@ -939,7 +938,8 @@ export class CarScanner extends BaseScriptComponent {
 
         this.cloudManager.onGetLocalImage = (savedAt: number) => {
             try {
-                return global.persistentStorageSystem.store.getString('dgns_img_' + savedAt.toString());
+                if (!this.collectionManager) return '';
+                return this.collectionManager.getCardImageBase64(savedAt) || '';
             } catch (e) { return ''; }
         };
 
@@ -1138,7 +1138,7 @@ export class CarScanner extends BaseScriptComponent {
             this.stopWaitingSfx('scan_wait');
             this.playOneShotSfx(this.sfxVehicleCardShown);
 
-            // CLUELESS uses the visual slot for the captured garment/look photo,
+            // Closet Club uses the visual slot for the captured garment/look photo,
             // not for external brand logos.
 
         } catch (error) {

@@ -7,7 +7,7 @@
  *   3. Clicking Accept hides Language Container, shows Welcome Container in selected language
  *   4. Solo mode starts the closet scanner. Shared Closet is hidden for this MVP.
  *
- * @author CLUELESS
+ * @author Closet Club
  * @license MIT
  */
 
@@ -59,7 +59,7 @@ export class WelcomeManager extends BaseScriptComponent {
 
     @input
     @allowUndefined
-    @hint('Title Text component in Welcome Container ("CLUELESS")')
+    @hint('Title Text component in Welcome Container ("Closet Club")')
     welcomeTitleText: Text;
 
     @input
@@ -84,7 +84,7 @@ export class WelcomeManager extends BaseScriptComponent {
 
     @input
     @allowUndefined
-    @hint('"Connected Lens CapsuleButton" SceneObject — hidden/deprioritized for CLUELESS MVP')
+    @hint('"Connected Lens CapsuleButton" SceneObject — hidden/deprioritized for Closet Club MVP')
     connectedLensButton: SceneObject;
 
     // =====================================================================

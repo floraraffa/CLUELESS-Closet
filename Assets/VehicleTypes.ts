@@ -32,7 +32,7 @@ export function normalizeScanContext(value?: string | null): ScanContext {
 /**
  * Clothing or outfit identification data returned by OpenAI Vision.
  * Some legacy vehicle field names are kept so existing Lens Studio scene
- * bindings continue to work during the first Clueless port.
+ * bindings continue to work during the first Closet Club port.
  */
 export interface VehicleData {
     vehicle_found?: boolean;

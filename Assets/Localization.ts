@@ -1,5 +1,5 @@
 /**
- * Localization.ts — Centralized i18n for CLUELESS
+ * Localization.ts — Centralized i18n for Closet Club
  *
  * Supports: English (en), French (fr), Spanish (es).
  * Default language: English
@@ -10,7 +10,7 @@
  *   t('scan_failed');             // "Scan échoué"
  *   tf('saving', { name: 'Blazer' }) // "Sauvegarde de Blazer..."
  *
- * @author CLUELESS
+ * @author Closet Club
  * @license MIT
  */
 
@@ -43,9 +43,9 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     // -----------------------------------------------------------------
     welcome_title:          { en: 'Start Scanning your clothes', fr: 'Commencez a scanner vos vetements', es: 'Empieza a escanear tu ropa' },
     welcome_description:    {
-        en: 'Scan garments and outfits with Spectacles. CLUELESS reads the item, builds a smart closet, and turns every save into a clean polaroid-style wardrobe card.',
-        fr: 'Scannez des vêtements et des looks avec Spectacles. CLUELESS identifie la pièce, crée un dressing intelligent et transforme chaque sauvegarde en carte façon polaroid.',
-        es: 'Escanea prendas y looks con Spectacles. CLUELESS interpreta la ropa, crea un armario inteligente y convierte cada guardado en una card estilo polaroid.',
+        en: 'Scan garments and outfits with Spectacles. Closet Club reads the item, builds a smart closet, and turns every save into a clean polaroid-style wardrobe card.',
+        fr: 'Scannez des vêtements et des looks avec Spectacles. Closet Club identifie la pièce, crée un dressing intelligent et transforme chaque sauvegarde en carte façon polaroid.',
+        es: 'Escanea prendas y looks con Spectacles. Closet Club interpreta la ropa, crea un armario inteligente y convierte cada guardado en una card estilo polaroid.',
     },
     solo:                   { en: 'Scan Clothes', fr: 'Scanner Vetements', es: 'Escanear Ropa' },
     connected_lens:         { en: 'Shared Closet', fr: 'Shared Closet', es: 'Armario compartido' },
@@ -65,7 +65,7 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     // -----------------------------------------------------------------
     // Closet Scan Interface
     // -----------------------------------------------------------------
-    dgns_title:             { en: 'CLUELESS', fr: 'CLUELESS', es: 'CLUELESS' },
+    dgns_title:             { en: 'Closet Club', fr: 'Closet Club', es: 'Closet Club' },
     loading_text:           { en: 'Loading', fr: 'Chargement', es: 'Cargando' },
     press_button_hint:      { en: 'Look at a garment or outfit', fr: 'Regardez un vêtement ou un look', es: 'Mira una prenda o un look' },
 
@@ -93,6 +93,11 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     combining_look:         { en: 'Combining from your closet', fr: 'Combinaison depuis votre dressing', es: 'Combinando desde tu armario' },
     combine_look_button:    { en: 'Combine', fr: 'Combiner', es: 'Combinar' },
     combine_need_more_items:{ en: 'Save at least one more closet item before combining looks.', fr: 'Sauvegardez au moins une autre pièce avant de combiner des looks.', es: 'Guarda al menos una prenda más antes de combinar looks.' },
+    look_mix_ready:         { en: 'Showing {count} closet cards for this look', fr: 'Affichage de {count} cartes pour ce look', es: 'Mostrando {count} cards para este look' },
+    look_options_ready:     { en: 'Showing {count} best closet matches', fr: 'Affichage des {count} meilleures associations', es: 'Mostrando las {count} mejores combinaciones' },
+    look_option_base:       { en: 'Base: {name}', fr: 'Base : {name}', es: 'Base: {name}' },
+    look_option_match:      { en: 'Match: {name}', fr: 'Avec : {name}', es: 'Combina: {name}' },
+    look_option_match_pct:  { en: '{percent}% Match: {name}', fr: '{percent}% Avec : {name}', es: '{percent}% Combina: {name}' },
     combine_fallback:       {
         en: 'Try {target} with {match}. It is the strongest match in your saved closet right now, so start there and adjust the shoes or layer after the next scan.',
         fr: 'Essayez {target} avec {match}. C’est la meilleure association dans votre dressing sauvegardé pour l’instant, puis ajustez les chaussures ou la couche après le prochain scan.',
@@ -159,6 +164,7 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     garment_cutout_ready:   { en: '{name} closet image ready!', fr: 'Image dressing de {name} prête !', es: '¡Imagen de {name} lista en el armario!' },
     garment_cutout_failed:  { en: 'Could not create closet image, keeping scan photo', fr: 'Impossible de créer l’image dressing, photo conservée', es: 'No se pudo crear la imagen, queda la foto escaneada' },
     closet_slot_opened:     { en: 'Opening {name} card', fr: 'Ouverture de la carte {name}', es: 'Abriendo card de {name}' },
+    closet_page_status:     { en: 'Closet page {page}/{pages}', fr: 'Page dressing {page}/{pages}', es: 'Página del armario {page}/{pages}' },
     image_gen_busy:         { en: 'Image generation busy, try again later', fr: 'Génération d\'image occupée, réessayez plus tard', es: 'Generación de imagen ocupada, inténtalo más tarde' },
     card_sparkle:           { en: '\u2728 {name} \u2728', fr: '\u2728 {name} \u2728', es: '\u2728 {name} \u2728' },
     release_to_collect:     { en: '{name} — release to collect', fr: '{name} — relâchez pour collecter', es: '{name} — suelta para coleccionar' },
@@ -278,7 +284,7 @@ const IDLE_PHRASES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         'Your closet is waiting for its next card.',
         'Scan a look. Keep the good ideas.',
         'A good outfit deserves an archive.',
-        'Look at a piece, then let CLUELESS read it.',
+        'Look at a piece, then let Closet Club read it.',
         'Scan tops, bottoms, shoes, or a full look.',
         'Your wardrobe is becoming searchable.',
         'One scan closer to a smarter closet.',
@@ -322,7 +328,7 @@ const IDLE_PHRASES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         'Tu armario espera su próxima card.',
         'Escanea un look. Guarda las buenas ideas.',
         'Un buen outfit merece archivo.',
-        'Mira una prenda y deja que CLUELESS la lea.',
+        'Mira una prenda y deja que Closet Club la lea.',
         'Escanea tops, bottoms, zapatos o un look completo.',
         'Tu armario se está volviendo searchable.',
         'Un scan más cerca de un armario inteligente.',
@@ -347,11 +353,11 @@ const IDLE_PHRASES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
 
 const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
     en: [
-        "That looks like a screen.\nPoint CLUELESS at real clothing.",
+        "That looks like a screen.\nPoint Closet Club at real clothing.",
         "Nice try, but this closet\nneeds real garments.",
         "Screenshots do not belong\nin the wardrobe archive.",
         "Scan the item in front of you,\nnot a photo of it.",
-        "CLUELESS wants fabric,\nshape, and color in real space.",
+        "Closet Club wants fabric,\nshape, and color in real space.",
         "That is not a live scan.\nFind the actual piece.",
         "A closet card should start\nwith a real garment.",
         "Your Trust score dropped.\nScan clothing in person.",
@@ -359,7 +365,7 @@ const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         "Point at a top, bottom,\nshoe, or full outfit.",
         "The archive gets smarter\nwhen the scan is real.",
         "Try again with the item\nin front of the camera.",
-        "CLUELESS can read style,\nbut not shortcuts.",
+        "Closet Club can read style,\nbut not shortcuts.",
         "Real clothes only.\nYour closet deserves better.",
         "Trust drops again.\nScan real wardrobe pieces.",
     ],
@@ -381,11 +387,11 @@ const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         "Sur ce coup de théâtre...\nton score de Confiance baisse\nENCORE. Scanne de vraies voitures !",
     ],
     es: [
-        "Eso parece una pantalla.\nApunta CLUELESS a ropa real.",
+        "Eso parece una pantalla.\nApunta Closet Club a ropa real.",
         "Buen intento, pero este armario\nnecesita prendas reales.",
         "Las capturas no pertenecen\nal archivo de tu armario.",
         "Escanea la prenda frente a ti,\nno una foto de ella.",
-        "CLUELESS necesita tela,\nforma y color en espacio real.",
+        "Closet Club necesita tela,\nforma y color en espacio real.",
         "Eso no es un scan en vivo.\nBusca la prenda real.",
         "Una card de armario debería\nnacer de una prenda real.",
         "Tu Confianza bajó.\nEscanea ropa en persona.",
@@ -393,7 +399,7 @@ const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         "Apunta a un top, bottom,\nzapato o look completo.",
         "El archivo mejora cuando\nel scan es real.",
         "Intenta otra vez con la prenda\nfrente a la cámara.",
-        "CLUELESS puede leer estilo,\npero no atajos.",
+        "Closet Club puede leer estilo,\npero no atajos.",
         "Solo ropa real.\nTu armario merece algo mejor.",
         "La Confianza baja otra vez.\nEscanea prendas reales.",
     ],

@@ -41,6 +41,8 @@
     confirmShareContainer: false
     confirmShareYesButton: false
     deleteCardButton: false
+    garmentCutoutMaxAttempts: false
+    garmentCutoutTimeoutSeconds: false
     garmentPlaceholderColumns: false
     garmentPlaceholderContainer: false
     garmentPlaceholderSpacing: false
@@ -76,6 +78,8 @@
       closetViewHeightOffset: !<float> -8.000000
       garmentPlaceholderContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       generateGarmentCutoutOnSave: true
+      garmentCutoutTimeoutSeconds: !<float> 60.000000
+      garmentCutoutMaxAttempts: !<float> 1.000000
       maxGarmentPlaceholders: !<float> 12.000000
       garmentPlaceholderColumns: !<float> 3.000000
       garmentPlaceholderSpacing: !<float> 6.000000
@@ -110,7 +114,9 @@
     - '// @input float closetViewHeightOffset = -8 {"hint":"Vertical offset in cm for the virtual closet view"}'
     - '// @input SceneObject garmentPlaceholderContainer {"hint":"Optional parent with Image/RenderMeshVisual children named Garment 1, Garment 2, etc."}'
     - '// @input bool generateGarmentCutoutOnSave = true {"hint":"Run GPT Image Edit on Save to remove the background and fill garment placeholders"}'
-    - '// @input float maxGarmentPlaceholders = 12 {"hint":"Maximum number of garment placeholder slots to fill"}'
+    - '// @input float garmentCutoutTimeoutSeconds = 60 {"hint":"Maximum seconds to wait for the AI closet image before keeping the scan photo"}'
+    - '// @input float garmentCutoutMaxAttempts = 1 {"hint":"Maximum AI attempts for the closet cutout. Keep this at 1 for faster saves."}'
+    - '// @input float maxGarmentPlaceholders = 2 {"hint":"Number of visible garment placeholder slots for the look builder"}'
     - '// @input float garmentPlaceholderColumns = 3 {"hint":"How many garment cards to place per row inside the closet list"}'
     - '// @input float garmentPlaceholderSpacing = 6 {"hint":"Spacing in cm between runtime garment placeholders"}'
     - '// @input SceneObject shareCollectionButton {"hint":"\"Share Collection\" button on left hand (inside User Card Info)"}'
@@ -128,4 +134,4 @@
     - '// @input SceneObject confirmDeleteCancelButton {"hint":"\"Cancel\" button inside Confirm Delete Container"}'
     - '// @input AssignableType brandLogoLoader {"hint":"BrandLogoLoader script reference (for loading logos onto collector cards)"}'
     - '// @input AssignableType_1 cardInteraction {"hint":"CardInteraction script reference (handles grab/release, auto-rotation, lerp)"}'
-    - '// @input float maxCollectionSize = 25 {"hint":"Maximum number of cards in collection. Default: 25. Increase for premium users."}'
+    - '// @input float maxCollectionSize = 100 {"hint":"Maximum number of cards in collection. Default: 100. Increase for premium users."}'

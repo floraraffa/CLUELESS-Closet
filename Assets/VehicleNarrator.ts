@@ -1,5 +1,5 @@
 /**
- * VehicleNarrator.ts — Style note + TTS + status text for CLUELESS
+ * VehicleNarrator.ts — Style note + TTS + status text for Closet Club
  *
  * Handles:
  *   - "Fetch Info" GPT stylist note + TTS readout
@@ -10,7 +10,7 @@
  *       • Scanning: animated "Scanning..." dots
  *       • Errors: brief error display, then back to idle
  *
- * @author CLUELESS
+ * @author Closet Club
  * @license MIT
  */
 
@@ -239,7 +239,7 @@ export class VehicleNarrator extends BaseScriptComponent {
 
     /**
      * Generates a styling suggestion using the selected item plus the saved closet.
-     * This replaces the old collector-card review action for the CLUELESS closet flow.
+     * This replaces the old collector-card review action for the Closet Club closet flow.
      */
     async triggerCombination(data: VehicleData, closetItems: VehicleData[], cardReviewText?: Text): Promise<void> {
         if (this.isFetchingInfo) {
@@ -473,7 +473,7 @@ export class VehicleNarrator extends BaseScriptComponent {
 
     private async fetchVehicleDescription(vehicleName: string, vehicleType: string, brand: string): Promise<string> {
         const langInstruction = t('gpt_narrator_lang');
-        const systemPrompt = `You are a concise fashion stylist for an AI closet app called CLUELESS.
+        const systemPrompt = `You are a concise fashion stylist for an AI closet app called Closet Club.
 
 YOUR STYLE:
 - Practical, direct, visual, and lightly opinionated
@@ -521,7 +521,7 @@ ${langInstruction}
             closetLines.push(this.formatClosetItem(closetItems[i], i + 1));
         }
 
-        const systemPrompt = `You are a practical fashion stylist inside an AI closet app called CLUELESS.
+        const systemPrompt = `You are a practical fashion stylist inside an AI closet app called Closet Club.
 
 TASK:
 - Suggest the best outfit combination for the target item using ONLY the saved closet items provided.
@@ -605,18 +605,20 @@ ${langInstruction}`;
     private scoreCombination(target: VehicleData, candidate: VehicleData): number {
         const targetType = this.getVehicleCategoryText(target);
         const candidateType = this.getVehicleCategoryText(candidate);
+        const targetFamily = this.getFamily(targetType);
+        const candidateFamily = this.getFamily(candidateType);
         let score = 0;
 
-        if (this.isTopLike(targetType) && (this.isBottomLike(candidateType) || this.isShoeLike(candidateType))) score += 5;
-        if (this.isBottomLike(targetType) && (this.isTopLike(candidateType) || this.isShoeLike(candidateType))) score += 5;
-        if (this.isShoeLike(targetType) && (this.isTopLike(candidateType) || this.isBottomLike(candidateType))) score += 4;
-        if (this.isOuterwearLike(targetType) && (this.isTopLike(candidateType) || this.isBottomLike(candidateType))) score += 4;
-        if (this.isAccessoryLike(targetType)) score += 2;
-        if (this.isAccessoryLike(candidateType)) score += 2;
+        score += this.getFamilyPairScore(targetFamily, candidateFamily);
+        if (targetFamily === candidateFamily) {
+            if (targetFamily === 'top' || targetFamily === 'bottom' || targetFamily === 'shoe') score -= 8;
+            else if (targetFamily === 'outerwear') score -= 5;
+            else if (targetFamily === 'accessory') score -= 3;
+        }
 
-        if (target.color && candidate.color && String(target.color).toLowerCase() !== String(candidate.color).toLowerCase()) score += 1;
-        if (target.style_tags && candidate.style_tags && this.hasSharedString(target.style_tags, candidate.style_tags)) score += 2;
-        if (target.occasion_tags && candidate.occasion_tags && this.hasSharedString(target.occasion_tags, candidate.occasion_tags)) score += 2;
+        score += this.getColorHarmonyScore(target.color || '', candidate.color || '');
+        if (target.style_tags && candidate.style_tags && this.hasSharedString(target.style_tags, candidate.style_tags)) score += 4;
+        if (target.occasion_tags && candidate.occasion_tags && this.hasSharedString(target.occasion_tags, candidate.occasion_tags)) score += 3;
         if (target.season_tags && candidate.season_tags && this.hasSharedString(target.season_tags, candidate.season_tags)) score += 1;
 
         return score;
@@ -645,7 +647,13 @@ ${langInstruction}`;
     }
 
     private getVehicleCategoryText(item: VehicleData): string {
-        return String(item.category || item.type || item.subcategory || '').toLowerCase();
+        return [
+            item.category || '',
+            item.type || '',
+            item.subcategory || '',
+            item.item_name || '',
+            item.brand_model || '',
+        ].join(' ').toLowerCase();
     }
 
     private getVehicleSerial(item: VehicleData): string {
@@ -656,6 +664,81 @@ ${langInstruction}`;
     private getVehicleSavedAt(item: VehicleData): number {
         const raw = (item as any).savedAt;
         return raw ? Number(raw) : 0;
+    }
+
+    private getFamily(text: string): string {
+        if (this.isBottomLike(text)) return 'bottom';
+        if (this.isTopLike(text)) return 'top';
+        if (this.isShoeLike(text)) return 'shoe';
+        if (this.isOuterwearLike(text)) return 'outerwear';
+        if (this.isAccessoryLike(text)) return 'accessory';
+        if (this.isDressLike(text)) return 'dress';
+        return 'unknown';
+    }
+
+    private getFamilyPairScore(a: string, b: string): number {
+        if (a === 'top' && b === 'bottom') return 16;
+        if (a === 'bottom' && b === 'top') return 16;
+        if (a === 'top' && b === 'outerwear') return 8;
+        if (a === 'outerwear' && b === 'top') return 8;
+        if (a === 'bottom' && b === 'outerwear') return 7;
+        if (a === 'outerwear' && b === 'bottom') return 7;
+        if (a === 'top' && b === 'shoe') return 6;
+        if (a === 'shoe' && b === 'top') return 6;
+        if (a === 'bottom' && b === 'shoe') return 7;
+        if (a === 'shoe' && b === 'bottom') return 7;
+        if (a === 'dress' && (b === 'shoe' || b === 'outerwear' || b === 'accessory')) return 8;
+        if (b === 'dress' && (a === 'shoe' || a === 'outerwear' || a === 'accessory')) return 8;
+        if (a === 'accessory' && b !== 'accessory' && b !== 'unknown') return 3;
+        if (b === 'accessory' && a !== 'accessory' && a !== 'unknown') return 3;
+        return 0;
+    }
+
+    private getColorHarmonyScore(a: string, b: string): number {
+        const aColors = this.getColorKeywords(a);
+        const bColors = this.getColorKeywords(b);
+        if (aColors.length === 0 || bColors.length === 0) return 0;
+        if (this.hasSharedString(aColors, bColors)) {
+            return (this.hasNeutralColor(aColors) || this.hasNeutralColor(bColors)) ? 2 : 1;
+        }
+        if (this.hasNeutralColor(aColors) || this.hasNeutralColor(bColors)) return 3;
+        if (this.hasComplementaryColors(aColors, bColors)) return 3;
+        return 0;
+    }
+
+    private getColorKeywords(text: string): string[] {
+        const source = String(text || '').toLowerCase();
+        const colors = [
+            'black', 'white', 'cream', 'beige', 'tan', 'brown', 'gray', 'grey',
+            'navy', 'blue', 'denim', 'red', 'burgundy', 'pink', 'purple',
+            'green', 'olive', 'yellow', 'orange',
+        ];
+        const result: string[] = [];
+        for (let i = 0; i < colors.length; i++) {
+            if (source.indexOf(colors[i]) >= 0) result.push(colors[i]);
+        }
+        return result;
+    }
+
+    private hasNeutralColor(colors: string[]): boolean {
+        return this.hasSharedString(colors, ['black', 'white', 'cream', 'beige', 'tan', 'brown', 'gray', 'grey', 'navy', 'denim']);
+    }
+
+    private hasComplementaryColors(a: string[], b: string[]): boolean {
+        return this.hasColorPair(a, b, 'blue', 'orange')
+            || this.hasColorPair(a, b, 'navy', 'white')
+            || this.hasColorPair(a, b, 'red', 'denim')
+            || this.hasColorPair(a, b, 'red', 'blue')
+            || this.hasColorPair(a, b, 'green', 'brown')
+            || this.hasColorPair(a, b, 'olive', 'beige')
+            || this.hasColorPair(a, b, 'pink', 'gray')
+            || this.hasColorPair(a, b, 'pink', 'grey')
+            || this.hasColorPair(a, b, 'yellow', 'navy');
+    }
+
+    private hasColorPair(a: string[], b: string[], first: string, second: string): boolean {
+        return (a.indexOf(first) >= 0 && b.indexOf(second) >= 0)
+            || (a.indexOf(second) >= 0 && b.indexOf(first) >= 0);
     }
 
     private hasSharedString(a: string[], b: string[]): boolean {
@@ -676,11 +759,11 @@ ${langInstruction}`;
     }
 
     private isTopLike(text: string): boolean {
-        return this.hasAny(text, ['top', 'shirt', 't-shirt', 'tee', 'sweater', 'sweatshirt', 'blouse', 'hoodie', 'knit', 'camisa', 'remera']);
+        return this.hasAny(text, ['top', 'shirt', 't-shirt', 'tee', 'sweater', 'sweatshirt', 'blouse', 'hoodie', 'knit', 'camisa', 'remera', 'pullover']);
     }
 
     private isBottomLike(text: string): boolean {
-        return this.hasAny(text, ['bottom', 'pants', 'jeans', 'trouser', 'skirt', 'shorts', 'denim', 'pantalon', 'falda']);
+        return this.hasAny(text, ['bottom', 'pants', 'jeans', 'trouser', 'skirt', 'shorts', 'denim', 'pantal', 'falda']);
     }
 
     private isShoeLike(text: string): boolean {
@@ -693,6 +776,10 @@ ${langInstruction}`;
 
     private isAccessoryLike(text: string): boolean {
         return this.hasAny(text, ['accessory', 'bag', 'belt', 'hat', 'scarf', 'jewelry', 'accesorio', 'bolso', 'cinturon']);
+    }
+
+    private isDressLike(text: string): boolean {
+        return this.hasAny(text, ['dress', 'vestido']);
     }
 
     private async speakDescription(text: string): Promise<void> {

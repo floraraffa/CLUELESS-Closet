@@ -154,6 +154,7 @@ export class VehicleCardUI extends BaseScriptComponent {
             const obj = this.cardStatusText.getSceneObject();
             if (obj) obj.enabled = false;
         }
+        this.hideScanResultReviewButton();
     }
 
     showCardStatus(text: string): void {
@@ -197,9 +198,10 @@ export class VehicleCardUI extends BaseScriptComponent {
         if (this.vehicleCard) {
             this.vehicleCard.enabled = true;
             enableAllDescendants(this.vehicleCard);
+            this.hideScanResultReviewButton();
         }
 
-        // Legacy input name; in CLUELESS this is the result-card garment photo slot.
+        // Legacy input name; in Closet Club this is the result-card garment photo slot.
         if (this.carBrandLogo) this.carBrandLogo.enabled = true;
 
         const displayName = data.item_name || data.brand_model;
@@ -295,6 +297,7 @@ export class VehicleCardUI extends BaseScriptComponent {
         if (state === 'results') {
             if (this.vehicleCard) {
                 this.vehicleCard.enabled = true;
+                this.hideScanResultReviewButton();
                 // Frame initializes when SceneObject is enabled — connect close button now
                 if (!this.closeButtonConnected) {
                     let delayFrames = 0;
@@ -539,6 +542,12 @@ export class VehicleCardUI extends BaseScriptComponent {
         if (this.connectButton(button, () => this.startEditingNote(), 'EditNote')) {
             this.noteEditButtonConnected = true;
         }
+    }
+
+    private hideScanResultReviewButton(): void {
+        if (!this.vehicleCard) return;
+        const reviewButton = findChildByName(this.vehicleCard, 'Review Button');
+        if (reviewButton) reviewButton.enabled = false;
     }
 
     // =====================================================================

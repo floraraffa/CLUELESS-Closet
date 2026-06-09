@@ -1,5 +1,5 @@
 /**
- * CloudManager.ts — Centralized Snap Cloud / Supabase integration for CLUELESS
+ * CloudManager.ts — Centralized Snap Cloud / Supabase integration for Closet Club
  *
  * Handles:
  *   - Snapchat authentication via Supabase Auth

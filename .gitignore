@@ -18,14 +18,17 @@ Workspaces/**
 # Shipped by Lens Studio
 .DS_Store
 
-# Lens Studio generated/local files
+# Lens Studio generated/local state
 Cache/
+Workspaces/
 PluginsUserPreferences/
 
-# Local dependency folders
+# Local dependency/build folders
 node_modules/
+dist/
+build/
 
-# Logs and temporary files
+# Logs and temp files
 *.log
 *.tmp
-*.bak
+*.temp
