@@ -30,6 +30,7 @@ Assets/**/*.ts !filter !diff !merge text
 Packages/**/*.ts !filter !diff !merge text
 Assets/**/*.txt !filter !diff !merge text
 Packages/**/*.txt !filter !diff !merge text
+Assets/types/**/*.txt -text
 Assets/**/*.ui !filter !diff !merge text
 Packages/**/*.ui !filter !diff !merge text
 Assets/**/*.yaml !filter !diff !merge text
