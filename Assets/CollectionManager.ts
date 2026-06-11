@@ -121,6 +121,10 @@ export class CollectionManager extends BaseScriptComponent {
     @hint('Spacing in cm between runtime garment placeholders')
     garmentPlaceholderSpacing: number = 6;
 
+    @input
+    @hint('Drop radius in cm for dragging a bracelet card onto an outfit slot')
+    outfitSlotDropRadiusCm: number = 24;
+
     // =====================================================================
     // INPUTS — Delete Card UI
     // =====================================================================
@@ -226,6 +230,8 @@ export class CollectionManager extends BaseScriptComponent {
     onReviewVehicle: ((data: SavedVehicleData, cardReviewText?: Text) => void) | null = null;
     /** Called when a collector card's "Combine Look" button is pressed. */
     onCombineLook: ((data: SavedVehicleData, closetItems: SavedVehicleData[], cardReviewText?: Text) => void) | null = null;
+    /** Called when AskAI is pressed for the currently composed outfit slots. */
+    onAskOutfitFeedback: ((outfitItems: SavedVehicleData[], slotLabels?: string[], outfitText?: Text | null, percentText?: Text | null, matchPercent?: number) => void) | null = null;
     /** Called when review generation starts (audio+text fetch begins). */
     onReviewGenerationStarted: (() => void) | null = null;
     /** Called when a card is successfully saved to the collection (for XP attribution). */
@@ -263,6 +269,7 @@ export class CollectionManager extends BaseScriptComponent {
     private readonly STORAGE_KEY: string = 'clueless_closet_collection';
     private readonly IMAGE_KEY_PREFIX: string = 'clueless_img_';
     private readonly GARMENT_CUTOUT_KEY_PREFIX: string = 'clueless_cutout_';
+    private readonly OUTFIT_SLOTS_KEY: string = 'clueless_outfit_slots';
     private readonly DELETED_SERIALS_KEY: string = 'clueless_deleted_serials';
     private readonly TRADE_HISTORY_KEY: string = 'dgns_trade_history';
     private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles CarScanner/1.0';
@@ -286,10 +293,17 @@ export class CollectionManager extends BaseScriptComponent {
     private garmentPlaceholderButtonConnected: boolean[] = [];
     private garmentSlotToSavedIndex: number[] = [];
     private garmentPageIndex: number = 0;
-    private garmentViewMode: 'inventory' | 'combination' = 'inventory';
+    private garmentViewMode: 'inventory' | 'combination' | 'outfit' = 'inventory';
     private garmentCombinationIndexes: number[] = [];
     private garmentCombinationTargetIndex: number = -1;
     private garmentCombinationPercents: number[] = [];
+    private outfitTesterContainer: SceneObject | null = null;
+    private outfitSlotObjects: SceneObject[] = [];
+    private outfitSlotDefaultTextures: Array<Texture | null> = [];
+    private outfitSlotToSavedIndex: number[] = [-1, -1, -1, -1];
+    private outfitSlotButtonConnected: boolean[] = [];
+    private askOutfitButtonConnected: boolean = false;
+    private composeOutfitButtonConnected: boolean = false;
     private garmentPrevPageButtonConnected: boolean = false;
     private garmentNextPageButtonConnected: boolean = false;
     private saveButtonConnected: boolean = false;
@@ -568,6 +582,7 @@ export class CollectionManager extends BaseScriptComponent {
     /** Reconnects runtime button callbacks after the orchestrator has wired helpers. */
     refreshButtonConnections(): void {
         this.setupSaveButton();
+        this.hookOutfitBuilderButtons();
     }
 
     // =====================================================================
@@ -910,12 +925,14 @@ export class CollectionManager extends BaseScriptComponent {
         this.reviewButtonHooked = [];
         this.garmentPlaceholderButtonConnected = [];
         this.garmentSlotToSavedIndex = [];
+        this.outfitSlotToSavedIndex = this.createEmptyOutfitSlots();
         this.garmentPageIndex = 0;
         this.clearRuntimeGarmentPlaceholders();
 
         if (this.cardInteraction) this.cardInteraction.setGrabbedCardIndex(-1);
 
         this.saveCollectionToStorage();
+        this.clearOutfitSlotsFromStorage();
         if (this.isCollectionOpen) this.hideCollection();
         this.updateDeleteButtonVisibility();
         this.updateCollectionButtonLabel();
@@ -997,6 +1014,7 @@ export class CollectionManager extends BaseScriptComponent {
         this.cardImageReady.splice(idx, 1);
         this.cardFrameHooked.splice(idx, 1);
         this.reviewButtonHooked.splice(idx, 1);
+        this.adjustOutfitSlotsAfterCardDelete(idx);
         this.clampGarmentPageIndex();
 
         // Adjust grabbed index
@@ -1009,7 +1027,10 @@ export class CollectionManager extends BaseScriptComponent {
         this.saveCollectionToStorage();
         this.rebuildGarmentPlaceholdersFromStorage();
         this.updateGarmentPlaceholderVisibility();
-        if (this.isCollectionOpen) this.layoutCircularCards();
+        if (this.isCollectionOpen) {
+            this.layoutCircularCards();
+            this.showOutfitBuilderContainer();
+        }
         this.updateDeleteButtonVisibility();
         this.updateCollectionButtonLabel();
         this.deleteTargetCardIndex = -1;
@@ -1425,10 +1446,9 @@ export class CollectionManager extends BaseScriptComponent {
             return;
         }
 
-        this.enterGarmentInventoryMode();
+        this.enterGarmentOutfitMode();
         this.isCollectionOpen = true;
         this.updateCollectionButtonLabel();
-        this.hideGarmentPlaceholderContainer();
         if (this.cardInteraction) {
             this.cardInteraction.setGrabbedCardIndex(-1);
             this.cardInteraction.carouselAngleOffset = 0;
@@ -1463,6 +1483,8 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         this.layoutCircularCards();
+        this.resetOutfitTesterSlots();
+        this.showOutfitBuilderContainer();
         this.startCollectionUpdateLoop();
 
         // Hook Frame events for unhooked cards
@@ -1517,6 +1539,7 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         if (this.collectionRoot) this.collectionRoot.enabled = false;
+        this.hideGarmentPlaceholderContainer();
         this.stopCollectionUpdateLoop();
         this.updateDeleteButtonVisibility();
 
@@ -1867,6 +1890,9 @@ export class CollectionManager extends BaseScriptComponent {
                 this.collectionCardObjects, this.savedVehicles,
                 this.cardStates, this.cardFrameHooked, this.collectionRoot
             );
+            this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
+                return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
+            };
         }
         this.collectionUpdateEvent = this.createEvent('UpdateEvent');
         this.collectionUpdateEvent.bind(() => {
@@ -1889,6 +1915,9 @@ export class CollectionManager extends BaseScriptComponent {
                 this.collectionCardObjects, this.savedVehicles,
                 this.cardStates, this.cardFrameHooked, this.collectionRoot
             );
+            this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
+                return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
+            };
         }
     }
 
@@ -2204,33 +2233,43 @@ export class CollectionManager extends BaseScriptComponent {
      * before its onTriggerUp event becomes available.
      */
     private hookPendingReviewButtons(): void {
+        // Outfit Tester is now a per-session builder. Cards should only be dragged
+        // into slots; automatic composition belongs to the tester's Compose button.
+        if (this.garmentViewMode === 'outfit') return;
+
+        const maxAttempts = 120;
         let waitFrames = 0;
         const pollEvent = this.createEvent('UpdateEvent');
         pollEvent.bind(() => {
             waitFrames++;
-            // Wait 10 frames for RectangleButton scripts to initialize
-            if (waitFrames < 10) return;
-            pollEvent.enabled = false;
+            // Wait a few frames for UIKit/SIK button scripts to initialize, then keep
+            // retrying because freshly-instantiated prefab buttons can come online late.
+            if (waitFrames < 3) return;
 
+            let pending = 0;
             for (let i = 0; i < this.collectionCardObjects.length; i++) {
                 if (this.reviewButtonHooked[i]) continue;
                 const card = this.collectionCardObjects[i];
                 if (!card || !card.enabled) continue;
                 if (i >= this.savedVehicles.length) continue;
 
-                this.tryHookReviewButton(card, i);
+                if (!this.tryHookReviewButton(card, i)) pending++;
+            }
+
+            if (pending === 0 || waitFrames >= maxAttempts) {
+                pollEvent.enabled = false;
             }
         });
     }
 
     /**
-     * Combine Look can run from the closet carousel or from a placed card.
-     * The button itself is the explicit trigger, so the user does not need to
-     * pull the card out first.
+     * Combine Look can run from the closet carousel or from a placed card,
+     * but never while the card is being dragged into Outfit Tester.
      */
     private canTriggerCombineLook(cardIndex: number): boolean {
         const state = this.cardStates[cardIndex] || this.STATE_IN_COLLECTION;
-        return state === this.STATE_IN_COLLECTION || state === this.STATE_PLACED_IN_WORLD;
+        return state === this.STATE_IN_COLLECTION
+            || state === this.STATE_PLACED_IN_WORLD;
     }
 
     private triggerCombineLook(cardIndex: number, data: SavedVehicleData, cardReviewText: Text | null, source: string): void {
@@ -2241,7 +2280,6 @@ export class CollectionManager extends BaseScriptComponent {
 
         print('CollectionManager: [COMBINE] Combine Look pressed (' + source + ') for ' + (data.brand_model || '?'));
         const matchIndexes = this.getBestLookCombinationIndexes(cardIndex, 1);
-        this.showLookCombinationInGarmentPlaceholder(cardIndex, matchIndexes);
         const closetItems = matchIndexes.length > 0
             ? matchIndexes.map((idx) => this.savedVehicles[idx]).filter((item) => !!item)
             : this.savedVehicles.slice();
@@ -2253,6 +2291,10 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private showLookCombinationInGarmentPlaceholder(targetIndex: number, matchIndexes: number[]): void {
+        this.showLookCombinationInOutfitTester(targetIndex, matchIndexes);
+    }
+
+    private showLookCombinationInOutfitTester(targetIndex: number, matchIndexes: number[]): void {
         const displayIndexes = this.buildClosetCombinationIndexes(targetIndex, matchIndexes);
         if (displayIndexes.length < 2) {
             if (this.onShowDescription) this.onShowDescription(t('combine_need_more_items'));
@@ -2260,16 +2302,35 @@ export class CollectionManager extends BaseScriptComponent {
             return;
         }
 
-        const percents = this.buildClosetCombinationPercents(targetIndex, displayIndexes);
-        this.enterGarmentCombinationMode(displayIndexes, targetIndex, percents);
-        this.showGarmentPlaceholderContainer();
-        this.renderGarmentPage(0);
-        this.refreshGarmentPlaceholderButtonConnections();
+        this.enterGarmentOutfitMode();
+        this.resetOutfitTesterSlots();
+        this.assignIndexesToOutfitSlots(displayIndexes);
+        this.showOutfitBuilderContainer();
 
         if (this.onShowDescription) {
             this.onShowDescription(tf('look_options_ready', { count: displayIndexes.length - 1 }));
         }
         if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
+    }
+
+    private assignIndexesToOutfitSlots(savedIndexes: number[]): void {
+        const usedSlots: number[] = [];
+        for (let i = 0; i < savedIndexes.length; i++) {
+            const savedIndex = savedIndexes[i];
+            if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) continue;
+            const slotIndex = this.getPreferredOutfitSlotForItem(this.savedVehicles[savedIndex]);
+            if (slotIndex < 0) continue;
+            if (usedSlots.indexOf(slotIndex) >= 0) continue;
+            usedSlots.push(slotIndex);
+            this.assignSavedItemToOutfitSlot(slotIndex, savedIndex, false);
+        }
+    }
+
+    private findFirstOpenOutfitSlot(usedSlots: number[]): number {
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            if (usedSlots.indexOf(i) < 0) return i;
+        }
+        return -1;
     }
 
     private buildClosetCombinationIndexes(targetIndex: number, matchIndexes: number[]): number[] {
@@ -2573,7 +2634,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private isLookAccessoryLike(text: string): boolean {
-        return this.hasLookWord(text, ['accessory', 'bag', 'belt', 'hat', 'scarf', 'jewelry', 'accesorio', 'bolso', 'cinturon']);
+        return this.hasLookWord(text, ['accessory', 'accessories', 'bag', 'belt', 'hat', 'cap', 'glasses', 'sunglasses', 'scarf', 'jewelry', 'accesorio', 'accesorios', 'bolso', 'cinturon']);
     }
 
     private isLookDressLike(text: string): boolean {
@@ -2589,11 +2650,11 @@ export class CollectionManager extends BaseScriptComponent {
      * Finds the existing "Review Button" scene object and the "Car Review" Text
      * child, then wires the button to ask the AI for outfit combinations.
      */
-    private tryHookReviewButton(cardObj: SceneObject, cardIndex: number): void {
-        const reviewBtnObj = findChildByName(cardObj, 'Review Button');
+    private tryHookReviewButton(cardObj: SceneObject, cardIndex: number): boolean {
+        const reviewBtnObj = this.findCollectorCombineButton(cardObj);
         if (!reviewBtnObj) {
-            print('CollectionManager: [COMBINE] "Review Button" not found in card #' + cardIndex);
-            return;
+            print('CollectionManager: [COMBINE] Combine button not found in card #' + cardIndex);
+            return false;
         }
 
         // Find the "Car Review" Text component on the card (for combination display)
@@ -2604,55 +2665,108 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         const data = this.savedVehicles[cardIndex];
+        const callback = (source: string) => {
+            const currentIndex = this.collectionCardObjects.indexOf(cardObj);
+            const idx = currentIndex >= 0 ? currentIndex : cardIndex;
+            const currentData = this.savedVehicles[idx] || data;
+            if (!currentData) {
+                print('CollectionManager: [COMBINE] Ignored (' + source + ') - card data missing');
+                return;
+            }
+            this.triggerCombineLook(idx, currentData, carReviewText, source);
+        };
 
         // Strategy 1: Try connectButton utility (checks multiple event types)
         if (this.onConnectButton) {
             const connected = this.onConnectButton(reviewBtnObj, () => {
-                this.triggerCombineLook(cardIndex, data, carReviewText, 'connectButton');
+                callback('connectButton');
             }, 'CardCombine_' + cardIndex);
             if (connected) {
                 this.reviewButtonHooked[cardIndex] = true;
                 print('CollectionManager: [COMBINE] Button connected for ' + (data.brand_model || '?'));
-                return;
+                return true;
             }
         }
 
-        // Strategy 2: Direct ScriptComponent event search on button + child
-        const objectsToCheck = [reviewBtnObj];
-        const childCount = reviewBtnObj.getChildrenCount();
-        for (let c = 0; c < childCount; c++) {
-            const child = reviewBtnObj.getChild(c);
-            if (child) objectsToCheck.push(child);
-        }
-
-        for (let o = 0; o < objectsToCheck.length; o++) {
-            const obj = objectsToCheck[o];
-            const scripts = obj.getComponents('Component.ScriptComponent') as any[];
-            for (let s = 0; s < scripts.length; s++) {
-                const script = scripts[s];
-                if (!script) continue;
-
-                if (script.onTriggerUp && typeof script.onTriggerUp.add === 'function') {
-                    script.onTriggerUp.add(() => {
-                        this.triggerCombineLook(cardIndex, data, carReviewText, 'direct/onTriggerUp');
-                    });
-                    this.reviewButtonHooked[cardIndex] = true;
-                    print('CollectionManager: [COMBINE] Button connected (direct/onTriggerUp) for ' + (data.brand_model || '?'));
-                    return;
-                }
-                if (script.onButtonPinched && typeof script.onButtonPinched.add === 'function') {
-                    script.onButtonPinched.add(() => {
-                        this.triggerCombineLook(cardIndex, data, carReviewText, 'direct/onButtonPinched');
-                    });
-                    this.reviewButtonHooked[cardIndex] = true;
-                    print('CollectionManager: [COMBINE] Button connected (direct/onButtonPinched) for ' + (data.brand_model || '?'));
-                    return;
-                }
-            }
+        // Strategy 2: local recursive fallback. This skips disabled scripts, which is
+        // important because the redesigned prefab can keep a disabled RectangleButton
+        // beside the enabled CapsuleButton.
+        const fallbackConnected = this.connectButtonFallbackRecursive(reviewBtnObj, () => {
+            callback('fallback');
+        }, 'CardCombineFallback_' + cardIndex, 0);
+        if (fallbackConnected) {
+            this.reviewButtonHooked[cardIndex] = true;
+            print('CollectionManager: [COMBINE] Button connected (fallback) for ' + (data.brand_model || '?'));
+            return true;
         }
 
         print('CollectionManager: [COMBINE] Could not hook Combine Look button for card #' + cardIndex
             + ' (' + (data.brand_model || '?') + ') — will retry next collection open');
+        return false;
+    }
+
+    private findCollectorCombineButton(cardObj: SceneObject): SceneObject | null {
+        const names = ['Review Button', 'Combine Button', 'Combine Look Button', 'Look Button'];
+        for (let i = 0; i < names.length; i++) {
+            const found = findChildByName(cardObj, names[i]);
+            if (found) return found;
+        }
+        return this.findButtonByVisibleText(cardObj, ['combine', 'combinar', 'combiner'], 0);
+    }
+
+    private findButtonByVisibleText(obj: SceneObject, words: string[], depth: number): SceneObject | null {
+        if (!obj || depth > 10) return null;
+        try {
+            const text = obj.getComponent('Component.Text') as Text;
+            if (text && this.textContainsAny(text.text || '', words)) {
+                return this.findNearestButtonAncestor(obj) || obj;
+            }
+        } catch (e) { /* no text */ }
+
+        const childCount = obj.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = obj.getChild(i);
+            const found = child ? this.findButtonByVisibleText(child, words, depth + 1) : null;
+            if (found) return found;
+        }
+        return null;
+    }
+
+    private textContainsAny(text: string, words: string[]): boolean {
+        const normalized = String(text || '').toLowerCase();
+        for (let i = 0; i < words.length; i++) {
+            if (normalized.indexOf(words[i]) >= 0) return true;
+        }
+        return false;
+    }
+
+    private findNearestButtonAncestor(obj: SceneObject): SceneObject | null {
+        let current: SceneObject | null = obj;
+        for (let i = 0; i < 6 && current; i++) {
+            if (this.hasEnabledButtonEvent(current)) return current;
+            try {
+                current = current.getParent();
+            } catch (e) {
+                current = null;
+            }
+        }
+        return null;
+    }
+
+    private hasEnabledButtonEvent(obj: SceneObject): boolean {
+        try {
+            const scripts = obj.getComponents('Component.ScriptComponent') as any[];
+            for (let i = 0; i < scripts.length; i++) {
+                const script = scripts[i];
+                if (!script || script.enabled === false) continue;
+                if (script.onButtonPinched && typeof script.onButtonPinched.add === 'function') return true;
+                if (script.onTriggerUp && typeof script.onTriggerUp.add === 'function') return true;
+                if (script.onTriggerEnd && typeof script.onTriggerEnd.add === 'function') return true;
+                if (script.onTriggerStart && typeof script.onTriggerStart.add === 'function') return true;
+                if (script.onInteractorTriggerEnd && typeof script.onInteractorTriggerEnd.add === 'function') return true;
+            }
+        } catch (e) { /* no scripts */ }
+        return false;
     }
 
     private updateStatBar(barObject: SceneObject | null, value: number): void {
@@ -3152,6 +3266,699 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.garmentPlaceholderContainer) {
             this.garmentPlaceholderContainer.enabled = false;
         }
+        const outfitRoot = this.getOutfitTesterContainer(false);
+        if (outfitRoot && outfitRoot !== this.garmentPlaceholderContainer) {
+            outfitRoot.enabled = false;
+        }
+    }
+
+    private showOutfitBuilderContainer(): void {
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        if (!outfitRoot) return;
+        this.enterGarmentOutfitMode();
+
+        if (this.garmentPlaceholderContainer && this.garmentPlaceholderContainer !== outfitRoot) {
+            this.garmentPlaceholderContainer.enabled = false;
+        }
+
+        if (!outfitRoot.enabled) {
+            outfitRoot.enabled = true;
+        }
+
+        const closetObj = this.findDirectChildByName(outfitRoot, 'Closet');
+        if (closetObj) closetObj.enabled = true;
+
+        this.resolveOutfitSlotObjects();
+        this.hookGarmentPlaceholderCloseButton();
+        this.hookOutfitBuilderButtons();
+        this.applyOutfitSlotsToVisuals();
+    }
+
+    private resetOutfitTesterSlots(): void {
+        this.outfitSlotToSavedIndex = this.createEmptyOutfitSlots();
+        this.clearOutfitSlotsFromStorage();
+        this.applyOutfitSlotsToVisuals();
+        this.clearOutfitSessionFeedback();
+    }
+
+    private createEmptyOutfitSlots(): number[] {
+        const slots: number[] = [];
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            slots.push(-1);
+        }
+        return slots;
+    }
+
+    private resolveOutfitSlotObjects(): void {
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        if (!outfitRoot) return;
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            const slotObj = this.findExistingOutfitSlot(i);
+            if (!slotObj) continue;
+            this.outfitSlotObjects[i] = slotObj;
+            this.captureOutfitSlotDefaultTexture(slotObj, i);
+            slotObj.enabled = true;
+            this.connectOutfitSlotButton(slotObj, i);
+        }
+    }
+
+    private captureOutfitSlotDefaultTexture(slotObj: SceneObject, slotIndex: number): void {
+        if (this.outfitSlotDefaultTextures[slotIndex] !== undefined) return;
+        const target = this.findFirstVisualTarget(slotObj);
+        this.outfitSlotDefaultTextures[slotIndex] = target ? this.extractTextureFromSceneObject(target) : null;
+    }
+
+    private connectOutfitSlotButton(slotObj: SceneObject, slotIndex: number): void {
+        if (!slotObj || this.outfitSlotButtonConnected[slotIndex]) return;
+        const connected = this.connectButtonFallback(slotObj, () => {
+            const savedIndex = this.outfitSlotToSavedIndex[slotIndex];
+            if (savedIndex >= 0) this.openCardFromOutfitSlot(slotIndex);
+        }, 'OutfitSlot' + this.getOutfitSlotLabel(slotIndex));
+        if (connected) {
+            this.expandGarmentPlaceholderHitArea(slotObj);
+            this.outfitSlotButtonConnected[slotIndex] = true;
+        }
+    }
+
+    private hookOutfitBuilderButtons(): void {
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        if (!outfitRoot) return;
+
+        if (!this.askOutfitButtonConnected) {
+            const askButton = this.findFirstSceneObjectByNames(outfitRoot, [
+                'AskAI',
+                'AskAI ',
+                'askai',
+                'Ask AI',
+                'ask ai',
+                'AskAI Button',
+                'Ask AI Button',
+                'Ask Outfit',
+                'Ask Outfit Button',
+            ]) || this.findButtonByVisibleText(outfitRoot, ['askai', 'ask ai'], 0);
+
+            if (askButton && this.connectButtonFallback(askButton, () => this.onAskOutfitPressed(), 'AskAIOutfit')) {
+                this.askOutfitButtonConnected = true;
+                print('CollectionManager: [OUTFIT] AskAI button connected');
+            }
+        }
+
+        if (!this.composeOutfitButtonConnected) {
+            const composeButton = this.findFirstSceneObjectByNames(outfitRoot, [
+                'Compose',
+                'Compose ',
+                'compose',
+                'COMPOSE',
+                'Compose Button',
+                'AI Compose',
+                'AI Compose Button',
+                'Compose Outfit',
+                'Compose Outfit Button',
+                'Combine',
+                'Combine Button',
+                'Combinar',
+                'Combinar Button',
+                'Combiner',
+                'Combiner Button',
+            ]) || this.findButtonByVisibleText(outfitRoot, ['compose', 'componer', 'armar', 'combine', 'combinar', 'combiner'], 0);
+
+            if (composeButton && this.connectButtonFallback(composeButton, () => this.onComposeOutfitPressed(), 'ComposeOutfit')) {
+                this.composeOutfitButtonConnected = true;
+                print('CollectionManager: [OUTFIT] Compose button connected');
+            }
+        }
+    }
+
+    private tryAssignDraggedCardToOutfitSlot(cardIndex: number, cardObj: SceneObject): boolean {
+        const outfitRoot = this.getOutfitTesterContainer(false);
+        if (!outfitRoot || !outfitRoot.enabled) return false;
+        if (cardIndex < 0 || cardIndex >= this.savedVehicles.length || !cardObj) return false;
+
+        this.resolveOutfitSlotObjects();
+        const slotIndex = this.findNearestOutfitSlotIndex(cardObj.getTransform().getWorldPosition());
+        if (slotIndex < 0) return false;
+
+        const validation = this.getOutfitSlotValidation(cardIndex, slotIndex);
+        if (!validation.ok) {
+            if (this.onShowDescription) this.onShowDescription(validation.message);
+            if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.2);
+            print('CollectionManager: [OUTFIT] Rejected card #' + (cardIndex + 1)
+                + ' for ' + this.getOutfitSlotLabel(slotIndex) + ': ' + validation.message);
+            return true;
+        }
+
+        this.assignSavedItemToOutfitSlot(slotIndex, cardIndex, true);
+        return true;
+    }
+
+    private findNearestOutfitSlotIndex(worldPos: vec3): number {
+        let bestSlot = -1;
+        let bestDistance = Math.max(1, this.outfitSlotDropRadiusCm || 24);
+
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            const slotObj = this.getOutfitSlotObject(i);
+            if (!slotObj) continue;
+            try {
+                const slotPos = slotObj.getTransform().getWorldPosition();
+                const dist = worldPos.sub(slotPos).length;
+                if (dist <= bestDistance) {
+                    bestDistance = dist;
+                    bestSlot = i;
+                }
+            } catch (e) { /* slot transform unavailable */ }
+        }
+
+        return bestSlot;
+    }
+
+    private assignSavedItemToOutfitSlot(slotIndex: number, savedIndex: number, announce: boolean): void {
+        if (slotIndex < 0 || slotIndex >= this.getOutfitSlotCount()) return;
+        if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) return;
+        const validation = this.getOutfitSlotValidation(savedIndex, slotIndex);
+        if (!validation.ok) {
+            if (announce && this.onShowDescription) this.onShowDescription(validation.message);
+            if (announce && this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.2);
+            return;
+        }
+
+        this.outfitSlotToSavedIndex[slotIndex] = savedIndex;
+        const slotObj = this.getOutfitSlotObject(slotIndex);
+        const data = this.savedVehicles[savedIndex];
+        if (slotObj && data) {
+            slotObj.enabled = true;
+            this.setOutfitSlotText(slotObj, data, slotIndex);
+            this.applySavedItemImageToOutfitSlot(slotIndex, savedIndex);
+        }
+
+        if (announce && data && this.onShowDescription) {
+            this.onShowDescription(tf('outfit_slot_assigned', {
+                item: data.item_name || data.brand_model || 'Item',
+                slot: this.getOutfitSlotLabel(slotIndex),
+            }));
+        }
+        if (announce && this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(1.8);
+        print('CollectionManager: [OUTFIT] Assigned saved card #' + (savedIndex + 1)
+            + ' to ' + this.getOutfitSlotLabel(slotIndex));
+        this.clearOutfitSessionFeedback();
+    }
+
+    private applyOutfitSlotsToVisuals(): void {
+        this.resolveOutfitSlotObjects();
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            const savedIndex = this.outfitSlotToSavedIndex[i];
+            const slotObj = this.getOutfitSlotObject(i);
+            if (!slotObj) continue;
+            slotObj.enabled = true;
+            if (savedIndex >= 0 && savedIndex < this.savedVehicles.length) {
+                this.setOutfitSlotText(slotObj, this.savedVehicles[savedIndex], i);
+                this.applySavedItemImageToOutfitSlot(i, savedIndex);
+            } else {
+                this.restoreOutfitSlotDefault(i);
+            }
+        }
+    }
+
+    private restoreOutfitSlotDefault(slotIndex: number): void {
+        const slotObj = this.getOutfitSlotObject(slotIndex);
+        if (!slotObj) return;
+        const defaultTexture = this.outfitSlotDefaultTextures[slotIndex];
+        if (defaultTexture) this.applyTextureToSceneObject(slotObj, defaultTexture);
+
+        const textObj = this.findSceneObjectByName(slotObj, 'Item Name')
+            || this.findSceneObjectByName(slotObj, 'Item Name ' + this.getOutfitSlotLabel(slotIndex))
+            || this.findSceneObjectByName(slotObj, this.getOutfitSlotLabel(slotIndex) + ' Name');
+        if (!textObj) return;
+        try {
+            const textComp = textObj.getComponent('Component.Text') as Text;
+            if (textComp) textComp.text = this.getOutfitSlotLabel(slotIndex);
+        } catch (e) { /* optional slot label */ }
+    }
+
+    private applySavedItemImageToOutfitSlot(slotIndex: number, savedIndex: number): void {
+        const slotObj = this.getOutfitSlotObject(slotIndex);
+        const data = this.savedVehicles[savedIndex];
+        if (!slotObj || !data) return;
+
+        const sourceCard = this.collectionCardObjects[savedIndex];
+        if (sourceCard) this.copyCardImageTextureToSlot(sourceCard, slotObj);
+
+        if (!data.savedAt) return;
+        const generatedKey = this.GARMENT_CUTOUT_KEY_PREFIX + data.savedAt.toString();
+        if (this.loadTextureKeyIntoSceneObject(generatedKey, slotObj, 'generated outfit slot ' + slotIndex)) return;
+
+        const scanKey = this.IMAGE_KEY_PREFIX + data.savedAt.toString();
+        this.loadTextureKeyIntoSceneObject(scanKey, slotObj, 'scan outfit slot ' + slotIndex);
+    }
+
+    private loadTextureKeyIntoSceneObject(storageKey: string, targetObj: SceneObject, debugName: string): boolean {
+        try {
+            const b64 = global.persistentStorageSystem.store.getString(storageKey);
+            if (!b64 || b64.length === 0) return false;
+            Base64.decodeTextureAsync(
+                b64,
+                (texture: Texture) => {
+                    this.applyTextureToSceneObject(targetObj, texture);
+                    print('CollectionManager: [OUTFIT] Loaded ' + debugName);
+                },
+                () => { print('CollectionManager: [OUTFIT] Could not decode ' + debugName); }
+            );
+            return true;
+        } catch (e) {
+            print('CollectionManager: [OUTFIT] Storage load failed for ' + debugName + ': ' + e);
+            return false;
+        }
+    }
+
+    private copyCardImageTextureToSlot(cardObj: SceneObject, slotObj: SceneObject): boolean {
+        const cardImageObj = cardObj ? findChildByName(cardObj, 'Card Image') : null;
+        const texture = cardImageObj ? this.extractTextureFromSceneObject(cardImageObj) : null;
+        if (!texture) return false;
+        return this.applyTextureToSceneObject(slotObj, texture);
+    }
+
+    private extractTextureFromSceneObject(obj: SceneObject): Texture | null {
+        if (!obj) return null;
+        try {
+            const img = obj.getComponent('Component.Image') as Image;
+            if (img && img.mainPass && img.mainPass.baseTex) return img.mainPass.baseTex as Texture;
+        } catch (e) { /* try mesh */ }
+        try {
+            const mesh = obj.getComponent('Component.RenderMeshVisual') as RenderMeshVisual;
+            if (mesh && mesh.mainPass && mesh.mainPass.baseTex) return mesh.mainPass.baseTex as Texture;
+        } catch (e) { /* ignore */ }
+        return null;
+    }
+
+    private onAskOutfitPressed(): void {
+        const outfit = this.getCurrentOutfitSelection();
+        const items = outfit.items;
+        if (items.length < 2) {
+            if (this.onShowDescription) this.onShowDescription(t('outfit_need_items'));
+            if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
+            return;
+        }
+
+        const matchPercent = this.getOutfitMatchPercent(outfit.items, outfit.slotLabels);
+        const outfitText = this.getOutfitFeedbackText();
+        const percentText = this.getOutfitPercentText();
+        this.setOutfitText(outfitText, t('outfit_feedback_loading'));
+        this.setOutfitText(percentText, matchPercent + '%');
+
+        if (this.onAskOutfitFeedback) {
+            this.onAskOutfitFeedback(items, outfit.slotLabels, outfitText, percentText, matchPercent);
+        } else if (this.onCombineLook) {
+            this.onCombineLook(items[0], items.slice(1));
+        }
+    }
+
+    private onComposeOutfitPressed(): void {
+        if (this.savedVehicles.length < 2) {
+            if (this.onShowDescription) this.onShowDescription(t('combine_need_more_items'));
+            if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
+            return;
+        }
+
+        this.resetOutfitTesterSlots();
+        const selected = this.buildAutomaticOutfitSlots();
+        let count = 0;
+        for (let i = 0; i < selected.length; i++) {
+            if (selected[i] >= 0) {
+                this.assignSavedItemToOutfitSlot(i, selected[i], false);
+                count++;
+            }
+        }
+
+        this.showOutfitBuilderContainer();
+        if (this.onShowDescription) this.onShowDescription(tf('outfit_composed', { count: count }));
+        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
+    }
+
+    private buildAutomaticOutfitSlots(): number[] {
+        const selected = this.createEmptyOutfitSlots();
+        const scores: number[] = [];
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            scores.push(-9999);
+        }
+
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            const data = this.savedVehicles[i];
+            if (!data) continue;
+            const slotIndex = this.getPreferredOutfitSlotForItem(data);
+            if (slotIndex < 0 || slotIndex >= selected.length) continue;
+            const score = this.getOutfitCandidateScore(data, slotIndex);
+            if (score > scores[slotIndex]) {
+                scores[slotIndex] = score;
+                selected[slotIndex] = i;
+            }
+        }
+
+        return selected;
+    }
+
+    private getOutfitSlotValidation(savedIndex: number, slotIndex: number): { ok: boolean; message: string } {
+        const data = savedIndex >= 0 && savedIndex < this.savedVehicles.length ? this.savedVehicles[savedIndex] : null;
+        const itemName = data ? (data.item_name || data.brand_model || 'Item') : 'Item';
+        const preferredSlot = data ? this.getPreferredOutfitSlotForItem(data) : -1;
+        if (preferredSlot < 0) {
+            return {
+                ok: false,
+                message: tf('outfit_category_unknown', { item: itemName }),
+            };
+        }
+        if (preferredSlot !== slotIndex) {
+            return {
+                ok: false,
+                message: tf('outfit_wrong_slot', {
+                    item: itemName,
+                    slot: this.getOutfitSlotLabel(slotIndex),
+                    correctSlot: this.getOutfitSlotLabel(preferredSlot),
+                }),
+            };
+        }
+        return { ok: true, message: '' };
+    }
+
+    private getCurrentOutfitItems(): SavedVehicleData[] {
+        return this.getCurrentOutfitSelection().items;
+    }
+
+    private getCurrentOutfitSelection(): { items: SavedVehicleData[]; slotLabels: string[] } {
+        const items: SavedVehicleData[] = [];
+        const slotLabels: string[] = [];
+        const usedSerials: string[] = [];
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            const savedIndex = this.outfitSlotToSavedIndex[i];
+            if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) continue;
+            const item = this.savedVehicles[savedIndex];
+            if (!item) continue;
+            const serial = item.serial || String(savedIndex);
+            if (usedSerials.indexOf(serial) >= 0) continue;
+            usedSerials.push(serial);
+            items.push(item);
+            slotLabels.push(this.getOutfitSlotLabel(i));
+        }
+        return { items, slotLabels };
+    }
+
+    private getOutfitMatchPercent(items: SavedVehicleData[], slotLabels: string[]): number {
+        if (!items || items.length < 2) return 0;
+
+        let score = 48;
+        let hasTop = false;
+        let hasBottom = false;
+        let hasShoes = false;
+        let hasDress = false;
+        let hasAccessories = false;
+
+        for (let i = 0; i < items.length; i++) {
+            const slot = slotLabels && slotLabels[i] ? slotLabels[i].toLowerCase() : '';
+            const family = this.getLookFamily(this.getLookCategoryText(items[i]));
+            if (slot.indexOf('top') >= 0 || family === 'top' || family === 'outerwear') hasTop = true;
+            if (slot.indexOf('bottom') >= 0 || family === 'bottom') hasBottom = true;
+            if (slot.indexOf('shoe') >= 0 || family === 'shoe') hasShoes = true;
+            if (family === 'dress' || family === 'full') hasDress = true;
+            if (slot.indexOf('accessor') >= 0 || family === 'accessory') hasAccessories = true;
+        }
+
+        if ((hasTop && hasBottom) || hasDress) score += 18;
+        if (((hasTop && hasBottom) || hasDress) && hasShoes) score += 10;
+        if (hasAccessories) score += 4;
+        if (!hasShoes && items.length >= 3) score -= 5;
+        if (!hasBottom && !hasDress && items.length >= 2) score -= 8;
+
+        let pairScore = 0;
+        let pairCount = 0;
+        for (let a = 0; a < items.length; a++) {
+            for (let b = a + 1; b < items.length; b++) {
+                pairScore += this.scoreLookCombination(items[a], items[b]);
+                pairCount++;
+            }
+        }
+        if (pairCount > 0) {
+            const averagePairScore = pairScore / pairCount;
+            score += Math.max(-12, Math.min(26, Math.round(averagePairScore * 1.25)));
+        }
+
+        if (this.hasSharedOutfitTags(items, 'style_tags')) score += 4;
+        if (this.hasSharedOutfitTags(items, 'occasion_tags')) score += 3;
+        if (this.hasSharedOutfitTags(items, 'season_tags')) score += 2;
+
+        const maxScore = ((hasTop && hasBottom) || hasDress) ? 98 : 78;
+        return Math.max(35, Math.min(maxScore, Math.round(score)));
+    }
+
+    private hasSharedOutfitTags(items: SavedVehicleData[], key: string): boolean {
+        const seen: string[] = [];
+        for (let i = 0; i < items.length; i++) {
+            const tags = (items[i] as any)[key] as string[];
+            if (!tags || tags.length === 0) continue;
+            for (let t = 0; t < tags.length; t++) {
+                const tag = String(tags[t] || '').toLowerCase();
+                if (!tag) continue;
+                if (seen.indexOf(tag) >= 0) return true;
+                seen.push(tag);
+            }
+        }
+        return false;
+    }
+
+    private getOutfitFeedbackText(): Text | null {
+        return this.getTextFromNamedSceneObject(['Style Notes 1', 'Style Notes', 'StyleNotes1', 'Outfit Notes']);
+    }
+
+    private getOutfitPercentText(): Text | null {
+        return this.getTextFromNamedSceneObject(['Percent', 'Match Percent', 'MatchPercent', 'Outfit Percent']);
+    }
+
+    private clearOutfitSessionFeedback(): void {
+        this.setOutfitText(this.getOutfitFeedbackText(), '');
+        this.setOutfitText(this.getOutfitPercentText(), '--%');
+    }
+
+    private getTextFromNamedSceneObject(names: string[]): Text | null {
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        if (outfitRoot) {
+            for (let i = 0; i < names.length; i++) {
+                const found = this.findSceneObjectByName(outfitRoot, names[i]);
+                const text = this.getTextComponent(found);
+                if (text) return text;
+            }
+        }
+
+        try {
+            const rootCount = global.scene.getRootObjectsCount();
+            for (let r = 0; r < rootCount; r++) {
+                const root = global.scene.getRootObject(r);
+                for (let i = 0; i < names.length; i++) {
+                    const found = this.findSceneObjectByName(root, names[i]);
+                    const text = this.getTextComponent(found);
+                    if (text) return text;
+                }
+            }
+        } catch (e) { /* scene search unavailable */ }
+
+        return null;
+    }
+
+    private getTextComponent(obj: SceneObject | null): Text | null {
+        if (!obj) return null;
+        try {
+            const text = obj.getComponent('Component.Text') as Text;
+            if (text) return text;
+        } catch (e) { /* no text */ }
+        return null;
+    }
+
+    private setOutfitText(textComp: Text | null, value: string): void {
+        if (!textComp) return;
+        try {
+            const obj = textComp.getSceneObject();
+            if (obj) obj.enabled = true;
+            textComp.text = value;
+        } catch (e) { /* optional text */ }
+    }
+
+    private openCardFromOutfitSlot(slotIndex: number): void {
+        const cardIndex = this.outfitSlotToSavedIndex[slotIndex];
+        if (cardIndex < 0 || cardIndex >= this.collectionCardObjects.length || cardIndex >= this.savedVehicles.length) return;
+        const data = this.savedVehicles[cardIndex];
+        const name = data ? (data.brand_model || data.item_name || this.getOutfitSlotLabel(slotIndex)) : this.getOutfitSlotLabel(slotIndex);
+        this.restoreCarouselForClosetFocus();
+        this.focusCollectionCard(cardIndex);
+        if (this.onShowDescription) this.onShowDescription(tf('closet_slot_opened', { name: name }));
+        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
+    }
+
+    private saveOutfitSlotsToStorage(): void {
+        try {
+            const serials: string[] = [];
+            for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+                const savedIndex = this.outfitSlotToSavedIndex[i];
+                const item = savedIndex >= 0 && savedIndex < this.savedVehicles.length ? this.savedVehicles[savedIndex] : null;
+                serials.push(item && item.serial ? item.serial : '');
+            }
+            global.persistentStorageSystem.store.putString(this.OUTFIT_SLOTS_KEY, JSON.stringify(serials));
+        } catch (e) {
+            print('CollectionManager: [OUTFIT] Could not save outfit slots: ' + e);
+        }
+    }
+
+    private loadOutfitSlotsFromStorage(): void {
+        this.outfitSlotToSavedIndex = this.createEmptyOutfitSlots();
+        try {
+            const raw = global.persistentStorageSystem.store.getString(this.OUTFIT_SLOTS_KEY);
+            if (!raw || raw.length === 0) return;
+            const serials = JSON.parse(raw) as string[];
+            if (!Array.isArray(serials)) return;
+            for (let i = 0; i < Math.min(serials.length, this.getOutfitSlotCount()); i++) {
+                const idx = this.findSavedVehicleIndexBySerial(serials[i] || '');
+                this.outfitSlotToSavedIndex[i] = idx >= 0 ? idx : -1;
+            }
+        } catch (e) {
+            print('CollectionManager: [OUTFIT] Could not load outfit slots: ' + e);
+        }
+    }
+
+    private adjustOutfitSlotsAfterCardDelete(deletedIndex: number): void {
+        for (let i = 0; i < this.outfitSlotToSavedIndex.length; i++) {
+            const idx = this.outfitSlotToSavedIndex[i];
+            if (idx === deletedIndex) this.outfitSlotToSavedIndex[i] = -1;
+            else if (idx > deletedIndex) this.outfitSlotToSavedIndex[i] = idx - 1;
+        }
+        this.applyOutfitSlotsToVisuals();
+    }
+
+    private clearOutfitSlotsFromStorage(): void {
+        try {
+            global.persistentStorageSystem.store.putString(this.OUTFIT_SLOTS_KEY, '');
+        } catch (e) {
+            print('CollectionManager: [OUTFIT] Could not clear outfit slots: ' + e);
+        }
+    }
+
+    private getOutfitCandidateScore(data: SavedVehicleData, slotIndex: number): number {
+        let score = 0;
+        score += (data.rarity || 2) * 3;
+        score += clampStat(data.top_speed || 3);
+        score += clampStat(data.acceleration || 3);
+        score += clampStat(data.braking || 3);
+        score += clampStat(data.traction || 3);
+        score += clampStat(data.comfort || 3);
+        if (this.getPreferredOutfitSlotForItem(data) === slotIndex) score += 20;
+        if (data.style_tags && data.style_tags.length > 0) score += 2;
+        if (data.color && data.color.length > 0) score += 1;
+        return score;
+    }
+
+    private getPreferredOutfitSlotForItem(data: SavedVehicleData): number {
+        const text = [
+            data.category || '',
+            data.type || '',
+            data.subcategory || '',
+            data.item_name || '',
+            data.brand_model || '',
+        ].join(' ').toLowerCase();
+
+        if (this.hasLookWord(text, ['hat', 'cap', 'beanie', 'bucket', 'headwear', 'head', 'gorra', 'sombrero'])) return 0;
+        if (this.isLookAccessoryLike(text) || this.hasLookWord(text, ['glasses', 'sunglasses', 'bag', 'belt', 'scarf', 'jewelry', 'accessories', 'accesorio', 'accesorios'])) return 0;
+        if (this.isLookShoeLike(text)) return 3;
+        if (this.isLookBottomLike(text)) return 2;
+        if (this.isLookTopLike(text) || this.isLookOuterwearLike(text) || this.isLookDressLike(text) || this.isLookFullOutfit(text)) return 1;
+        return -1;
+    }
+
+    private getOutfitSlotObject(slotIndex: number): SceneObject | null {
+        const cached = this.outfitSlotObjects[slotIndex];
+        if (cached) return cached;
+        const found = this.findExistingOutfitSlot(slotIndex);
+        if (found) this.outfitSlotObjects[slotIndex] = found;
+        return found;
+    }
+
+    private findExistingOutfitSlot(slotIndex: number): SceneObject | null {
+        const names = this.getOutfitSlotAliases(slotIndex);
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        if (outfitRoot) {
+            for (let i = 0; i < names.length; i++) {
+                const found = this.findSceneObjectByName(outfitRoot, names[i]);
+                if (found) return found;
+            }
+        }
+
+        try {
+            const rootCount = global.scene.getRootObjectsCount();
+            for (let r = 0; r < rootCount; r++) {
+                const root = global.scene.getRootObject(r);
+                for (let i = 0; i < names.length; i++) {
+                    const found = this.findSceneObjectByName(root, names[i]);
+                    if (found) return found;
+                }
+            }
+        } catch (e) { /* ignore */ }
+        return null;
+    }
+
+    private getOutfitTesterContainer(searchIfNeeded: boolean): SceneObject | null {
+        if (this.outfitTesterContainer) return this.outfitTesterContainer;
+
+        if (searchIfNeeded) {
+            if (this.garmentPlaceholderContainer) {
+                const nested = this.findSceneObjectByName(this.garmentPlaceholderContainer, 'Outfit tester')
+                    || this.findSceneObjectByName(this.garmentPlaceholderContainer, 'Outfit Tester');
+                if (nested) {
+                    this.outfitTesterContainer = nested;
+                    return nested;
+                }
+            }
+
+            try {
+                const rootCount = global.scene.getRootObjectsCount();
+                for (let i = 0; i < rootCount; i++) {
+                    const root = global.scene.getRootObject(i);
+                    const found = this.findSceneObjectByName(root, 'Outfit tester')
+                        || this.findSceneObjectByName(root, 'Outfit Tester');
+                    if (found) {
+                        this.outfitTesterContainer = found;
+                        return found;
+                    }
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        return this.garmentPlaceholderContainer || null;
+    }
+
+    private getOutfitSlotCount(): number {
+        return 4;
+    }
+
+    private getOutfitSlotLabel(slotIndex: number): string {
+        if (slotIndex === 0) return 'Accessories';
+        if (slotIndex === 1) return 'Top';
+        if (slotIndex === 2) return 'Bottom';
+        if (slotIndex === 3) return 'Shoes';
+        return 'Slot';
+    }
+
+    private getOutfitSlotAliases(slotIndex: number): string[] {
+        if (slotIndex === 0) return ['photocard ACCESSORIES', 'photocard ACCESSORY', 'PhotoCard ACCESSORIES', 'PhotoCard ACCESSORY', 'Accessories', 'ACCESSORIES', 'Accessory', 'ACCESSORY', 'photocard HAT', 'PhotoCard HAT', 'Photocard HAT', 'Photo Card HAT', 'photocard HEAD', 'Garment HAT', 'HAT', 'Head'];
+        if (slotIndex === 1) return ['photocard TOP', 'PhotoCard TOP', 'Photocard TOP', 'Photo Card TOP', 'photocard TORSO', 'Garment TOP', 'TOP', 'Torso'];
+        if (slotIndex === 2) return ['photocard BOTTOM', 'PhotoCard BOTTOM', 'Photocard BOTTOM', 'Photo Card BOTTOM', 'photocard LEGS', 'Garment BOTTOM', 'BOTTOM', 'Legs'];
+        if (slotIndex === 3) return ['photocard SHOES', 'PhotoCard SHOES', 'Photocard SHOES', 'Photo Card SHOES', 'Garment SHOES', 'SHOES', 'Shoes'];
+        return [];
+    }
+
+    private setOutfitSlotText(slotObj: SceneObject, data: SavedVehicleData, slotIndex: number): void {
+        const textObj = this.findSceneObjectByName(slotObj, 'Item Name')
+            || this.findSceneObjectByName(slotObj, 'Item Name ' + this.getOutfitSlotLabel(slotIndex))
+            || this.findSceneObjectByName(slotObj, this.getOutfitSlotLabel(slotIndex) + ' Name');
+        if (!textObj) return;
+        try {
+            const textComp = textObj.getComponent('Component.Text') as Text;
+            if (!textComp) return;
+            textComp.text = this.getGarmentDisplayName(data, slotIndex);
+            textObj.enabled = true;
+        } catch (e) { /* optional slot label */ }
     }
 
     private enterGarmentInventoryMode(): void {
@@ -3162,6 +3969,17 @@ export class CollectionManager extends BaseScriptComponent {
         this.garmentCombinationIndexes = [];
         this.garmentCombinationTargetIndex = -1;
         this.garmentCombinationPercents = [];
+    }
+
+    private enterGarmentOutfitMode(): void {
+        if (this.garmentViewMode !== 'outfit') {
+            print('CollectionManager: [OUTFIT] Opening outfit builder slots');
+        }
+        this.garmentViewMode = 'outfit';
+        this.garmentCombinationIndexes = [];
+        this.garmentCombinationTargetIndex = -1;
+        this.garmentCombinationPercents = [];
+        this.garmentPageIndex = 0;
     }
 
     private enterGarmentCombinationMode(displayIndexes: number[], targetIndex: number, percents: number[]): void {
@@ -3178,21 +3996,24 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private hookGarmentPlaceholderCloseButton(): void {
-        if (!this.garmentPlaceholderContainer || this._closeHooked.has(this.garmentPlaceholderContainer)) return;
+        const root = this.garmentViewMode === 'outfit'
+            ? this.getOutfitTesterContainer(true)
+            : this.garmentPlaceholderContainer;
+        if (!root || this._closeHooked.has(root)) return;
 
         let attempts = 0;
         const poll = this.createEvent('UpdateEvent');
         poll.bind(() => {
             attempts++;
-            if (!this.garmentPlaceholderContainer || this._closeHooked.has(this.garmentPlaceholderContainer) || attempts > 120) {
+            if (!root || this._closeHooked.has(root) || attempts > 120) {
                 poll.enabled = false;
                 return;
             }
-            if (this.deepSearchAndHookClose(this.garmentPlaceholderContainer, () => {
-                print('CollectionManager: Garment Placeholder close pressed');
+            if (this.deepSearchAndHookClose(root, () => {
+                print('CollectionManager: Outfit tester close pressed');
                 this.hideGarmentPlaceholderContainer();
-            }, 'GarmentPlaceholder')) {
-                this._closeHooked.add(this.garmentPlaceholderContainer);
+            }, this.garmentViewMode === 'outfit' ? 'OutfitTester' : 'GarmentPlaceholder')) {
+                this._closeHooked.add(root);
                 poll.enabled = false;
             }
         });
@@ -3340,6 +4161,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private getVisibleGarmentSlotCount(): number {
+        if (this.garmentViewMode === 'outfit') return this.getOutfitSlotCount();
         return 2;
     }
 

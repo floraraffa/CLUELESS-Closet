@@ -322,6 +322,9 @@ export class CarScanner extends BaseScriptComponent {
             this.collectionManager.onCombineLook = (data: VehicleData, closetItems: VehicleData[], cardReviewText?: Text) => {
                 if (this.vehicleNarrator) this.vehicleNarrator.triggerCombination(data, closetItems, cardReviewText);
             };
+            this.collectionManager.onAskOutfitFeedback = (outfitItems: VehicleData[], slotLabels?: string[], outfitText?: Text | null, percentText?: Text | null, matchPercent?: number) => {
+                if (this.vehicleNarrator) this.vehicleNarrator.triggerOutfitFeedback(outfitItems, slotLabels, outfitText, percentText, matchPercent);
+            };
             this.collectionManager.onShowCardStatus = (text: string) => {
                 if (this.vehicleCardUI) this.vehicleCardUI.showCardStatus(text);
             };

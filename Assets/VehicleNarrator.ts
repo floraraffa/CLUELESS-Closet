@@ -277,15 +277,69 @@ export class VehicleNarrator extends BaseScriptComponent {
             if (!suggestion || suggestion.trim().length === 0) {
                 suggestion = this.buildFallbackCombination(data, candidates);
             }
-            this.showDescriptionText(suggestion);
+            if (cardReviewText) this.showDescriptionText(suggestion);
+            else await this.speakDescription(suggestion);
         } catch (error) {
             print('VehicleNarrator: Combine Look error: ' + error);
-            this.showDescriptionText(this.buildFallbackCombination(data, this.getCombinationCandidates(data, closetItems)));
+            const fallback = this.buildFallbackCombination(data, this.getCombinationCandidates(data, closetItems));
+            if (cardReviewText) this.showDescriptionText(fallback);
+            else await this.speakDescription(fallback);
         } finally {
             this.isFetchingInfo = false;
             this.restoreCardReviewText();
             if (this.onReviewGenerationFinished) this.onReviewGenerationFinished();
         }
+    }
+
+    async triggerOutfitFeedback(outfitItems: VehicleData[], slotLabels?: string[], outfitText?: Text | null, percentText?: Text | null, matchPercent?: number): Promise<void> {
+        if (this.isFetchingInfo) {
+            if (outfitText) this.setExternalText(outfitText, t('combine_in_progress'));
+            else this.showDescriptionText(t('combine_in_progress'));
+            return;
+        }
+
+        if (!outfitItems || outfitItems.length < 2) {
+            if (outfitText) this.setExternalText(outfitText, t('outfit_need_items'));
+            else this.showDescriptionText(t('outfit_need_items'));
+            return;
+        }
+
+        if (percentText && typeof matchPercent === 'number' && isFinite(matchPercent)) {
+            this.setExternalText(percentText, Math.round(matchPercent) + '%');
+        }
+        if (outfitText) {
+            this.savedDescriptionText = this.carDescriptionText;
+            this.carDescriptionText = outfitText;
+            this.isReviewFromCard = true;
+            this.setExternalText(outfitText, t('outfit_feedback_loading'));
+        }
+
+        this.isFetchingInfo = true;
+        if (this.onReviewGenerationStarted) this.onReviewGenerationStarted();
+        this.showAnimatedDescriptionText(t('outfit_feedback_loading'));
+
+        try {
+            let suggestion = await this.fetchOutfitFeedback(outfitItems, slotLabels || [], matchPercent);
+            if (!suggestion || suggestion.trim().length === 0) {
+                suggestion = this.buildFallbackOutfitFeedback(outfitItems);
+            }
+            await this.speakDescription(suggestion);
+        } catch (error) {
+            print('VehicleNarrator: Outfit feedback error: ' + error);
+            await this.speakDescription(this.buildFallbackOutfitFeedback(outfitItems));
+        } finally {
+            this.isFetchingInfo = false;
+            if (this.onReviewGenerationFinished) this.onReviewGenerationFinished();
+        }
+    }
+
+    private setExternalText(textComp: Text | null | undefined, value: string): void {
+        if (!textComp) return;
+        try {
+            const obj = textComp.getSceneObject();
+            if (obj) obj.enabled = true;
+            textComp.text = value;
+        } catch (e) { /* optional UI text */ }
     }
 
     /**
@@ -555,6 +609,57 @@ ${langInstruction}`;
         return '';
     }
 
+    private async fetchOutfitFeedback(outfitItems: VehicleData[], slotLabels: string[], matchPercent?: number): Promise<string> {
+        const langInstruction = t('gpt_narrator_lang');
+        const outfitLines: string[] = [];
+        for (let i = 0; i < outfitItems.length; i++) {
+            const slot = slotLabels && slotLabels[i] ? slotLabels[i] : 'Slot ' + (i + 1);
+            outfitLines.push(slot + ': ' + this.formatClosetItem(outfitItems[i], i + 1));
+        }
+        const percentLine = (typeof matchPercent === 'number' && isFinite(matchPercent))
+            ? '\nMatch percentage: ' + Math.round(matchPercent) + '%'
+            : '';
+
+        const systemPrompt = `You are a practical fashion stylist inside an AI closet app called Closet Club.
+
+TASK:
+- Evaluate the outfit made from the saved closet items provided.
+- Start with a clear verdict in the user's language: it matches, or it does not match.
+- If a match percentage is provided, mention it once in the first sentence.
+- If it does not match, explicitly say that it does not match and explain why.
+- Explain why the pieces work together or what feels off.
+- Give one concise adjustment if the outfit can improve.
+- Be specific about color, proportion, style, occasion, and cohesion.
+- Treat the slot label as intentional placement. If shoes are placed as torso, or a top is placed as shoes, say it does not match because the slot placement is wrong.
+
+RULES:
+- Use ONLY the listed closet items.
+- Do not invent garments that are not listed, except a generic styling suggestion only if needed.
+- Do not make comments about the user's body, size, attractiveness, gender, age, or sensitive traits.
+- Reply as a natural spoken note, 45-85 words.
+- No markdown, no headings, no bullets.
+${langInstruction}`;
+
+        const userPrompt = 'Composed outfit slots:\n' + outfitLines.join('\n')
+            + percentLine
+            + '\n\nGive text and voice-ready feedback. The first phrase must clearly say whether this outfit matches or does not match.';
+
+        const response = await OpenAI.chatCompletions({
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt },
+            ],
+            model: 'gpt-4o',
+            max_tokens: 280,
+            temperature: 0.7,
+        });
+
+        if (response?.choices?.length > 0 && response.choices[0].message?.content) {
+            return response.choices[0].message.content.trim();
+        }
+        return '';
+    }
+
     private getCombinationCandidates(target: VehicleData, closetItems: VehicleData[]): VehicleData[] {
         const result: VehicleData[] = [];
         const targetSerial = this.getVehicleSerial(target);
@@ -586,6 +691,40 @@ ${langInstruction}`;
             target: this.getVehicleDisplayName(target),
             match: this.getVehicleDisplayName(best),
         });
+    }
+
+    private buildFallbackOutfitFeedback(outfitItems: VehicleData[]): string {
+        if (!outfitItems || outfitItems.length < 2) return t('outfit_need_items');
+        const names: string[] = [];
+        for (let i = 0; i < outfitItems.length; i++) {
+            names.push(this.getVehicleDisplayName(outfitItems[i]));
+        }
+        const matches = this.outfitHasBasicMatch(outfitItems);
+        return tf(matches ? 'outfit_feedback_fallback_match' : 'outfit_feedback_fallback_nomatch', { items: names.join(', ') });
+    }
+
+    private outfitHasBasicMatch(outfitItems: VehicleData[]): boolean {
+        let hasTop = false;
+        let hasBottom = false;
+        let hasShoe = false;
+        let hasDress = false;
+        let hasOuterwear = false;
+        let hasAccessory = false;
+
+        for (let i = 0; i < outfitItems.length; i++) {
+            const family = this.getFamily(this.getVehicleCategoryText(outfitItems[i]));
+            if (family === 'top') hasTop = true;
+            else if (family === 'bottom') hasBottom = true;
+            else if (family === 'shoe') hasShoe = true;
+            else if (family === 'dress') hasDress = true;
+            else if (family === 'outerwear') hasOuterwear = true;
+            else if (family === 'accessory') hasAccessory = true;
+        }
+
+        if (hasDress && (hasShoe || hasOuterwear || hasAccessory || outfitItems.length >= 2)) return true;
+        if (hasTop && hasBottom) return true;
+        if ((hasTop || hasBottom) && hasShoe && outfitItems.length >= 3) return true;
+        return false;
     }
 
     private pickBestCombinationMatch(target: VehicleData, closetItems: VehicleData[]): VehicleData {
@@ -775,7 +914,7 @@ ${langInstruction}`;
     }
 
     private isAccessoryLike(text: string): boolean {
-        return this.hasAny(text, ['accessory', 'bag', 'belt', 'hat', 'scarf', 'jewelry', 'accesorio', 'bolso', 'cinturon']);
+        return this.hasAny(text, ['accessory', 'accessories', 'bag', 'belt', 'hat', 'cap', 'glasses', 'sunglasses', 'scarf', 'jewelry', 'accesorio', 'accesorios', 'bolso', 'cinturon']);
     }
 
     private isDressLike(text: string): boolean {
@@ -789,7 +928,10 @@ ${langInstruction}`;
             // Restore card review text after scroll if applicable
             if (this.isReviewFromCard) {
                 const restoreEv = this.createEvent('DelayedCallbackEvent');
-                restoreEv.bind(() => this.restoreCardReviewText());
+                restoreEv.bind(() => {
+                    if (this.carDescriptionText) this.carDescriptionText.text = text;
+                    this.restoreCardReviewText();
+                });
                 restoreEv.reset(15.0);
             }
             return;
@@ -809,6 +951,7 @@ ${langInstruction}`;
                 if (this.onTTSPlaybackEnded) this.onTTSPlaybackEnded();
                 this.stopTextScroll();
                 if (this.isReviewFromCard) {
+                    if (this.carDescriptionText) this.carDescriptionText.text = text;
                     // Card review: keep last text visible, restore target after delay
                     const restoreEv = this.createEvent('DelayedCallbackEvent');
                     restoreEv.bind(() => this.restoreCardReviewText());
@@ -832,7 +975,10 @@ ${langInstruction}`;
             // Restore card review text after scroll if applicable
             if (this.isReviewFromCard) {
                 const restoreEv = this.createEvent('DelayedCallbackEvent');
-                restoreEv.bind(() => this.restoreCardReviewText());
+                restoreEv.bind(() => {
+                    if (this.carDescriptionText) this.carDescriptionText.text = text;
+                    this.restoreCardReviewText();
+                });
                 restoreEv.reset(15.0);
             }
         }

@@ -6,6 +6,9 @@
 
 *.esproj text linguist-language=yaml
 
+Assets/**/* filter=lfs diff=lfs merge=lfs -text
+Packages/**/* filter=lfs diff=lfs merge=lfs -text
+
 Assets/**/*.css !filter !diff !merge text
 Packages/**/*.css !filter !diff !merge text
 Assets/**/*.customCode !filter !diff !merge text
@@ -30,7 +33,6 @@ Assets/**/*.ts !filter !diff !merge text
 Packages/**/*.ts !filter !diff !merge text
 Assets/**/*.txt !filter !diff !merge text
 Packages/**/*.txt !filter !diff !merge text
-Assets/types/**/*.txt -text
 Assets/**/*.ui !filter !diff !merge text
 Packages/**/*.ui !filter !diff !merge text
 Assets/**/*.yaml !filter !diff !merge text

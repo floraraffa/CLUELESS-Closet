@@ -123,6 +123,8 @@ export class CardInteraction extends BaseScriptComponent {
     onCardGrabbed: ((serial: string, pos: vec3, rot: quat, scale: number) => void) | null = null;
     /** Fires every few frames while a card is being held/moved (real-time position broadcast). */
     onCardMoving: ((serial: string, pos: vec3, rot: quat, scale: number) => void) | null = null;
+    /** Lets CollectionManager consume a dropped card as an outfit-slot assignment. */
+    onCardDroppedOnOutfitSlot: ((cardIndex: number, cardObj: SceneObject) => boolean) | null = null;
 
     // =====================================================================
     // INTERNAL STATE
@@ -286,6 +288,26 @@ export class CardInteraction extends BaseScriptComponent {
         }
 
         const serial = this.savedVehicles[cardIndex]?.serial || '';
+
+        if (this.onCardDroppedOnOutfitSlot && this.onCardDroppedOnOutfitSlot(cardIndex, card)) {
+            this.cardStates[cardIndex] = this.STATE_IN_COLLECTION;
+            if (this.collectionRoot && card.getParent() !== this.collectionRoot) {
+                const oldParent = card.getParent();
+                card.setParent(this.collectionRoot);
+                card.getTransform().setLocalPosition(vec3.zero());
+                card.getTransform().setLocalScale(new vec3(this.collectionCardScale, this.collectionCardScale, this.collectionCardScale));
+                if (oldParent && oldParent.name && oldParent.name.indexOf('WorldCard_') >= 0) {
+                    try { oldParent.destroy(); } catch (e) { /* ignore */ }
+                }
+            }
+            this.setCardOpacity(card, 1.0);
+            if (serial && this.onCardReturnedToCollection) {
+                this.onCardReturnedToCollection(serial);
+            }
+            this.grabbedCardIndex = -1;
+            if (this.onUpdateDeleteButtonVisibility) this.onUpdateDeleteButtonVisibility();
+            return;
+        }
 
         if (distToCarousel <= this.NEAR_CAROUSEL_DIST) {
             this.cardStates[cardIndex] = this.STATE_IN_COLLECTION;

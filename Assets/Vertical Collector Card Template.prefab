@@ -464,7 +464,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: -8.230995, y: -6.312739, z: 0.120000}
+    Position: {x: -7.677507, y: -6.312739, z: 0.120000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 0.360000, y: 0.360000, z: 0.360000}
     HasSegmentScaleCompensation: false
@@ -945,8 +945,8 @@
   Editable: false
   ShowEditingPreview: true
   TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
-  SizeToFit: false
-  FontSize: 69
+  SizeToFit: true
+  FontSize: 89
   Font: !<reference> 93ab6323-d418-485a-a669-70b8ab6cd86c
   LayoutRect:
     left: -7.500000
@@ -957,7 +957,7 @@
   OverflowHorizontal: Overflow
   Fill: !<TextFill>
     Mode: Solid
-    Color: {x: 0.000000, y: 0.328527, z: 0.574884, w: 1.000000}
+    Color: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
     Texture: !<reference> 00000000-0000-0000-0000-000000000000
     ColorTint: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
     TileCount: 5.000000
@@ -1180,7 +1180,7 @@
   ShowEditingPreview: true
   TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
   SizeToFit: false
-  FontSize: 69
+  FontSize: 100
   Font: !<reference> 93ab6323-d418-485a-a669-70b8ab6cd86c
   LayoutRect:
     left: -7.500000
@@ -1462,7 +1462,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 2.644816, y: -13.025028, z: 0.120000}
+    Position: {x: 5.359087, y: -12.358365, z: 0.120000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 0.500000, y: 0.500000, z: 0.500000}
     HasSegmentScaleCompensation: false
@@ -1704,7 +1704,7 @@
   ShowEditingPreview: true
   TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
   SizeToFit: false
-  FontSize: 57
+  FontSize: 75
   Font: !<reference> 00000000-0000-0000-0000-000000000000
   LayoutRect:
     left: -7.500000
@@ -2114,6 +2114,7 @@
     _showFollowButton: true
     useFollowBehavior: true
     _following: true
+    _showCloseButton: true
     _enableInteractionPlane: true
     _interactionPlaneOffset: true
     _interactionPlanePadding: true
@@ -2124,7 +2125,7 @@
     "":
       autoShowHide: true
       _appearance: Large
-      _innerSize: !<Vec2> {x: 14.000000, y: 18.000000}
+      _innerSize: !<Vec2> {x: 14.000000, y: 30.000000}
       _padding: !<Vec2> {x: 0.000000, y: 0.000000}
       allowScaling: false
       autoScaleContent: true
@@ -2147,7 +2148,7 @@
       _showFollowButton: false
       useFollowBehavior: false
       _following: false
-      _showCloseButton: true
+      _showCloseButton: false
       _enableInteractionPlane: true
       _interactionPlaneOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       _interactionPlanePadding: !<Vec2> {x: 0.000000, y: 0.000000}
@@ -2592,7 +2593,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: -7.851106, y: -7.431643, z: 0.120000}
+    Position: {x: 6.834302, y: -7.431643, z: 0.120000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 0.500000, y: 0.500000, z: 0.500000}
     HasSegmentScaleCompensation: false

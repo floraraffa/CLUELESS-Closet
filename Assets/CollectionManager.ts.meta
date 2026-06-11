@@ -52,6 +52,7 @@
     maxGarmentPlaceholders: false
     openCollectionButton: false
     openCollectionButtonText: false
+    outfitSlotDropRadiusCm: false
     resetCollectionButton: false
     saveButton: false
     shareCollectionButton: false
@@ -83,6 +84,7 @@
       maxGarmentPlaceholders: !<float> 12.000000
       garmentPlaceholderColumns: !<float> 3.000000
       garmentPlaceholderSpacing: !<float> 6.000000
+      outfitSlotDropRadiusCm: !<float> 24.000000
       shareCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmShareContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmShareYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
@@ -119,6 +121,7 @@
     - '// @input float maxGarmentPlaceholders = 2 {"hint":"Number of visible garment placeholder slots for the look builder"}'
     - '// @input float garmentPlaceholderColumns = 3 {"hint":"How many garment cards to place per row inside the closet list"}'
     - '// @input float garmentPlaceholderSpacing = 6 {"hint":"Spacing in cm between runtime garment placeholders"}'
+    - '// @input float outfitSlotDropRadiusCm = 24 {"hint":"Drop radius in cm for dragging a bracelet card onto an outfit slot"}'
     - '// @input SceneObject shareCollectionButton {"hint":"\"Share Collection\" button on left hand (inside User Card Info)"}'
     - '// @input SceneObject confirmShareContainer {"hint":"\"Confirm Share Container\" with confirmation text, URL text, Yes/Cancel buttons"}'
     - '// @input SceneObject confirmShareYesButton {"hint":"\"Yes CapsuleButton\" inside Confirm Share Container"}'
