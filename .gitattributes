@@ -219,6 +219,22 @@ Assets/**/*.worldDepthTexture !filter !diff !merge text linguist-language=yaml m
 Packages/**/*.worldDepthTexture !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
 Assets/**/*.worldQueryModule !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
 Packages/**/*.worldQueryModule !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
+
+# Keep common UI/media assets in the repo so GitHub ZIP downloads open in Lens Studio
+# without requiring Git LFS. Lens Studio may regenerate the block above; keep this
+# override at the end of the file.
+Assets/**/*.png -filter -diff -merge -text
+Assets/**/*.jpg -filter -diff -merge -text
+Assets/**/*.jpeg -filter -diff -merge -text
+Assets/**/*.ttf -filter -diff -merge -text
+Assets/**/*.otf -filter -diff -merge -text
+Assets/**/*.mp4 -filter -diff -merge -text
+Packages/**/*.png -filter -diff -merge -text
+Packages/**/*.jpg -filter -diff -merge -text
+Packages/**/*.jpeg -filter -diff -merge -text
+Packages/**/*.ttf -filter -diff -merge -text
+Packages/**/*.otf -filter -diff -merge -text
+Packages/**/*.mp4 -filter -diff -merge -text
 Assets/**/*.worldSettings !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
 Packages/**/*.worldSettings !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
 Assets/**/*.worldUnderstandingModule !filter !diff !merge text linguist-language=yaml merge=lens-studio-yaml-merge
