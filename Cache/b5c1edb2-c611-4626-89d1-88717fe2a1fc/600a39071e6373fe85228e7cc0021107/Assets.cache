@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    634dd89e-6cdd-42de-9005-08f853f264cf: b5c1edb2-c611-4626-89d1-88717fe2a1fc/600a39071e6373fe85228e7cc0021107/Data/backward.png
+  Assets:
+    - !<FileTexture/634dd89e-6cdd-42de-9005-08f853f264cf>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 600a39071e6373fe85228e7cc0021107
+  FileHash: 32cbaa9f6fd94eab13a90b4b6d621f45
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    1accafb5-f30a-4ea8-9c1c-af6bae25630f: fb0691ae-b0e2-4218-bad5-81b4a45e40f0/b14937827ec5a3cea56a818c2020711a/Data/Car Brand Logos Url.txt
+  Assets:
+    - !<BinAsset/1accafb5-f30a-4ea8-9c1c-af6bae25630f>
+      PackagePath: ""
+  SourceHash: b14937827ec5a3cea56a818c2020711a
+  FileHash: 7f498d4624c30160d8984701d306aa99
+  NativePackageItems:
+    []

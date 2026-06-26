@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0b55d3a4-a20e-4bfd-b9bd-b0ff9f626b78: ccdfbc36-31fa-3ed2-4b22-ccbf894a2a5c/58efdca2562ea2430f6cb71ca32b61e6/Data/Hazard_AO.jpg
+  Assets:
+    - !<FileTexture/0b55d3a4-a20e-4bfd-b9bd-b0ff9f626b78>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 58efdca2562ea2430f6cb71ca32b61e6
+  FileHash: e454f87bebfe36a1e5207488dad65857
+  NativePackageItems:
+    []

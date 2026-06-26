@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    53f32343-b58c-40d3-ad47-7d55f1a9153d: c868c03b-5485-88da-1b68-b1a5939277b3/491a4c85785e5312a92432734befb08c/Data/Bounce_pad_AO.jpg
+  Assets:
+    - !<FileTexture/53f32343-b58c-40d3-ad47-7d55f1a9153d>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 491a4c85785e5312a92432734befb08c
+  FileHash: 339006bb2c54dd4f54335298175328f6
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    21191513-f0f4-4255-9d21-89e30e7b1571: e6a463b4-5c1a-1df8-22bb-604f28838dfe/999035255a145fb62b181adaed9b4508/Data/user_preferences.csv
+  Assets:
+    - !<BinAsset/21191513-f0f4-4255-9d21-89e30e7b1571>
+      PackagePath: ""
+  SourceHash: 999035255a145fb62b181adaed9b4508
+  FileHash: baa5b177cea3c829b07fcf739cdaf964
+  NativePackageItems:
+    []

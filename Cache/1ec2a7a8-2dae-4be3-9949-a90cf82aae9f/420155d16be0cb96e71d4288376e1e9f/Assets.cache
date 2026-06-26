@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7c30578a-1674-44f2-9c7b-bdb776c7bd3c: 1ec2a7a8-2dae-4be3-9949-a90cf82aae9f/420155d16be0cb96e71d4288376e1e9f/Data/LOGO2.png
+  Assets:
+    - !<FileTexture/7c30578a-1674-44f2-9c7b-bdb776c7bd3c>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1402
+        Height: 1122
+  SourceHash: 420155d16be0cb96e71d4288376e1e9f
+  FileHash: e69fe9d265014973d3037264be733b88
+  NativePackageItems:
+    []

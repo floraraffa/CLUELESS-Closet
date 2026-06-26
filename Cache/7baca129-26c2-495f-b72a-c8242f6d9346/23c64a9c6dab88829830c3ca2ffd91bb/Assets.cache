@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    a65aa4b9-2c5a-4270-9d1f-3898ac44eda7: 7baca129-26c2-495f-b72a-c8242f6d9346/23c64a9c6dab88829830c3ca2ffd91bb/Data/Read Me.txt
+  Assets:
+    - !<BinAsset/a65aa4b9-2c5a-4270-9d1f-3898ac44eda7>
+      PackagePath: ""
+  SourceHash: 23c64a9c6dab88829830c3ca2ffd91bb
+  FileHash: 3724f02b606b6d934faeb71453387649
+  NativePackageItems:
+    []

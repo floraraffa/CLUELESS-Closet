@@ -1,0 +1,122 @@
+- !<AssetCache>
+  AssetFiles:
+    c1b2a062-86d1-414c-9de8-10aa21200e75: 5c3dc176-5b35-454b-bfa5-cdd8a70a609c/618a5c49a8bf034a868fa058a529ad1f/Data/mesh_0.mesh
+  Assets:
+    - !<FileMesh/c1b2a062-86d1-414c-9de8-10aa21200e75>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 768
+        Vertices: 425
+        Blendshapes:
+          - Morph Target0
+          - Morph Target1
+          - Morph Target2
+          - Morph Target3
+          - Morph Target4
+          - Morph Target5
+          - Morph Target6
+          - Morph Target7
+          - Morph Target8
+          - Morph Target9
+          - Morph Target10
+          - Morph Target11
+          - Morph Target12
+          - Morph Target13
+          - Morph Target14
+          - Morph Target15
+          - Morph Target16
+          - Morph Target17
+          - Morph Target18
+          - Morph Target19
+          - Morph Target20
+          - Morph Target21
+          - Morph Target22
+          - Morph Target23
+          - Morph Target24
+          - Morph Target25
+          - Morph Target26
+          - Morph Target27
+          - Morph Target28
+          - Morph Target29
+          - Morph Target30
+          - Morph Target31
+          - Morph Target32
+          - Morph Target33
+          - Morph Target34
+          - Morph Target35
+          - Morph Target36
+          - Morph Target37
+          - Morph Target38
+          - Morph Target39
+          - Morph Target40
+          - Morph Target41
+          - Morph Target42
+          - Morph Target43
+          - Morph Target44
+          - Morph Target45
+          - Morph Target46
+          - Morph Target47
+          - Morph Target48
+          - Morph Target49
+          - Morph Target50
+          - Morph Target51
+          - Morph Target52
+          - Morph Target53
+          - Morph Target54
+          - Morph Target55
+          - Morph Target56
+          - Morph Target57
+          - Morph Target58
+          - Morph Target59
+          - Morph Target60
+          - Morph Target61
+          - Morph Target62
+          - Morph Target63
+          - Morph Target64
+          - Morph Target65
+          - Morph Target66
+          - Morph Target67
+          - Morph Target68
+          - Morph Target69
+          - Morph Target70
+          - Morph Target71
+          - Morph Target72
+          - Morph Target73
+          - Morph Target74
+          - Morph Target75
+          - Morph Target76
+          - Morph Target77
+          - Morph Target78
+          - Morph Target79
+          - Morph Target80
+          - Morph Target81
+          - Morph Target82
+          - Morph Target83
+          - Morph Target84
+          - Morph Target85
+          - Morph Target86
+          - Morph Target87
+          - Morph Target88
+          - Morph Target89
+          - Morph Target90
+          - Morph Target91
+          - Morph Target92
+          - Morph Target93
+          - Morph Target94
+          - Morph Target95
+          - Morph Target96
+          - Morph Target97
+          - Morph Target98
+          - Morph Target99
+          - Morph Target100
+          - Morph Target101
+          - Morph Target102
+          - Morph Target103
+          - Morph Target104
+          - Morph Target105
+        Joints: 0
+        AabbSize: {x: 2.797655, y: 2.322003, z: 0.816411}
+  SourceHash: 618a5c49a8bf034a868fa058a529ad1f
+  FileHash: deb0abb632a1aa594da83569e6401a6e
+  NativePackageItems:
+    []

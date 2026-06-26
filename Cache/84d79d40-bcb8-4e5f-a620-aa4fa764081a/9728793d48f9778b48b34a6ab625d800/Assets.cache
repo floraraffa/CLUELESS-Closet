@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    06a1834d-9a5d-4567-93a2-191470d95e67: 84d79d40-bcb8-4e5f-a620-aa4fa764081a/9728793d48f9778b48b34a6ab625d800/Data/papel-base-op.png
+  Assets:
+    - !<FileTexture/06a1834d-9a5d-4567-93a2-191470d95e67>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1535
+        Height: 1024
+  SourceHash: 9728793d48f9778b48b34a6ab625d800
+  FileHash: 67fcaa1dd3b6b9ca6793454452b71f92
+  NativePackageItems:
+    []

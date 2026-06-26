@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    3035a679-b0c9-42ad-ad96-72d4d3ee0909: f1933c8e-547b-4432-adf0-d9836e0d6c6f/5b9fb274bb090e2b2b626c0336bb5d80/Data/OriginFonts-EULA.pdf
+  Assets:
+    - !<BinAsset/3035a679-b0c9-42ad-ad96-72d4d3ee0909>
+      PackagePath: ""
+  SourceHash: 5b9fb274bb090e2b2b626c0336bb5d80
+  FileHash: 1bf2a2c45229591f62a7d9a2ea47be0f
+  NativePackageItems:
+    []

@@ -1,0 +1,1129 @@
+- !<AssetCache>
+  AssetFiles:
+    1cce248e-d41e-40a4-a444-0fe888bb11c4: d83ec685-74e2-0a38-0b41-6a4dd198d2e9/cbb2aa83d04b6be98f1d6d7d12fef66d/Data/ID4.ss_graph
+  Assets:
+    - !<ShaderGraphPass/1cce248e-d41e-40a4-a444-0fe888bb11c4>
+      PackagePath: ""
+      DefaultDefines:
+        []
+      DefaultProperties:
+        Port_AO_N152:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_AO_N313:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_AO_N410:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_AO_N506:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_Center_N122:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N126:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N282:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N286:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N379:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N383:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N475:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Center_N479:
+          typeIdx: 3
+          value: {x: 0.500000, y: 0.500000}
+        Port_Default_N338:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+        Port_Default_N358:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+        Port_Default_N453:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+        Port_Depth_N004:
+          typeIdx: 1
+          value: 1.000000
+        Port_Dimension_N126:
+          typeIdx: 3
+          value: {x: 1.000000, y: 1.000000}
+        Port_Dimension_N286:
+          typeIdx: 3
+          value: {x: 1.000000, y: 1.000000}
+        Port_Dimension_N383:
+          typeIdx: 3
+          value: {x: 1.000000, y: 1.000000}
+        Port_Dimension_N479:
+          typeIdx: 3
+          value: {x: 1.000000, y: 1.000000}
+        Port_Emissive_N152:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Emissive_N313:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Emissive_N410:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Emissive_N506:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_FinalColor1_N004:
+          typeIdx: 5
+          value: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+        Port_FinalColor2_N004:
+          typeIdx: 5
+          value: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+        Port_FinalColor3_N004:
+          typeIdx: 5
+          value: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+        Port_GSplatPointSize_N004:
+          typeIdx: 1
+          value: 0.000000
+        Port_GSplatRotation_N004:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
+        Port_GSplatScale_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Import_N027:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+        Port_Import_N060:
+          typeIdx: 1
+          value: 1.000000
+        Port_Import_N063:
+          typeIdx: 1
+          value: 1.000000
+        Port_Import_N100:
+          typeIdx: 1
+          value: 1.300000
+        Port_Input0_N102:
+          typeIdx: 5
+          value: {x: 0.500000, y: 0.500000, z: 0.500000, w: 0.000000}
+        Port_Input1_N006:
+          typeIdx: 1
+          value: 0.156200
+        Port_Input1_N009:
+          typeIdx: 1
+          value: 0.133700
+        Port_Input1_N012:
+          typeIdx: 1
+          value: 0.218700
+        Port_Input1_N013:
+          typeIdx: 1
+          value: 0.176200
+        Port_Input1_N034:
+          typeIdx: 1
+          value: 0.031200
+        Port_Input1_N035:
+          typeIdx: 1
+          value: 0.041200
+        Port_Input1_N038:
+          typeIdx: 1
+          value: 0.073700
+        Port_Input1_N051:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+        Port_Input1_N062:
+          typeIdx: 5
+          value: {x: 0.212500, y: 0.715400, z: 0.072100, w: 0.000000}
+        Port_Input1_N070:
+          typeIdx: 5
+          value: {x: 0.000000, y: 0.000000, z: 0.000000, w: 0.000000}
+        Port_Input2_N051:
+          typeIdx: 5
+          value: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+        Port_Input2_N070:
+          typeIdx: 5
+          value: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+        Port_LODValue_N001:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N030:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N052:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N129:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N287:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N384:
+          typeIdx: 1
+          value: 0.000000
+        Port_LODValue_N480:
+          typeIdx: 1
+          value: 0.000000
+        Port_Mask_N139:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N263:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N302:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N399:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N418:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N495:
+          typeIdx: 1
+          value: 1.000000
+        Port_Mask_N514:
+          typeIdx: 1
+          value: 1.000000
+        Port_Normal_N152:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Normal_N240:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+        Port_Normal_N276:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+        Port_Normal_N313:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Normal_N373:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+        Port_Normal_N410:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Normal_N469:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+        Port_Normal_N506:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_Opacity_N152:
+          typeIdx: 1
+          value: 1.000000
+        Port_Opacity_N313:
+          typeIdx: 1
+          value: 1.000000
+        Port_Opacity_N410:
+          typeIdx: 1
+          value: 1.000000
+        Port_Opacity_N506:
+          typeIdx: 1
+          value: 1.000000
+        Port_PrevWorldPosition_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_RayDirection_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 1.000000, z: 0.000000}
+        Port_RayOrigin_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_SpecularAO_N152:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_SpecularAO_N313:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_SpecularAO_N410:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_SpecularAO_N506:
+          typeIdx: 4
+          value: {x: 1.000000, y: 1.000000, z: 1.000000}
+        Port_UVCoord_N052:
+          typeIdx: 3
+          value: {x: 0.000000, y: 0.000000}
+        Port_WorldNormal_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 1.000000, z: 0.000000}
+        Port_WorldPosition_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 0.000000}
+        Port_WorldTangent_N004:
+          typeIdx: 4
+          value: {x: 0.000000, y: 0.000000, z: 1.000000}
+      PassUiData: !<PassUiData>
+        ExtraDefines:
+          - SC_ENABLE_RT_CASTER
+          - SC_ENABLE_RT_RECEIVER
+        PassBindings:
+          - mLabel: Graph Parameters
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Custom Float
+            mType: Property
+            mName: Tweak_N16
+            mWidget: slider
+            mHint: "Property: Tweak_N16"
+            mMin: 0.000000
+            mMax: 3.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Custom Map
+            mType: Property
+            mName: Tweak_N25
+            mWidget: texture_group
+            mHint: "Property: Tweak_N25"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 01 COLOR RGB_8
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID Color
+            mType: Property
+            mName: colorId01
+            mWidget: color
+            mHint: "Property: colorId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PATTERN ON/OFF
+            mType: Property
+            mName: patternOnOffId01
+            mWidget: checkbox
+            mHint: "Property: patternOnOffId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Color
+            mType: Property
+            mName: patternColorId01
+            mWidget: color
+            mHint: "Property: patternColorId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PNG Pattern
+            mType: Property
+            mName: pngPatternId01
+            mWidget: checkbox
+            mHint: "Property: pngPatternId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Texture
+            mType: Property
+            mName: patternTextureId01
+            mWidget: texture_group
+            mHint: "Property: patternTextureId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Scale
+            mType: Property
+            mName: patternScaleId01
+            mWidget: spinbox
+            mHint: "Property: patternScaleId01"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Offset
+            mType: Property
+            mName: patternOffsetId01
+            mWidget: spinbox
+            mHint: "Property: patternOffsetId01"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Rotate
+            mType: Property
+            mName: patternRotateId01
+            mWidget: spinbox
+            mHint: "Property: patternRotateId01"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PBR ON/OFF
+            mType: Property
+            mName: pbrOnOffId01
+            mWidget: checkbox
+            mHint: "Property: pbrOnOffId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Metallic
+            mType: Property
+            mName: metallicId01
+            mWidget: slider
+            mHint: "Property: metallicId01"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rougness
+            mType: Property
+            mName: rougnessId01
+            mWidget: slider
+            mHint: "Property: rougnessId01"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim On/Off
+            mType: Property
+            mName: rimOnOffId01
+            mWidget: checkbox
+            mHint: "Property: rimOnOffId01"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Rim Exp
+            mType: Property
+            mName: rimExpId01
+            mWidget: spinbox
+            mHint: "Property: rimExpId01"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim Int
+            mType: Property
+            mName: rimIntId01
+            mWidget: spinbox
+            mHint: "Property: rimIntId01"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 02 COLOR RGB_24
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 02 COLOR ON/OFF
+            mType: Property
+            mName: ColorOnOffid02
+            mWidget: checkbox
+            mHint: "Property: ColorOnOffid02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID Color
+            mType: Property
+            mName: colorId02
+            mWidget: color
+            mHint: "Property: colorId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PATTERN ON/OFF
+            mType: Property
+            mName: patternOnOffId02
+            mWidget: checkbox
+            mHint: "Property: patternOnOffId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Color
+            mType: Property
+            mName: patternColorId02
+            mWidget: color
+            mHint: "Property: patternColorId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PNG Pattern
+            mType: Property
+            mName: pngPatternId02
+            mWidget: checkbox
+            mHint: "Property: pngPatternId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Texture
+            mType: Property
+            mName: patternTextureId02
+            mWidget: texture_group
+            mHint: "Property: patternTextureId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Scale
+            mType: Property
+            mName: patternScaleId02
+            mWidget: spinbox
+            mHint: "Property: patternScaleId02"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Offset
+            mType: Property
+            mName: patternOffsetId02
+            mWidget: spinbox
+            mHint: "Property: patternOffsetId02"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Rotate
+            mType: Property
+            mName: patternRotateId02
+            mWidget: spinbox
+            mHint: "Property: patternRotateId02"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PBR ON/OFF
+            mType: Property
+            mName: pbrOnOffId02
+            mWidget: checkbox
+            mHint: "Property: pbrOnOffId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Metallic
+            mType: Property
+            mName: metallicId02
+            mWidget: slider
+            mHint: "Property: metallicId02"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rougness
+            mType: Property
+            mName: rougnessId02
+            mWidget: slider
+            mHint: "Property: rougnessId02"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim On/Off
+            mType: Property
+            mName: rimOnOffId02
+            mWidget: checkbox
+            mHint: "Property: rimOnOffId02"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Rim Exp
+            mType: Property
+            mName: rimExpId02
+            mWidget: spinbox
+            mHint: "Property: rimExpId02"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim Int
+            mType: Property
+            mName: rimIntId02
+            mWidget: spinbox
+            mHint: "Property: rimIntId02"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 03 COLOR RGB_40
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 03 COLOR ON/OFF
+            mType: Property
+            mName: ColorOnOffid03
+            mWidget: checkbox
+            mHint: "Property: ColorOnOffid03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID Color
+            mType: Property
+            mName: colorId03
+            mWidget: color
+            mHint: "Property: colorId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PATTERN ON/OFF
+            mType: Property
+            mName: patternOnOffId03
+            mWidget: checkbox
+            mHint: "Property: patternOnOffId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Color
+            mType: Property
+            mName: patternColorId03
+            mWidget: color
+            mHint: "Property: patternColorId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PNG Pattern
+            mType: Property
+            mName: pngPatternId03
+            mWidget: checkbox
+            mHint: "Property: pngPatternId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Texture
+            mType: Property
+            mName: patternTextureId03
+            mWidget: texture_group
+            mHint: "Property: patternTextureId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Scale
+            mType: Property
+            mName: patternScaleId03
+            mWidget: spinbox
+            mHint: "Property: patternScaleId03"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Offset
+            mType: Property
+            mName: patternOffsetId03
+            mWidget: spinbox
+            mHint: "Property: patternOffsetId03"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Rotate
+            mType: Property
+            mName: patternRotateId03
+            mWidget: spinbox
+            mHint: "Property: patternRotateId03"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PBR ON/OFF
+            mType: Property
+            mName: pbrOnOffId03
+            mWidget: checkbox
+            mHint: "Property: pbrOnOffId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Metallic
+            mType: Property
+            mName: metallicId03
+            mWidget: slider
+            mHint: "Property: metallicId03"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rougness
+            mType: Property
+            mName: rougnessId03
+            mWidget: slider
+            mHint: "Property: rougnessId03"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim On/Off
+            mType: Property
+            mName: rimOnOffId03
+            mWidget: checkbox
+            mHint: "Property: rimOnOffId03"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Rim Exp
+            mType: Property
+            mName: rimExpId03
+            mWidget: spinbox
+            mHint: "Property: rimExpId03"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim Int
+            mType: Property
+            mName: rimIntId03
+            mWidget: spinbox
+            mHint: "Property: rimIntId03"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 04 COLOR RGB_56
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID 04 COLOR ON/OFF
+            mType: Property
+            mName: ColorOnOffid04
+            mWidget: checkbox
+            mHint: "Property: ColorOnOffid04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ID Color
+            mType: Property
+            mName: colorId04
+            mWidget: color
+            mHint: "Property: colorId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PATTERN ON/OFF
+            mType: Property
+            mName: patternOnOffId04
+            mWidget: checkbox
+            mHint: "Property: patternOnOffId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Color
+            mType: Property
+            mName: patternColorId04
+            mWidget: color
+            mHint: "Property: patternColorId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PNG Pattern
+            mType: Property
+            mName: pngPatternId04
+            mWidget: checkbox
+            mHint: "Property: pngPatternId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Texture
+            mType: Property
+            mName: patternTextureId04
+            mWidget: texture_group
+            mHint: "Property: patternTextureId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Pattern Scale
+            mType: Property
+            mName: patternScaleId04
+            mWidget: spinbox
+            mHint: "Property: patternScaleId04"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Offset
+            mType: Property
+            mName: patternOffsetId04
+            mWidget: spinbox
+            mHint: "Property: patternOffsetId04"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Pattern Rotate
+            mType: Property
+            mName: patternRotateId04
+            mWidget: spinbox
+            mHint: "Property: patternRotateId04"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: PBR ON/OFF
+            mType: Property
+            mName: pbrOnOffId04
+            mWidget: checkbox
+            mHint: "Property: pbrOnOffId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Metallic
+            mType: Property
+            mName: metallicId04
+            mWidget: slider
+            mHint: "Property: metallicId04"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rougness
+            mType: Property
+            mName: rougnessId04
+            mWidget: slider
+            mHint: "Property: rougnessId04"
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim On/Off
+            mType: Property
+            mName: rimOnOffId04
+            mWidget: checkbox
+            mHint: "Property: rimOnOffId04"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Rim Exp
+            mType: Property
+            mName: rimExpId04
+            mWidget: spinbox
+            mHint: "Property: rimExpId04"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: Rim Int
+            mType: Property
+            mName: rimIntId04
+            mWidget: spinbox
+            mHint: "Property: rimIntId04"
+            mMin: ~
+            mMax: ~
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: BASE
+            mType: Invalid
+            mName: ""
+            mWidget: group_start
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Bake Ligth or AO Map
+            mType: Property
+            mName: Tweak_N27
+            mWidget: texture_group
+            mHint: "Property: Tweak_N27"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Grey Mask ID
+            mType: Property
+            mName: greyMaskId
+            mWidget: texture_group
+            mHint: "Property: greyMaskId"
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Color Int
+            mType: Property
+            mName: Tweak_N47
+            mWidget: slider
+            mHint: "Property: Tweak_N47"
+            mMin: 0.000000
+            mMax: 2.000000
+            mStep: 0.010000
+            mDefaultVal: 1.000000
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: ""
+            mType: GroupEnd
+            mName: ""
+            mWidget: group_end
+            mHint: ""
+            mMin: ~
+            mMax: ~
+            mStep: ~
+            mDefaultVal: ~
+            mValues:
+              []
+          - mLabel: Alpha Test Threshold
+            mType: Property
+            mName: alphaTestThreshold
+            mWidget: slider
+            mHint: |-
+              Property: alphaTestThreshold
+              
+              When the 'Alpha Test' blend mode is enabled, pixels with alpha values lower than this disappear.
+            mMin: 0.000000
+            mMax: 1.000000
+            mStep: 0.001000
+            mDefaultVal: 0.500000
+            mValues:
+              []
+        ShaderType: Mesh3d
+      ShaderPath: d83ec685-74e2-0a38-0b41-6a4dd198d2e9/cbb2aa83d04b6be98f1d6d7d12fef66d/Data/6a992e8/ID4.glsl
+      Defines:
+        []
+      Properties:
+        {}
+      ReferencedAssets:
+        []
+      GraphStatus: Evaluated
+  SourceHash: cbb2aa83d04b6be98f1d6d7d12fef66d
+  FileHash: 400326c40c3bfb272b88e22e59a4c0ed
+  NativePackageItems:
+    []

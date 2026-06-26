@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    6861166e-954e-4c0c-8aed-254edc8a7e70: dc461c91-9f06-96e1-4be7-9d339d0c56c3/7c197a81a893b5dbf30b8557610fb652/Data/Spikes_ID.png
+  Assets:
+    - !<FileTexture/6861166e-954e-4c0c-8aed-254edc8a7e70>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 7c197a81a893b5dbf30b8557610fb652
+  FileHash: 8ee155ba332d0304d9efb1b130518da1
+  NativePackageItems:
+    []

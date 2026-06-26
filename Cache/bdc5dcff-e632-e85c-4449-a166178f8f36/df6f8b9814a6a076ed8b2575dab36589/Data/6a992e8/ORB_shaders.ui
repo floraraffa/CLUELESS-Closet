@@ -1,0 +1,227 @@
+{ 
+	"ui": 
+	[
+		{
+        	"label": "Graph Parameters",
+        	"widget": "group_start"
+        },
+{
+                	"bindingName": "Tweak_N1",
+                	"label":       "Base Color",
+                	"widget":      "color",
+                	"sortIndex":   "0",
+                	"hint":        "",
+                	"default":     "1.0"
+                },
+                
+                {
+                	"label":       "Diffuse",
+                	"bindingName": "Tweak_N28",
+                	"bindingType": "define",
+                	"optimize":    true,
+                	"widget":      "group_start",
+                	"sortIndex":   "0",
+                	"hint":        ""
+                }
+                ,                    
+                    { 
+                    	"bindingName": "Tweak_N0", 
+                    	"label":       "Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "11",
+                    	"hint":        ""
+                    },
+                {
+                	"_bindingName": "Tweak_N28",
+                	"widget": "group_end"
+                }
+                ,
+                
+                {
+                	"label":       "Simple Reflection",
+                	"bindingName": "Tweak_N22",
+                	"bindingType": "define",
+                	"optimize":    true,
+                	"widget":      "group_start",
+                	"sortIndex":   "0",
+                	"hint":        ""
+                }
+                ,                    
+                    { 
+                    	"bindingName": "Tweak_N15", 
+                    	"label":       "Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "31",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N24",
+                    	"label":       "Intensity",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         10,
+                    	"step":        "0.01",
+                    	"sortIndex":   "32",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"label":       "Modulation map",
+                    	"bindingName": "Tweak_N34",
+                    	"bindingType": "define",
+                    	"optimize":    true,
+                    	"widget":      "group_start",
+                    	"sortIndex":   "0",
+                    	"hint":        ""
+                    }
+                    ,                        
+                        { 
+                        	"bindingName": "Tweak_N82", 
+                        	"label":       "Texture", 
+                        	"widget":      "texture_group",
+                        	"sortIndex":   "34",
+                        	"hint":        ""
+                        },
+                    {
+                    	"_bindingName": "Tweak_N34",
+                    	"widget": "group_end"
+                    }
+                    ,
+                {
+                	"_bindingName": "Tweak_N22",
+                	"widget": "group_end"
+                }
+                ,
+                
+                {
+                	"label":       "Rim",
+                	"bindingName": "Tweak_N20",
+                	"bindingType": "define",
+                	"optimize":    true,
+                	"widget":      "group_start",
+                	"sortIndex":   "0",
+                	"hint":        ""
+                }
+                ,                    
+                    {
+                    	"label":       "Rim color",
+                    	"bindingType": "defineSelect",
+                    	"values":      
+                    	[
+                    		
+                    		{
+                    			"value": "NODE_66_DROPLIST_ITEM 0",
+                    			"label": "None"
+                    		},
+                    		
+                    		{
+                    			"value": "NODE_66_DROPLIST_ITEM 1",
+                    			"label": "Color"
+                    		},
+                    		
+                    		{
+                    			"value": "NODE_66_DROPLIST_ITEM 2",
+                    			"label": "Diffuse"
+                    		}
+                    	],
+                    	"sortIndex":   "40",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N68",
+                    	"label":       "Custom Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "41",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N16",
+                    	"label":       "Intensity",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         10,
+                    	"step":        "0.01",
+                    	"sortIndex":   "42",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N17",
+                    	"label":       "Exponent",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         10,
+                    	"step":        "0.01",
+                    	"sortIndex":   "43",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N104",
+                    	"bindingType": "define",
+                    	"optimize":    true,
+                    	"label":       "Invert",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "44",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"label":       "Rim Texture",
+                    	"bindingName": "Tweak_N64",
+                    	"bindingType": "define",
+                    	"optimize":    true,
+                    	"widget":      "group_start",
+                    	"sortIndex":   "0",
+                    	"hint":        ""
+                    }
+                    ,                        
+                        { 
+                        	"bindingName": "Tweak_N18", 
+                        	"label":       "Texture", 
+                        	"widget":      "texture_group",
+                        	"sortIndex":   "46",
+                        	"hint":        ""
+                        },
+                    {
+                    	"_bindingName": "Tweak_N64",
+                    	"widget": "group_end"
+                    }
+                    ,
+                {
+                	"_bindingName": "Tweak_N20",
+                	"widget": "group_end"
+                }
+                ,
+
+        {
+        	"widget": "group_end"
+        },
+        
+		
+	{
+		"bindingName": "alphaTestThreshold",
+		"widget": "slider",
+		"min" : 0.0,
+		"max" : 1.0,
+		"step": 0.001,
+		"default": 0.5,
+		"hint": "When the 'Alpha Test' blend mode is enabled, pixels with alpha values lower than this disappear."
+	}
+	
+	],
+	
+	"shaderType": "Mesh3d",
+	
+	"extraDefines":
+	[
+		"SC_ENABLE_RT_CASTER"
+	]
+}

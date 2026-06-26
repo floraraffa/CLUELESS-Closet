@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    2721d582-1b89-470f-aeea-34479083f1f4: 314dcc24-2ad1-4cb4-9cae-debed1ab41d2/d34dbbc0cd8decd6199c39fb4a8ed1d2/Data/Flag_normal.jpeg
+  Assets:
+    - !<FileTexture/2721d582-1b89-470f-aeea-34479083f1f4>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1024
+        Height: 1024
+  SourceHash: d34dbbc0cd8decd6199c39fb4a8ed1d2
+  FileHash: 66c0985e5a3816913e566602242e75ea
+  NativePackageItems:
+    []

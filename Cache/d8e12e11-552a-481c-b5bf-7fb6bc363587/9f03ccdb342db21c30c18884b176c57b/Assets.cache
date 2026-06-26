@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    9ddfefee-1521-4038-93e4-e27520312ac4: d8e12e11-552a-481c-b5bf-7fb6bc363587/9f03ccdb342db21c30c18884b176c57b/Data/Milk Choco.otf
+  Assets:
+    - !<Font/9ddfefee-1521-4038-93e4-e27520312ac4>
+      PackagePath: ""
+  SourceHash: 9f03ccdb342db21c30c18884b176c57b
+  FileHash: 0d05908efedfd6ed9d465bde65e6c685
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    6c027168-67a6-4ece-8274-5db9b61fe233: 2738d08b-8e2c-48a8-b5e0-f8c8e89595cc/a65189ff952f8f7f37a656bb698ce5fa/Data/Manrope-SemiBold.ttf
+  Assets:
+    - !<Font/6c027168-67a6-4ece-8274-5db9b61fe233>
+      PackagePath: ""
+  SourceHash: a65189ff952f8f7f37a656bb698ce5fa
+  FileHash: 890f94985bec199084cd71f3a3a8e7f6
+  NativePackageItems:
+    []

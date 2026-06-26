@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    6a6e9f1d-0513-4c20-8e22-4ee11777a445: 8ce65e8e-72c5-4fec-8742-f7dfa5199927/5af990e4e70f3617bf428b2793b4da46/Data/Manrope-ExtraBold.ttf
+  Assets:
+    - !<Font/6a6e9f1d-0513-4c20-8e22-4ee11777a445>
+      PackagePath: ""
+  SourceHash: 5af990e4e70f3617bf428b2793b4da46
+  FileHash: 33936daad18645c7ef45ba208ecf7aa9
+  NativePackageItems:
+    []

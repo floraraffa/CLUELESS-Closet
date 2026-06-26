@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7b1aa623-430e-4668-acbf-c329a5555b9e: d3294a83-e05f-48ef-b1ad-fca3d07be52d/ad1539d962e5f70e410498d3ad39f8d8/Data/button-music-on.png
+  Assets:
+    - !<FileTexture/7b1aa623-430e-4668-acbf-c329a5555b9e>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: ad1539d962e5f70e410498d3ad39f8d8
+  FileHash: 99c114e4c054a4e5c361511e0999c27b
+  NativePackageItems:
+    []

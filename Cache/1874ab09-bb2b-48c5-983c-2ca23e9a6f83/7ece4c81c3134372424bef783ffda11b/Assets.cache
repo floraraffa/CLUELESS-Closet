@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    1ce27866-89f0-43fc-8196-a8730f4d840d: 1874ab09-bb2b-48c5-983c-2ca23e9a6f83/7ece4c81c3134372424bef783ffda11b/Data/Hardware Connected.wav
+  Assets:
+    - !<FileAudioTrack/1ce27866-89f0-43fc-8196-a8730f4d840d>
+      PackagePath: ""
+  SourceHash: 7ece4c81c3134372424bef783ffda11b
+  FileHash: 5a113d217d5f498061042f3d08a6f5cb
+  NativePackageItems:
+    []

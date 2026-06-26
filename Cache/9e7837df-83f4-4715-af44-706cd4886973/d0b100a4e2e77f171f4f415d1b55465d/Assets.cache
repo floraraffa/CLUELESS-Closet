@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ef0aeb65-16f1-4266-b242-f31f1ab9b4b7: 9e7837df-83f4-4715-af44-706cd4886973/d0b100a4e2e77f171f4f415d1b55465d/Data/delete.png
+  Assets:
+    - !<FileTexture/ef0aeb65-16f1-4266-b242-f31f1ab9b4b7>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: d0b100a4e2e77f171f4f415d1b55465d
+  FileHash: 858e761425a7349aa4c45666e86c4d94
+  NativePackageItems:
+    []

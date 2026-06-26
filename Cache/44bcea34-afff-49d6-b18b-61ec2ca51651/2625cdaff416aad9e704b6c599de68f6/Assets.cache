@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    89046014-0f04-4a0c-aa58-a41a095c6088: 44bcea34-afff-49d6-b18b-61ec2ca51651/2625cdaff416aad9e704b6c599de68f6/Data/button-user.png
+  Assets:
+    - !<FileTexture/89046014-0f04-4a0c-aa58-a41a095c6088>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 2625cdaff416aad9e704b6c599de68f6
+  FileHash: d7fbe77f4af8a050e6cb0dde4d4c9b08
+  NativePackageItems:
+    []

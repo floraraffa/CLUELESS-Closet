@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    c9e043fa-07df-4c2e-944d-65b4aa39a30b: 1986595e-346e-3cb5-fb73-85c80d9078c4/26a1f1e72ceab9348e6eed8c1c2d884a/Data/Gem_diffuse_violet.jpg
+  Assets:
+    - !<FileTexture/c9e043fa-07df-4c2e-944d-65b4aa39a30b>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 26a1f1e72ceab9348e6eed8c1c2d884a
+  FileHash: 5cc70c6b5308b81af33f2831bf5d7d79
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    ffc75edd-4988-40ce-9563-b5a340cc231d: 7f03b13b-7972-2506-980f-75b7abda5ddd/5b8972906d31f7a7fa8635ac09bb6f3a/Data/composite-stream-viewer.html
+  Assets:
+    - !<BinAsset/ffc75edd-4988-40ce-9563-b5a340cc231d>
+      PackagePath: ""
+  SourceHash: 5b8972906d31f7a7fa8635ac09bb6f3a
+  FileHash: dec472daf4d62bf7f2f9b3be3cba3730
+  NativePackageItems:
+    []

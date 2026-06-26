@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    2f846fcb-021c-4ba5-9eaa-0be28a14b883: f18c4e1f-0b61-41a5-9237-bc247831884f/b275f89599568bdb68ce494f539f1205/Data/Flag_baseColor.png
+  Assets:
+    - !<FileTexture/2f846fcb-021c-4ba5-9eaa-0be28a14b883>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 2048
+        Height: 2048
+  SourceHash: b275f89599568bdb68ce494f539f1205
+  FileHash: e1069ffab81fdb3df1e53d49f7efd1c0
+  NativePackageItems:
+    []

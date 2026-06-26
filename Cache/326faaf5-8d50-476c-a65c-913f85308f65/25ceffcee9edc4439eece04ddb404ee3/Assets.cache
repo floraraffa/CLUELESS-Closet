@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    83d48f49-84bc-44fb-a33f-64a593129209: 326faaf5-8d50-476c-a65c-913f85308f65/25ceffcee9edc4439eece04ddb404ee3/Data/make your outfit 2.png
+  Assets:
+    - !<FileTexture/83d48f49-84bc-44fb-a33f-64a593129209>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1448
+  SourceHash: 25ceffcee9edc4439eece04ddb404ee3
+  FileHash: 051e50c951890ae52f9d51b9b00f0d4a
+  NativePackageItems:
+    []

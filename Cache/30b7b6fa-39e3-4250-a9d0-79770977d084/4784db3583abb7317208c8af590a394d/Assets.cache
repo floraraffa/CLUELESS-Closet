@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    82a7d6f7-8bb5-4772-8174-1defc5b5f6a2: 30b7b6fa-39e3-4250-a9d0-79770977d084/4784db3583abb7317208c8af590a394d/Data/SFX7.mp3
+  Assets:
+    - !<FileAudioTrack/82a7d6f7-8bb5-4772-8174-1defc5b5f6a2>
+      PackagePath: ""
+  SourceHash: 4784db3583abb7317208c8af590a394d
+  FileHash: 534fcd3d033fea925e11fc502a5be85f
+  NativePackageItems:
+    []

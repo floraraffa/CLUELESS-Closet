@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ff6ee255-e755-4477-a506-a709defa69ee: c511c447-7bac-4e93-9fd8-00caa1226a5c/cb624ea4766847cbae7f29a5a0adbf8b/Data/papel-base-chico-opacity.png
+  Assets:
+    - !<FileTexture/ff6ee255-e755-4477-a506-a709defa69ee>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1535
+        Height: 512
+  SourceHash: cb624ea4766847cbae7f29a5a0adbf8b
+  FileHash: 3ef507da742bbaa0168bd237d70788d7
+  NativePackageItems:
+    []

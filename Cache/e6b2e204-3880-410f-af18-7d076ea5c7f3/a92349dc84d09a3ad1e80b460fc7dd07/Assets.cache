@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    657ba7d3-5282-4f70-9a43-fc47ffc6d866: e6b2e204-3880-410f-af18-7d076ea5c7f3/a92349dc84d09a3ad1e80b460fc7dd07/Data/button-trash.png
+  Assets:
+    - !<FileTexture/657ba7d3-5282-4f70-9a43-fc47ffc6d866>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: a92349dc84d09a3ad1e80b460fc7dd07
+  FileHash: 3e5b029adfa958a45282a89b4b918d51
+  NativePackageItems:
+    []

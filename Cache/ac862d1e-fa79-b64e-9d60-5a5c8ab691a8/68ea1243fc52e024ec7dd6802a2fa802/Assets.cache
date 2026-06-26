@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    8e2362ba-de1a-4571-9209-e4bc3f647609: ac862d1e-fa79-b64e-9d60-5a5c8ab691a8/68ea1243fc52e024ec7dd6802a2fa802/Data/Star_AO.jpg
+  Assets:
+    - !<FileTexture/8e2362ba-de1a-4571-9209-e4bc3f647609>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 68ea1243fc52e024ec7dd6802a2fa802
+  FileHash: d88fb5559c34987c37ded35fba5b3874
+  NativePackageItems:
+    []

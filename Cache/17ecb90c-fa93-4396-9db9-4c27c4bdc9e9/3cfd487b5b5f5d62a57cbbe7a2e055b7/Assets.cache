@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    59a5db76-596c-4a6f-bce0-c6a316106692: 17ecb90c-fa93-4396-9db9-4c27c4bdc9e9/3cfd487b5b5f5d62a57cbbe7a2e055b7/Data/TrashHand.TTF
+  Assets:
+    - !<Font/59a5db76-596c-4a6f-bce0-c6a316106692>
+      PackagePath: ""
+  SourceHash: 3cfd487b5b5f5d62a57cbbe7a2e055b7
+  FileHash: b9e709514abd86f61b1cbe0d4a519255
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    55262ff0-62cd-44da-a9f6-7914dfa9371e: 08853f4a-0966-4a69-87b6-1e68248c3114/06aa8bc8221d7e4cfbc9370f3f85a26a/Data/OFL.txt
+  Assets:
+    - !<BinAsset/55262ff0-62cd-44da-a9f6-7914dfa9371e>
+      PackagePath: ""
+  SourceHash: 06aa8bc8221d7e4cfbc9370f3f85a26a
+  FileHash: c6619e2ae157209a7c6294fde0986f67
+  NativePackageItems:
+    []

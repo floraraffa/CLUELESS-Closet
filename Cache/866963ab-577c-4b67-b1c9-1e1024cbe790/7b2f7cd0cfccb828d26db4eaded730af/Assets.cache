@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    c8d39f9c-5cd7-4649-91cf-3dd352737dd3: 866963ab-577c-4b67-b1c9-1e1024cbe790/7b2f7cd0cfccb828d26db4eaded730af/Data/Scanner 2.mp3
+  Assets:
+    - !<FileAudioTrack/c8d39f9c-5cd7-4649-91cf-3dd352737dd3>
+      PackagePath: ""
+  SourceHash: 7b2f7cd0cfccb828d26db4eaded730af
+  FileHash: a1d70d47ac3935811ebed1e24ef544b1
+  NativePackageItems:
+    []

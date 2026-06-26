@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    fd87c0b9-1935-482f-93bf-f20647d11071: 468c5eee-1aa9-2597-e99e-2e61c6c4b8ef/772ea25ee0ea59cd2407470ab1e0ae69/Data/Pendulm_ID.png
+  Assets:
+    - !<FileTexture/fd87c0b9-1935-482f-93bf-f20647d11071>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 772ea25ee0ea59cd2407470ab1e0ae69
+  FileHash: 12f2c5b60e4bf4f506d72e0f79314d01
+  NativePackageItems:
+    []

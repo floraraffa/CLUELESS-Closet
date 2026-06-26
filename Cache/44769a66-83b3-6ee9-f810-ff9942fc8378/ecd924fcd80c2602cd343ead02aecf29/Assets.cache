@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    29c2fc89-accb-4742-9b0e-ed52980bb827: 44769a66-83b3-6ee9-f810-ff9942fc8378/ecd924fcd80c2602cd343ead02aecf29/Data/README LeaderboardInfo.md
+  Assets:
+    - !<MarkdownAsset/29c2fc89-accb-4742-9b0e-ed52980bb827>
+      PackagePath: ""
+  SourceHash: ecd924fcd80c2602cd343ead02aecf29
+  FileHash: 448ad4dca7b6c553a72a87e01dc2981d
+  NativePackageItems:
+    []

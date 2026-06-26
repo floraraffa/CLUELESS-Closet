@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    9f49b6cd-9a92-436c-b31d-1065d9f545aa: e50148b4-d680-44a2-93f1-b8b33dc8ac95/6b5bcf947ae8b0c52387a12aa546f7c2/Data/CormorantGaramond-Italic.ttf
+  Assets:
+    - !<Font/9f49b6cd-9a92-436c-b31d-1065d9f545aa>
+      PackagePath: ""
+  SourceHash: 6b5bcf947ae8b0c52387a12aa546f7c2
+  FileHash: e3cdf2fb0997d24522c010610758809a
+  NativePackageItems:
+    []

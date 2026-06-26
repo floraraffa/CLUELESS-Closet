@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    0da9d5db-e897-443e-b90e-d03cb860629b: dc14a1a9-327b-4353-a30d-b5c5189a2dcd/f226b5fde6efc9e2c10bae489a69458c/Data/irinairinafomicheva-camera-13695.mp3
+  Assets:
+    - !<FileAudioTrack/0da9d5db-e897-443e-b90e-d03cb860629b>
+      PackagePath: ""
+  SourceHash: f226b5fde6efc9e2c10bae489a69458c
+  FileHash: 51f050c308559c3038b8c5b74ba0a9a8
+  NativePackageItems:
+    []

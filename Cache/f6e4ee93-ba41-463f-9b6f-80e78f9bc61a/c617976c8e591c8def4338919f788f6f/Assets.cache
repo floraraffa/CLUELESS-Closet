@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    57e2ed24-34dd-41fa-8a1f-ceda2f34debb: f6e4ee93-ba41-463f-9b6f-80e78f9bc61a/c617976c8e591c8def4338919f788f6f/Data/foto-opacity.png
+  Assets:
+    - !<FileTexture/57e2ed24-34dd-41fa-8a1f-ceda2f34debb>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 737
+        Height: 865
+  SourceHash: c617976c8e591c8def4338919f788f6f
+  FileHash: 94e24abe2592876e00a9b66455367068
+  NativePackageItems:
+    []

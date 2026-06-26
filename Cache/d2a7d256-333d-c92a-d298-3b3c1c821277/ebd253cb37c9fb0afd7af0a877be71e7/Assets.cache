@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    de6f3d9d-25e4-4e02-a8a4-fc0d8bd1b485: d2a7d256-333d-c92a-d298-3b3c1c821277/ebd253cb37c9fb0afd7af0a877be71e7/Data/Bounce_pad_shadow.jpg
+  Assets:
+    - !<FileTexture/de6f3d9d-25e4-4e02-a8a4-fc0d8bd1b485>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: ebd253cb37c9fb0afd7af0a877be71e7
+  FileHash: 7242f7cbb7dd58d4f75502a5f80d86ce
+  NativePackageItems:
+    []

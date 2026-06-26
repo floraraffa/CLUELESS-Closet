@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    367c1bdb-7f38-43a6-a797-bb508ee220f9: 373a0c3d-6667-d703-4811-287d07ce2da9/489d39181c3d7972de6075df20ff4f6c/Data/user_interactions.csv
+  Assets:
+    - !<BinAsset/367c1bdb-7f38-43a6-a797-bb508ee220f9>
+      PackagePath: ""
+  SourceHash: 489d39181c3d7972de6075df20ff4f6c
+  FileHash: 7299451045ac0f92727ac49a91e80cb5
+  NativePackageItems:
+    []

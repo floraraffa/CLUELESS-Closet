@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    66be92ed-b188-4ad8-aa5a-ae89ff66b11d: 8c8d4185-a679-7d82-c5c5-b9944ca2d6a7/9022d928a3407ee68be14ac212741ea8/Data/Portal_1_AO.jpg
+  Assets:
+    - !<FileTexture/66be92ed-b188-4ad8-aa5a-ae89ff66b11d>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 9022d928a3407ee68be14ac212741ea8
+  FileHash: 032fc2047a40c938d11ec954290d5d86
+  NativePackageItems:
+    []

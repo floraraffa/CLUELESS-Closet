@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    6fe90b7d-c5e1-4c39-9463-2678ba89fcf5: 55465421-75eb-4242-93f0-06d9ed80f469/53d0f6f05dc430b8f768157d259ae492/Data/Papernotes Bold.ttf
+  Assets:
+    - !<Font/6fe90b7d-c5e1-4c39-9463-2678ba89fcf5>
+      PackagePath: ""
+  SourceHash: 53d0f6f05dc430b8f768157d259ae492
+  FileHash: 8fe564c026a2ba1e5db254f242bf2246
+  NativePackageItems:
+    []

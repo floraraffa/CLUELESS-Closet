@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    259583d9-ceda-4353-b971-d35e1d3f3f52: cd01ac2e-bcef-4300-b548-ce0502de6f1b/3e24f393603338c7825643b9b6c6da1b/Data/Orbital gate 5 master perfect loop.mp3
+  Assets:
+    - !<FileAudioTrack/259583d9-ceda-4353-b971-d35e1d3f3f52>
+      PackagePath: ""
+  SourceHash: 3e24f393603338c7825643b9b6c6da1b
+  FileHash: 5184f68ac9f623f48c67087619161fe6
+  NativePackageItems:
+    []

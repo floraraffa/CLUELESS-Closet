@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    8fa38c18-7ff9-4959-8bd2-2c6415efbede: a6e59628-dece-40b6-a992-14e55bb90377/6bfbaf656c6419a373b31791a6635e04/Data/WHOOSH 10.wav
+  Assets:
+    - !<FileAudioTrack/8fa38c18-7ff9-4959-8bd2-2c6415efbede>
+      PackagePath: ""
+  SourceHash: 6bfbaf656c6419a373b31791a6635e04
+  FileHash: 1f8a435debc06d7375a87bc9620c148f
+  NativePackageItems:
+    []

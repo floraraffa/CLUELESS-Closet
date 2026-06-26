@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    1099a425-8413-4508-90df-ee060f0c01a7: 1ac8949f-fb13-497a-a9e5-18f01a57336c/1494193c6e79c69dc5618af059dc828f/Data/Flag_of_France 2.png
+  Assets:
+    - !<FileTexture/1099a425-8413-4508-90df-ee060f0c01a7>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 2000
+        Height: 1333
+  SourceHash: 1494193c6e79c69dc5618af059dc828f
+  FileHash: e53ce385f91240f18e9c196e7b9dd95e
+  NativePackageItems:
+    []

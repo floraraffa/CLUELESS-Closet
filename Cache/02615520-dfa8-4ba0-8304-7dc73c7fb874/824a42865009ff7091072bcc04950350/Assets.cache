@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7b54960e-f6da-40eb-a937-a19c0b54bf01: 02615520-dfa8-4ba0-8304-7dc73c7fb874/824a42865009ff7091072bcc04950350/Data/forward.png
+  Assets:
+    - !<FileTexture/7b54960e-f6da-40eb-a937-a19c0b54bf01>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 824a42865009ff7091072bcc04950350
+  FileHash: 0b561be4f5707b2df449f42e0de02cf4
+  NativePackageItems:
+    []

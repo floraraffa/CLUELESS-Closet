@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    e1898093-e32a-423c-adf0-045aa6e2023d: 9105f83e-a583-4ebf-b656-68c24423e834/bd88e502c89eb9a1aa060b2c69af5550/Data/Adriatic Cruising.mp3
+  Assets:
+    - !<FileAudioTrack/e1898093-e32a-423c-adf0-045aa6e2023d>
+      PackagePath: ""
+  SourceHash: bd88e502c89eb9a1aa060b2c69af5550
+  FileHash: 0053108e06a1628eb4bc2a6ed009e1b3
+  NativePackageItems:
+    []

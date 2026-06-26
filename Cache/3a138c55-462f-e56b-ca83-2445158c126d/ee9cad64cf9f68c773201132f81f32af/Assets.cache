@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    c579ca57-7236-4550-a8c3-356684a6769e: 3a138c55-462f-e56b-ca83-2445158c126d/ee9cad64cf9f68c773201132f81f32af/Data/complete-setup-guide.md
+  Assets:
+    - !<MarkdownAsset/c579ca57-7236-4550-a8c3-356684a6769e>
+      PackagePath: ""
+  SourceHash: ee9cad64cf9f68c773201132f81f32af
+  FileHash: 335e132d4efefb14bd7cfbdff1afe7c1
+  NativePackageItems:
+    []

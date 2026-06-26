@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    237f989c-72dc-4628-8d98-f13b67146400: eb000362-7ef1-49a4-89ea-3697759fc20b/66cc984f6b720f319da5e96e9288d5b0/Data/new-polaroid.png
+  Assets:
+    - !<FileTexture/237f989c-72dc-4628-8d98-f13b67146400>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1009
+        Height: 1249
+  SourceHash: 66cc984f6b720f319da5e96e9288d5b0
+  FileHash: f6e5eab7a03f5ee69085b8bf1c0480bf
+  NativePackageItems:
+    []

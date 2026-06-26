@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    28b56f7d-c097-4a17-a73b-389c8cba29bc: 826c4c1e-c4b8-b47b-42ca-dd81b109b314/15af2b7d04ecafc2839981dd1ebdaf6b/Data/railway-guide.md
+  Assets:
+    - !<MarkdownAsset/28b56f7d-c097-4a17-a73b-389c8cba29bc>
+      PackagePath: ""
+  SourceHash: 15af2b7d04ecafc2839981dd1ebdaf6b
+  FileHash: 0267031bba8b46b5644ee2a19860aace
+  NativePackageItems:
+    []

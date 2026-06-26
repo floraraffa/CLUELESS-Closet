@@ -1,0 +1,520 @@
+{ 
+	"ui": 
+	[
+		{
+        	"label": "Graph Parameters",
+        	"widget": "group_start"
+        },
+{
+                	"bindingName": "Tweak_N16",
+                	"label":       "Custom Float",
+                	"widget":      "slider",
+                	"min":         0,
+                	"max":         3,
+                	"step":        "0.01",
+                	"sortIndex":   "0",
+                	"hint":        "",
+                	"default":     "1.0"
+                },
+                
+                { 
+                	"bindingName": "Tweak_N25", 
+                	"label":       "Custom Map", 
+                	"widget":      "texture_group",
+                	"sortIndex":   "0",
+                	"hint":        ""
+                },
+                
+                {
+                	"label": "ID 01 COLOR RGB_8",
+                	"widget": "group_start"
+                },                    
+                    {
+                    	"bindingName": "colorId01",
+                    	"label":       "ID Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "0",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOnOffId01",
+                    	"label":       "PATTERN ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternColorId01",
+                    	"label":       "Pattern Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pngPatternId01",
+                    	"label":       "PNG Pattern",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    { 
+                    	"bindingName": "patternTextureId01", 
+                    	"label":       "Pattern Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternScaleId01",
+                    	"label":       "Pattern Scale",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOffsetId01",
+                    	"label":       "Pattern Offset",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternRotateId01",
+                    	"label":       "Pattern Rotate",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pbrOnOffId01",
+                    	"label":       "PBR ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "2",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "metallicId01",
+                    	"label":       "Metallic",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "2",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rougnessId01",
+                    	"label":       "Rougness",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "2",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimOnOffId01",
+                    	"label":       "Rim On/Off",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "4",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "rimExpId01",
+                    	"label":       "Rim Exp",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "4",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimIntId01",
+                    	"label":       "Rim Int",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "4",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+                
+                {
+                	"label": "ID 02 COLOR RGB_24",
+                	"widget": "group_start"
+                },                    
+                    {
+                    	"bindingName": "ColorOnOffid02",
+                    	"label":       "ID 02 COLOR ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "5",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "colorId02",
+                    	"label":       "ID Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "6",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOnOffId02",
+                    	"label":       "PATTERN ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "7",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternColorId02",
+                    	"label":       "Pattern Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "7",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pngPatternId02",
+                    	"label":       "PNG Pattern",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "7",
+                    	"hint":        ""
+                    },
+                    
+                    { 
+                    	"bindingName": "patternTextureId02", 
+                    	"label":       "Pattern Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "7",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternScaleId02",
+                    	"label":       "Pattern Scale",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "7",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOffsetId02",
+                    	"label":       "Pattern Offset",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "7",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternRotateId02",
+                    	"label":       "Pattern Rotate",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "7",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pbrOnOffId02",
+                    	"label":       "PBR ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "8",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "metallicId02",
+                    	"label":       "Metallic",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "8",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rougnessId02",
+                    	"label":       "Rougness",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "8",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimOnOffId02",
+                    	"label":       "Rim On/Off",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "10",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "rimExpId02",
+                    	"label":       "Rim Exp",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "10",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimIntId02",
+                    	"label":       "Rim Int",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "10",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+                
+                {
+                	"label": "ID 03 COLOR RGB_40",
+                	"widget": "group_start"
+                },                    
+                    {
+                    	"bindingName": "ColorOnOffid03",
+                    	"label":       "ID 03 COLOR ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "11",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "colorId03",
+                    	"label":       "ID Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "12",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOnOffId03",
+                    	"label":       "PATTERN ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "13",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternColorId03",
+                    	"label":       "Pattern Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "13",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pngPatternId03",
+                    	"label":       "PNG Pattern",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "13",
+                    	"hint":        ""
+                    },
+                    
+                    { 
+                    	"bindingName": "patternTextureId03", 
+                    	"label":       "Pattern Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "13",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternScaleId03",
+                    	"label":       "Pattern Scale",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "13",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOffsetId03",
+                    	"label":       "Pattern Offset",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "13",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternRotateId03",
+                    	"label":       "Pattern Rotate",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "13",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pbrOnOffId03",
+                    	"label":       "PBR ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "14",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "metallicId03",
+                    	"label":       "Metallic",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "14",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rougnessId03",
+                    	"label":       "Rougness",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "14",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimOnOffId03",
+                    	"label":       "Rim On/Off",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "16",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "rimExpId03",
+                    	"label":       "Rim Exp",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "16",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimIntId03",
+                    	"label":       "Rim Int",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "16",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+                
+                {
+                	"label": "BASE",
+                	"widget": "group_start"
+                },                    
+                    { 
+                    	"bindingName": "Tweak_N27", 
+                    	"label":       "Bake Ligth or AO Map", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "150",
+                    	"hint":        ""
+                    },
+                    
+                    { 
+                    	"bindingName": "greyMaskId", 
+                    	"label":       "Grey Mask ID", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "150",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N47",
+                    	"label":       "Color Int",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         2,
+                    	"step":        "0.01",
+                    	"sortIndex":   "150",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+
+        {
+        	"widget": "group_end"
+        },
+        
+		
+	{
+		"bindingName": "alphaTestThreshold",
+		"widget": "slider",
+		"min" : 0.0,
+		"max" : 1.0,
+		"step": 0.001,
+		"default": 0.5,
+		"hint": "When the 'Alpha Test' blend mode is enabled, pixels with alpha values lower than this disappear."
+	}
+	
+	],
+	
+	"shaderType": "Mesh3d",
+	
+	"extraDefines":
+	[
+		"SC_ENABLE_RT_CASTER",
+		"SC_ENABLE_RT_RECEIVER"
+	]
+}

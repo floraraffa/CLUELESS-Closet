@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    d793da20-157c-4c97-91a4-90481985dca9: 364601b9-b838-4656-8e90-68b8545a7f31/bc2fd66147cf4d1c35875cf1335e605b/Data/Handwriting-Regular.otf
+  Assets:
+    - !<Font/d793da20-157c-4c97-91a4-90481985dca9>
+      PackagePath: ""
+  SourceHash: bc2fd66147cf4d1c35875cf1335e605b
+  FileHash: 4bfdbb19dc8aeecb5a8f3f4d717875ca
+  NativePackageItems:
+    []

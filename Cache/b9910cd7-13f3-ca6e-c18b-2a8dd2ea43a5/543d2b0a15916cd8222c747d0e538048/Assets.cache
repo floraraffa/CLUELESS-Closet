@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    2e4fce5d-0e3b-4937-aa2c-0a2284d259af: b9910cd7-13f3-ca6e-c18b-2a8dd2ea43a5/543d2b0a15916cd8222c747d0e538048/Data/Pendulum_AO.jpg
+  Assets:
+    - !<FileTexture/2e4fce5d-0e3b-4937-aa2c-0a2284d259af>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 543d2b0a15916cd8222c747d0e538048
+  FileHash: d28363bcea7eb69feda29593063b64ab
+  NativePackageItems:
+    []

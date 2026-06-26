@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    97b5dfd9-f88f-4561-a518-f2bbb7e477b8: 15448093-404b-4cf7-9d6a-5df4b7b44bb5/ce86e0a7736b1f4ba270f204b433aa6d/Data/Checkout my font store!.url
+  Assets:
+    - !<BinAsset/97b5dfd9-f88f-4561-a518-f2bbb7e477b8>
+      PackagePath: ""
+  SourceHash: ce86e0a7736b1f4ba270f204b433aa6d
+  FileHash: 09d89b05945366bcc96506cdad6c26e1
+  NativePackageItems:
+    []

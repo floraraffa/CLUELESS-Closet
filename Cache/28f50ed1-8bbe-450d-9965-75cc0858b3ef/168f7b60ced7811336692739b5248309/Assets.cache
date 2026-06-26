@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    8b528254-f734-4c12-9d69-4d63421cea62: 28f50ed1-8bbe-450d-9965-75cc0858b3ef/168f7b60ced7811336692739b5248309/Data/Papernotes.ttf
+  Assets:
+    - !<Font/8b528254-f734-4c12-9d69-4d63421cea62>
+      PackagePath: ""
+  SourceHash: 168f7b60ced7811336692739b5248309
+  FileHash: 02ecfff5ec093eb87897abde1c0faeee
+  NativePackageItems:
+    []

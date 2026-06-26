@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    8df49314-c6a9-4474-b456-33df42b85083: ed92b03e-6b4f-91ff-6ab8-ffe96cd4a3d4/58fd731fa241e461a9451d1e2d0f23a5/Data/railway.json
+  Assets:
+    - !<JsonAsset/8df49314-c6a9-4474-b456-33df42b85083>
+      PackagePath: ""
+  SourceHash: 58fd731fa241e461a9451d1e2d0f23a5
+  FileHash: 9d71afd7b4d959e59cddaaed35570570
+  NativePackageItems:
+    []

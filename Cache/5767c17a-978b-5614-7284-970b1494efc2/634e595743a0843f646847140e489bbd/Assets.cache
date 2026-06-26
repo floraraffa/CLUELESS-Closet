@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    bbd0f16a-0015-4d36-9c49-875323656d55: 5767c17a-978b-5614-7284-970b1494efc2/634e595743a0843f646847140e489bbd/Data/simple_03.jpg
+  Assets:
+    - !<FileTexture/bbd0f16a-0015-4d36-9c49-875323656d55>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 128
+        Height: 128
+  SourceHash: 634e595743a0843f646847140e489bbd
+  FileHash: e4ef2e8c16af67a4259e0a627b19ebd7
+  NativePackageItems:
+    []

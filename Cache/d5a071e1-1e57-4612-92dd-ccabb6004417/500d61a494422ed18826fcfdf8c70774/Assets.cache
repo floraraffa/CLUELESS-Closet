@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    dbcc54da-ba17-4a96-801a-7b7c22c82ba6: d5a071e1-1e57-4612-92dd-ccabb6004417/500d61a494422ed18826fcfdf8c70774/Data/Button-camera.png
+  Assets:
+    - !<FileTexture/dbcc54da-ba17-4a96-801a-7b7c22c82ba6>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 500d61a494422ed18826fcfdf8c70774
+  FileHash: bb1817f637fc0cb1bbb81933e47c2ac4
+  NativePackageItems:
+    []

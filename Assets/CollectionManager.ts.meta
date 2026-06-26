@@ -1,0 +1,125 @@
+- !<AssetImportMetadata/ecb81db4-8d12-4e6d-b99c-57ced667ed4d>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 1b195c18-eefc-4995-b33e-70a7c610f3bd
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 1b195c18-eefc-4995-b33e-70a7c610f3bd
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 1922c149-46d7-46e4-8bee-71fe5becbd88
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/1922c149-46d7-46e4-8bee-71fe5becbd88>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 35e1cfff-00d7-46c5-a43d-e408075759bd
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    brandLogoLoader: false
+    cardCollectionContainer: false
+    cardInteraction: false
+    closetViewDistance: false
+    closetViewHeightOffset: false
+    confirmDeleteCancelButton: false
+    confirmDeleteContainer: false
+    confirmDeleteYesButton: false
+    confirmResetCancelButton: false
+    confirmResetProfileContainer: false
+    confirmResetYesButton: false
+    deleteCardButton: false
+    garmentCutoutMaxAttempts: false
+    garmentCutoutTimeoutSeconds: false
+    garmentPlaceholderColumns: false
+    garmentPlaceholderContainer: false
+    garmentPlaceholderSpacing: false
+    generateGarmentCutoutOnSave: false
+    leftPalmAnchor: false
+    maxCollectionSize: false
+    maxGarmentPlaceholders: false
+    openCollectionButton: false
+    openCollectionButtonText: false
+    outfitSlotDropRadiusCm: false
+    resetCollectionButton: false
+    saveButton: false
+    useWorldClosetView: false
+    verticalCardPrefab: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - saveButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      verticalCardPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      openCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      openCollectionButtonText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      leftPalmAnchor: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      cardCollectionContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      useWorldClosetView: false
+      closetViewDistance: !<float> 75.000000
+      closetViewHeightOffset: !<float> -8.000000
+      garmentPlaceholderContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      generateGarmentCutoutOnSave: true
+      garmentCutoutTimeoutSeconds: !<float> 60.000000
+      garmentCutoutMaxAttempts: !<float> 1.000000
+      maxGarmentPlaceholders: !<float> 12.000000
+      garmentPlaceholderColumns: !<float> 3.000000
+      garmentPlaceholderSpacing: !<float> 6.000000
+      outfitSlotDropRadiusCm: !<float> 24.000000
+      resetCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmResetProfileContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmResetYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmResetCancelButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      deleteCardButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmDeleteContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmDeleteYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      confirmDeleteCancelButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      brandLogoLoader: !<MappingBased.AssignableType> 00000000-0000-0000-0000-000000000000
+      cardInteraction: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      maxCollectionSize: !<float> 25.000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input SceneObject saveButton {"hint":"\"Save\" button SceneObject on the Vehicle Card"}'
+    - '// @input Asset.ObjectPrefab verticalCardPrefab {"hint":"ObjectPrefab for the Vertical Collector Card template"}'
+    - '// @input SceneObject openCollectionButton {"hint":"\"Open Collection\" PinchButton SceneObject on the wrist"}'
+    - '// @input Component.Text openCollectionButtonText {"hint":"Text component on the Open Collection button (toggles \"Open\" / \"Close\")"}'
+    - '// @input SceneObject leftPalmAnchor {"hint":"Left palm anchor SceneObject (tracks the left palm center)"}'
+    - '// @input SceneObject cardCollectionContainer {"hint":"Card Collection Container — SceneObject under Left Hand Wrist"}'
+    - '// @input bool useWorldClosetView {"hint":"Show saved closet cards in front of the user instead of attached to the left wrist"}'
+    - '// @input float closetViewDistance = 75 {"hint":"Distance in cm for the virtual closet view"}'
+    - '// @input float closetViewHeightOffset = -8 {"hint":"Vertical offset in cm for the virtual closet view"}'
+    - '// @input SceneObject garmentPlaceholderContainer {"hint":"Optional parent with Image/RenderMeshVisual children named Garment 1, Garment 2, etc."}'
+    - '// @input bool generateGarmentCutoutOnSave = true {"hint":"Run GPT Image Edit on Save to remove the background and fill garment placeholders"}'
+    - '// @input float garmentCutoutTimeoutSeconds = 60 {"hint":"Maximum seconds to wait for the AI closet image before keeping the scan photo"}'
+    - '// @input float garmentCutoutMaxAttempts = 1 {"hint":"Maximum AI attempts for the closet cutout. Keep this at 1 for faster saves."}'
+    - '// @input float maxGarmentPlaceholders = 2 {"hint":"Number of visible garment placeholder slots for the look builder"}'
+    - '// @input float garmentPlaceholderColumns = 3 {"hint":"How many garment cards to place per row inside the closet list"}'
+    - '// @input float garmentPlaceholderSpacing = 6 {"hint":"Spacing in cm between runtime garment placeholders"}'
+    - '// @input float outfitSlotDropRadiusCm = 24 {"hint":"Drop radius in cm for dragging a bracelet card onto an outfit slot"}'
+    - '// @input SceneObject resetCollectionButton {"hint":"\"Reset Profile\" button inside User Card Info"}'
+    - '// @input SceneObject confirmResetProfileContainer {"hint":"\"Confirm Reset Profile\" container with Yes/Cancel buttons"}'
+    - '// @input SceneObject confirmResetYesButton {"hint":"\"Yes\" button inside Confirm Reset Profile Container"}'
+    - '// @input SceneObject confirmResetCancelButton {"hint":"\"Cancel\" button inside Confirm Reset Profile Container"}'
+    - '// @input SceneObject deleteCardButton {"hint":"\"Delete Card\" button on left hand"}'
+    - '// @input SceneObject confirmDeleteContainer {"hint":"\"Confirm Delete Card\" container with Yes/Cancel buttons"}'
+    - '// @input SceneObject confirmDeleteYesButton {"hint":"\"Yes\" button inside Confirm Delete Container"}'
+    - '// @input SceneObject confirmDeleteCancelButton {"hint":"\"Cancel\" button inside Confirm Delete Container"}'
+    - '// @input AssignableType brandLogoLoader {"hint":"BrandLogoLoader script reference (for loading logos onto collector cards)"}'
+    - '// @input AssignableType_1 cardInteraction {"hint":"CardInteraction script reference (handles grab/release, auto-rotation, lerp)"}'
+    - '// @input float maxCollectionSize = 100 {"hint":"Maximum number of cards in collection. Default: 100. Increase for premium users."}'

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    6a443cfa-8142-41b1-8b5f-06ef1a89e841: dc29a281-b3f8-4a90-88fa-7007708230e6/ea7f11d42530a03247431ad85640e661/Data/2-SCAN.png
+  Assets:
+    - !<FileTexture/6a443cfa-8142-41b1-8b5f-06ef1a89e841>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1224
+        Height: 1920
+  SourceHash: ea7f11d42530a03247431ad85640e661
+  FileHash: d79aa96f04f521e91d83a8221bdcfbe7
+  NativePackageItems:
+    []

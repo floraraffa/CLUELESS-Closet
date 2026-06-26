@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    faa5239a-2916-4475-b840-13e3049908e5: 4a42b5a9-7526-9e37-818a-fc981e713a44/1eba1c8a7063c4832e1de9ac0d6da48e/Data/Logo.png
+  Assets:
+    - !<FileTexture/faa5239a-2916-4475-b840-13e3049908e5>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 2048
+        Height: 493
+  SourceHash: 1eba1c8a7063c4832e1de9ac0d6da48e
+  FileHash: 1bf7c0632425d59c9d7ef1555151dc04
+  NativePackageItems:
+    []

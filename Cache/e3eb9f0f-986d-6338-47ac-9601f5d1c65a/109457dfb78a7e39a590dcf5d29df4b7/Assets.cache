@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    fc017b46-ce16-47b7-a89a-aff4bb69482e: e3eb9f0f-986d-6338-47ac-9601f5d1c65a/109457dfb78a7e39a590dcf5d29df4b7/Data/Finish_gate_ID.png
+  Assets:
+    - !<FileTexture/fc017b46-ce16-47b7-a89a-aff4bb69482e>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 109457dfb78a7e39a590dcf5d29df4b7
+  FileHash: c07de33cd8ecbfcdf0643213515811d3
+  NativePackageItems:
+    []

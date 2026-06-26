@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    42629fe4-4ec2-4a38-a8ab-8950883ed0fc: 40e9193f-0436-4495-9378-d1ca98c533f1/c8e29b57845d7c752c92aec4d140058a/Data/top.png
+  Assets:
+    - !<FileTexture/42629fe4-4ec2-4a38-a8ab-8950883ed0fc>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1491
+  SourceHash: c8e29b57845d7c752c92aec4d140058a
+  FileHash: d1dfbd649a367ded4ca7fc61f379426f
+  NativePackageItems:
+    []

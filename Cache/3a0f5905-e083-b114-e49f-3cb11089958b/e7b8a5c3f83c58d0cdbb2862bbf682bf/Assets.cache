@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    3f43f610-97fd-485f-adb7-0a76cf4ee567: 3a0f5905-e083-b114-e49f-3cb11089958b/e7b8a5c3f83c58d0cdbb2862bbf682bf/Data/Rotation_blades_ID.png
+  Assets:
+    - !<FileTexture/3f43f610-97fd-485f-adb7-0a76cf4ee567>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: e7b8a5c3f83c58d0cdbb2862bbf682bf
+  FileHash: 0b0d1bb143edc1d8da0bd332400ff303
+  NativePackageItems:
+    []

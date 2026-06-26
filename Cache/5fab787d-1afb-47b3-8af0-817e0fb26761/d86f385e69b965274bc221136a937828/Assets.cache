@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7b82ee76-e3e7-4f69-a77a-b9ed13e2b52c: 5fab787d-1afb-47b3-8af0-817e0fb26761/d86f385e69b965274bc221136a937828/Data/closet open.JPG
+  Assets:
+    - !<FileTexture/7b82ee76-e3e7-4f69-a77a-b9ed13e2b52c>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1120
+        Height: 1404
+  SourceHash: d86f385e69b965274bc221136a937828
+  FileHash: 4e8b1924ea4e1b39fc5ff47199d66baa
+  NativePackageItems:
+    []

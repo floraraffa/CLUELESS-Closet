@@ -1,0 +1,883 @@
+- !<AssetCache>
+  AssetFiles:
+    {}
+  Assets:
+    []
+  SourceHash: d264c75bea422d35292dd1e170395f38
+  FileHash: 0eda79e124c51a014ad9bea472df8120
+  NativePackageItems:
+    - !<own> 44769a66-83b3-6ee9-f810-ff9942fc8378
+    - !<own> cf8eeeea-c551-8380-4a71-e06ba0c582e2
+    - !<own> 065a6666-d954-fa09-4628-fbfb1f6f1cc5
+    - !<own> 18cf3ddf-2880-ea28-a6ff-13d1084f920e
+    - !<own> 433b1dae-2e96-a39c-7fb5-8ad3e906e73e
+    - !<own> c8f82c69-fef9-d1c9-6acc-60684c3e798a
+    - !<own> 847db963-4598-fbf9-318d-8609e4f98dfe
+    - !<own> 65af0d66-d29d-35d4-d20b-4e57347b5f83
+    - !<own> 1312654b-fbcf-3932-5a85-ec90b287d8fb
+    - !<own> 4fb2d98a-3796-14a1-aa20-b82af3152014
+    - !<own> df94393d-899b-87d0-1262-2d2f41297a9b
+    - !<own> 768d64c9-a602-d6f8-7b51-26b6e89d0ce1
+    - !<own> 56234800-b249-e71a-cf6a-3c65a0c295ef
+    - !<own> 102b4092-1aec-56fc-d8c6-6303390febe7
+    - !<own> 92e0c7a3-8028-2fb0-9583-c6a6f02cff4e
+    - !<own> 761f8c7c-2dcb-b218-41d4-6d5bf4f9c771
+    - !<own> 0a67370f-89f0-82c4-973e-bef59d80c3bc
+    - !<own> 343884b7-1761-c282-5776-1cc110496234
+    - !<own> 3105d4ee-a429-82ca-89ff-22078535381c
+- !<AssetImportMetadata/065a6666-d954-fa09-4628-fbfb1f6f1cc5>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> a559e068-c7de-4086-949a-e9c878a7e5ce
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> a559e068-c7de-4086-949a-e9c878a7e5ce
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> f1565920-f730-4479-af7d-9559f3044755
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/0a67370f-89f0-82c4-973e-bef59d80c3bc>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 979fccd2-2d7a-419f-befb-9d435bc86f17
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 979fccd2-2d7a-419f-befb-9d435bc86f17
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 1e557100-96eb-468a-91bd-db0d1be1bda5
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/102b4092-1aec-56fc-d8c6-6303390febe7>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> ba000574-dc88-4085-81f9-b7b2c3c780b3
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> ba000574-dc88-4085-81f9-b7b2c3c780b3
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 6c881c12-96df-44a7-aa77-87ad7293a9e6
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/1312654b-fbcf-3932-5a85-ec90b287d8fb>
+  ImportedAssetIds:
+    RemoteMediaModule: !<reference> 2f268c65-d2ff-44aa-be05-b291a8a4269d
+  ImporterName: RemoteMediaModuleImporter
+  PrimaryAsset: !<reference> 2f268c65-d2ff-44aa-be05-b291a8a4269d
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/18cf3ddf-2880-ea28-a6ff-13d1084f920e>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 90e80a32-1542-4146-b86a-db2243bf97f7
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 90e80a32-1542-4146-b86a-db2243bf97f7
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> b62cf13f-ae5a-458f-8007-f856d420adae
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/1e557100-96eb-468a-91bd-db0d1be1bda5>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: d8ba0595-98f8-447c-83ab-8204fdac9102
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<TypeScriptAssetData/1fa60853-b8ff-4105-979b-79a0ff5401bc>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 59768de6-8624-4e42-a306-47f116e6014d
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<TypeScriptAssetData/30fd2a77-7c7b-48f8-ab29-37b774d51dbd>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 0eda476d-dae4-4ead-801e-9a9cca020b9b
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<AssetImportMetadata/3105d4ee-a429-82ca-89ff-22078535381c>
+  ImportedAssetIds:
+    MarkdownAsset: !<reference> d1cd2782-efdd-4678-ab38-85ecbce2ac27
+  ImporterName: MarkdownAssetImporter
+  PrimaryAsset: !<reference> d1cd2782-efdd-4678-ab38-85ecbce2ac27
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/343884b7-1761-c282-5776-1cc110496234>
+  ImportedAssetIds:
+    NativePackageDescriptor: !<reference> e505ab31-35ef-47c9-a039-8ade469b745d
+  ImporterName: NativePackageDescriptorImporter
+  PrimaryAsset: !<reference> e505ab31-35ef-47c9-a039-8ade469b745d
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/433b1dae-2e96-a39c-7fb5-8ad3e906e73e>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> fa701fa2-b183-4cf2-8450-70f88025ad05
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> fa701fa2-b183-4cf2-8450-70f88025ad05
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> ac7d8815-561e-403a-99f3-94a617423375
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/44769a66-83b3-6ee9-f810-ff9942fc8378>
+  ImportedAssetIds:
+    MarkdownAsset: !<reference> 29c2fc89-accb-4742-9b0e-ed52980bb827
+  ImporterName: MarkdownAssetImporter
+  PrimaryAsset: !<reference> 29c2fc89-accb-4742-9b0e-ed52980bb827
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/4fb2d98a-3796-14a1-aa20-b82af3152014>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 06627ffc-d79c-47e6-9fa5-7b6fe6c0d75e
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 06627ffc-d79c-47e6-9fa5-7b6fe6c0d75e
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> eaec3c11-e09e-43de-b3b4-ef2926df7c44
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/56234800-b249-e71a-cf6a-3c65a0c295ef>
+  ImportedAssetIds:
+    LeaderboardModule: !<reference> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+  ImporterName: LeaderboardModuleImporter
+  PrimaryAsset: !<reference> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/61f10f3e-252d-47c5-8766-ed986c9219bc>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: b27d5ba7-3c4d-4cda-98c1-e071b4f803c8
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<TypeScriptAssetData/64282ac3-c055-4835-aa98-d44757581aa0>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 161ef0ba-06b2-4d1c-be02-b696844b30ad
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<AssetImportMetadata/65af0d66-d29d-35d4-d20b-4e57347b5f83>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 0d21ebaf-154c-40eb-9f1c-7d59b06a50bf
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 0d21ebaf-154c-40eb-9f1c-7d59b06a50bf
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 1fa60853-b8ff-4105-979b-79a0ff5401bc
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/6c881c12-96df-44a7-aa77-87ad7293a9e6>
+  SvgIcon: |
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 19C24.6645 19 24.3349 19.0251 24.0137 19.0732L22.751 21.207H20.123C19.6268 21.7861 19.2427 22.4552 19 23.1846L20.0527 25.0449L19.0098 26.8438C19.2626 27.5905 19.6646 28.2725 20.1826 28.8594L22.751 28.793L23.9258 30.9102C24.2749 30.9674 24.6337 31 25 31C25.3349 31 25.6636 30.9738 25.9844 30.9258L27.2471 28.793H29.877C30.3663 28.2219 30.7471 27.5634 30.9902 26.8457L29.9443 25.0449L30.999 23.1816C30.7468 22.4249 30.3422 21.7331 29.8184 21.1396L27.2471 21.207L26.0732 19.0879C25.7244 19.0308 25.3659 19 25 19ZM24.998 22.4287C26.4879 22.4287 27.6953 23.5799 27.6953 25C27.6951 26.42 26.4878 27.5713 24.998 27.5713C23.5083 27.5713 22.301 26.42 22.3008 25C22.3008 23.5798 23.5082 22.4287 24.998 22.4287Z" fill="#DEE6ED"/>
+    <path d="M16 7.01123C16.5664 7.01123 17.0889 7.00738 17.5703 7.00439C22.231 6.97553 23.0664 6.9709 23.1807 10.1538L26.9473 10.6196C27.5484 10.694 28 11.2053 28 11.811C28 13.4489 27.4639 15.3824 26.1797 16.9282C26.1408 16.975 26.0987 17.019 26.0586 17.0649C25.7132 17.0221 25.3598 16.9995 25 16.9995C24.6737 16.9995 24.3509 17.0176 24.0332 17.0532L23.7168 17.0952L22.7764 17.2358L21.6104 19.2065H19.2031L18.6045 19.9048C17.9447 20.6746 17.4294 21.5702 17.1025 22.5522L16.8213 23.396L17.748 25.0317L16.8242 26.6255L17.0869 27.3999H11.665C10.8461 27.3999 10.2677 26.5977 10.5264 25.8208L10.9268 24.6206C11.09 24.1307 11.5481 23.8005 12.0645 23.8003H13.6611C14.2898 23.8003 14.7995 23.2903 14.7998 22.6616C14.7998 22.1635 14.4704 21.7329 14.0283 21.5034C13.2174 21.0826 12.4659 20.4214 11.7988 19.606C9.0839 19.5576 7.10627 18.4759 5.82031 16.9282C4.53612 15.3824 4.00002 13.4489 4 11.811C4 11.2053 4.45159 10.694 5.05273 10.6196L8.80664 10.1548C8.82332 8.87377 8.90457 8.10853 9.32422 7.65381C10.0555 6.86184 11.8068 7.01123 16 7.01123ZM6.5 12.8589C6.66617 13.738 7.04376 14.645 7.66602 15.394C8.23946 16.0843 9.04841 16.674 10.1738 16.9819C9.51606 15.5786 9.06398 14.035 8.88574 12.564L6.5 12.8589ZM23.1133 12.564C22.935 14.0351 22.483 15.5785 21.8252 16.9819C22.9511 16.674 23.7604 16.0845 24.334 15.394C24.9562 14.645 25.3338 13.738 25.5 12.8589L23.1133 12.564Z" fill="#47B8A9"/>
+    </svg>
+
+  SetupScript:
+    code: |
+      return async function instantiate(asset, scene, target, instantiator) {
+          try {
+              console.log(`Instantiating ${asset.name}`);
+              const leaderboardComponent = instantiator.defaultInstantiate(asset, scene, target);
+              // set today's date in mm/dd/yyyy format
+              const date = new Date();
+              const day = String(date.getDate()).padStart(2, '0');
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const year = date.getFullYear();
+              leaderboardComponent.leaderboardStartDate = month + '/' + day + '/' + year;
+          } catch (e) {
+              console.error(e, "\n" + e.stack);
+          }
+      };
+
+  Description: |-
+    LeaderboardCore is a lightweight, logic-only component that powers real-time score tracking via Snapchat’s leaderboard system.
+    
+    This component exposes all core leaderboard APIs — including initialization, score submission, and user rank queries — while letting developers handle their own custom visuals and game logic.
+  VersionMajor: 1
+  VersionMinor: 2
+  VersionPatch: 0
+  ComponentUid: 1c439034-a71a-45f4-9dd4-77fd351d26fa
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    autoInitialize: false
+    bitmojiModule: true
+    customStickerId: false
+    debugMode: false
+    entriesCount: false
+    leaderboardModule: true
+    leaderboardName: false
+    leaderboardStartDate: false
+    printDebugStatements: false
+    printWarningStatements: false
+    remoteMediaModule: true
+    scoreLifetimeOption: false
+    scoreOrdering: false
+    scoreToSubmit: false
+    userLimit: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> d1cd2782-efdd-4678-ab38-85ecbce2ac27
+  DeclarationFile: !<reference> 22fc13a7-ba20-4f1b-b9ba-e55e64ccf8a7
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - autoInitialize: true
+      leaderboardName: name
+      userLimit: 10
+      scoreLifetimeOption: 3
+      leaderboardStartDate: 12/31/2024
+      scoreOrdering: 1
+      customStickerId: ""
+      bitmojiModule: !<reference.BitmojiModule> bc24cc0c-473c-4cf3-b875-6a9b6963eee3
+      remoteMediaModule: !<reference.RemoteMediaModule> 2f268c65-d2ff-44aa-be05-b291a8a4269d
+      leaderboardModule: !<reference.LeaderboardModule> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+      debugMode: 0
+      entriesCount: 10
+      scoreToSubmit: 100
+      printDebugStatements: true
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input boolean autoInitialize = "true"'
+    - '// @ui {"widget":"label", "label":"You can find an example of initialization here: <a href=\"https://developers.snap.com/lens-studio/features/games/leaderboard#initializeWithOptions\">developers.snap.com/&hellip;/leaderboard</a>", "showIf":"autoInitialize", "showIfValue":false}'
+    - '// @input string leaderboardName {"hint":"Changing leaderboard name will reset scores", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int userLimit = "10" {"hint":"Maximum user limit is 50", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int scoreLifetimeOption = "3" {"label":"Score Reset Interval", "widget":"combobox", "values":[{"label":"Day", "value":0}, {"label":"Week", "value":1}, {"label":"Month", "value":2}, {"label":"Year", "value":3}], "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input string leaderboardStartDate = "12/31/2024" {"label":"Score Reset Anchor", "hint":"In format mm/dd/yyyy, this is the start date for the recurring score reset interval.<br>For example, if you select \"Week\" as the Score Reset Interval and set this date to 12/31/2024, the leaderboard will reset every week on Tuesday.", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int scoreOrdering = "1" {"widget":"combobox", "values":[{"label":"Descending", "value":1}, {"label":"Ascending", "value":2}], "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input string customStickerId {"hint":"Please enter bitmoji sticker id or leave empty to use selfie sticker"}'
+    - '// @ui {"widget":"separator"}'
+    - // @input Asset.BitmojiModule bitmojiModule
+    - // @input Asset.RemoteMediaModule remoteMediaModule
+    - // @input Asset.LeaderboardModule leaderboardModule
+    - '// @input int debugMode = "0" {"widget":"combobox", "values":[{"label":"None", "value":0}, {"label":"Submit score", "value":1}, {"label":"Custom entries count", "value":2}]}'
+    - '// @input int entriesCount = "10"'
+    - '// @input int scoreToSubmit = "100" {"showIf":"debugMode", "showIfValue":1}'
+    - '// @input bool printDebugStatements = "true" {"label":"Print Info"}'
+    - '// @input bool printWarningStatements = "true" {"label":"Print Warnings"}'
+- !<TypeScriptAssetData/721134e3-4355-4cb3-8a4f-71efa4b21854>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 979da2f6-112b-4104-b642-2e1bfbbe28e8
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<AssetImportMetadata/761f8c7c-2dcb-b218-41d4-6d5bf4f9c771>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 12429766-16cd-4877-af1a-bde599f9e4e9
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 12429766-16cd-4877-af1a-bde599f9e4e9
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 721134e3-4355-4cb3-8a4f-71efa4b21854
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/7643647d-443e-4a56-926c-3b07e4171722>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 4cec7e92-6f14-4ace-b166-9c8122457640
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<AssetImportMetadata/768d64c9-a602-d6f8-7b51-26b6e89d0ce1>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> ba52db7e-cb4e-4053-ac58-8505635c7dfa
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> ba52db7e-cb4e-4053-ac58-8505635c7dfa
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 61f10f3e-252d-47c5-8766-ed986c9219bc
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/847db963-4598-fbf9-318d-8609e4f98dfe>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 22fc13a7-ba20-4f1b-b9ba-e55e64ccf8a7
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 22fc13a7-ba20-4f1b-b9ba-e55e64ccf8a7
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 7643647d-443e-4a56-926c-3b07e4171722
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/92e0c7a3-8028-2fb0-9583-c6a6f02cff4e>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 1e03b5b4-cf6a-43c2-8bb1-425cc0366ae8
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 1e03b5b4-cf6a-43c2-8bb1-425cc0366ae8
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 30fd2a77-7c7b-48f8-ab29-37b774d51dbd
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/ac7d8815-561e-403a-99f3-94a617423375>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 5a8a2e12-dc66-43e1-8f13-9c5c7725d552
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<TypeScriptAssetData/b62cf13f-ae5a-458f-8007-f856d420adae>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: f545777c-8745-40bf-b290-1f04cd76dd75
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<AssetImportMetadata/c8f82c69-fef9-d1c9-6acc-60684c3e798a>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 9f9e70ea-4060-441c-9291-d6f9c96da8bb
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 9f9e70ea-4060-441c-9291-d6f9c96da8bb
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 64282ac3-c055-4835-aa98-d44757581aa0
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<AssetImportMetadata/cf8eeeea-c551-8380-4a71-e06ba0c582e2>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 94192507-4215-4fb7-82da-cb82fe682ee3
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 94192507-4215-4fb7-82da-cb82fe682ee3
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> dcbbcc12-a3d1-489b-915c-483c97e60f92
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/dcbbcc12-a3d1-489b-915c-483c97e60f92>
+  SvgIcon: |
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M30 25C30 22.2386 27.7614 20 25 20C22.2386 20 20 22.2386 20 25C20 27.7614 22.2386 30 25 30V32C21.134 32 18 28.866 18 25C18 21.134 21.134 18 25 18C28.866 18 32 21.134 32 25C32 28.866 28.866 32 25 32V30C27.7614 30 30 27.7614 30 25Z" fill="#DEE6ED"/>
+    <path d="M16 7.01025C16.5661 7.01025 17.0881 7.00738 17.5693 7.00439C22.2303 6.97553 23.0672 6.97094 23.1816 10.1538L26.9473 10.6206C27.5483 10.695 27.9998 11.2055 28 11.811C28 13.1899 27.6179 14.7773 26.7314 16.1675C26.1711 16.0583 25.5923 16.0005 25 16.0005C24.5219 16.0005 24.0526 16.0381 23.5947 16.1099C23.876 15.891 24.1215 15.6498 24.334 15.394C24.9561 14.6451 25.3339 13.7379 25.5 12.8589L23.1133 12.564C22.9551 13.8687 22.5805 15.2301 22.0391 16.5005C18.5234 17.7251 16 21.0675 16 25.0005C16 25.8317 16.1152 26.6358 16.3262 27.3999H11.665C10.846 27.3999 10.2674 26.5969 10.5264 25.8198L10.9268 24.6196C11.0903 24.1302 11.5484 23.7994 12.0645 23.7993H13.6611C14.29 23.7993 14.7998 23.2895 14.7998 22.6606C14.7995 22.163 14.4701 21.7328 14.0283 21.5034C13.2175 21.0826 12.4659 20.4213 11.7988 19.606C9.08385 19.5576 7.10626 18.4759 5.82031 16.9282C4.53623 15.3824 4 13.4489 4 11.811C4.00023 11.2055 4.45174 10.695 5.05273 10.6206L8.80566 10.1558C8.82239 8.87422 8.90447 8.10863 9.32422 7.65381C10.0556 6.86205 11.8071 7.01026 16 7.01025ZM16 9.01025C13.8138 9.01025 12.456 8.97452 11.4805 9.03174C11.1922 9.04865 10.9927 9.07352 10.8594 9.09521C10.8574 9.1108 10.8545 9.12773 10.8525 9.14502C10.8029 9.58166 10.7998 10.1953 10.7998 11.2104C10.7998 12.7837 11.2629 14.666 12.0781 16.3296C12.9095 18.0258 13.9684 19.2188 14.9492 19.728C15.3203 19.9206 15.6896 20.2012 16 20.5581C16.3104 20.2013 16.6798 19.9206 17.0508 19.728L17.2354 19.6245C18.1628 19.0677 19.1426 17.9197 19.9219 16.3296C20.737 14.6661 21.2002 12.7837 21.2002 11.2104C21.2002 10.1379 21.1624 9.54015 21.085 9.17725C21.0815 9.16097 21.0765 9.14596 21.0732 9.13232C20.9641 9.10644 20.7709 9.07085 20.4531 9.04541C19.7911 8.99243 18.8996 8.99623 17.582 9.00439C17.1012 9.00737 16.5733 9.01025 16 9.01025ZM6.5 12.8589C6.66615 13.7379 7.04392 14.6451 7.66602 15.394C8.23944 16.0843 9.04847 16.6739 10.1738 16.9819C9.51608 15.5787 9.06403 14.0349 8.88574 12.564L6.5 12.8589Z" fill="#47B8A9"/>
+    <path d="M24.0335 25.1209C24.0335 24.5871 24.4662 24.1543 25 24.1543V24.1543C25.5338 24.1543 25.9665 24.5871 25.9665 25.1209V27.5335C25.9665 28.0673 25.5338 28.5 25 28.5V28.5C24.4662 28.5 24.0335 28.0673 24.0335 27.5335V25.1209ZM24 22.4749C24 22.3427 24.0251 22.2188 24.0753 22.1031C24.1311 21.9819 24.2036 21.8773 24.2929 21.7892C24.3877 21.701 24.4965 21.6322 24.6192 21.5826C24.742 21.5275 24.8731 21.5 25.0126 21.5C25.1464 21.5 25.272 21.5275 25.3891 21.5826C25.5063 21.6322 25.6095 21.701 25.6987 21.7892C25.7936 21.8773 25.8661 21.9819 25.9163 22.1031C25.9721 22.2188 26 22.3427 26 22.4749C26 22.6126 25.9721 22.742 25.9163 22.8632C25.8661 22.9788 25.7936 23.0807 25.6987 23.1689C25.6095 23.2515 25.5063 23.3176 25.3891 23.3671C25.272 23.4167 25.1464 23.4415 25.0126 23.4415C24.8731 23.4415 24.742 23.4167 24.6192 23.3671C24.4965 23.3176 24.3877 23.2515 24.2929 23.1689C24.2036 23.0807 24.1311 22.9788 24.0753 22.8632C24.0251 22.742 24 22.6126 24 22.4749Z" fill="#DEE6ED"/>
+    </svg>
+
+  SetupScript:
+    code: |
+      return async function instantiate(asset, scene, target, instantiator) {
+          try {
+              console.log(`Instantiating ${asset.name}`);
+              const leaderboardComponent = instantiator.defaultInstantiate(asset, scene, target);
+              // set today's date in mm/dd/yyyy format
+              const date = new Date();
+              const day = String(date.getDate()).padStart(2, '0');
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const year = date.getFullYear();
+              leaderboardComponent.leaderboardStartDate = month + '/' + day + '/' + year;
+          } catch (e) {
+              console.error(e, "\n" + e.stack);
+          }
+      };
+
+  Description: |-
+    LeaderboardInfo is a headless, UI-flexible custom component that lets you display real-time rankings, scores, and Bitmoji avatars using text and image components — no code required.
+    
+    Ideal for creators who want to design custom scoreboards, banners, or end screens that blend natively into their game UI.
+  VersionMajor: 1
+  VersionMinor: 2
+  VersionPatch: 0
+  ComponentUid: e2bc0f97-0a1b-4f26-8f53-4db23caca1c9
+  ExportUid: 61954e5b-9827-41f7-9f1f-e354fbe58287
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    autoInitialize: false
+    bitmojiModule: true
+    bitmojis: false
+    customStickerId: false
+    debugMode: false
+    disableWhenAllRequiredTagsAreUndefined: false
+    enableTextOnlyWhenLoaded: false
+    entriesCount: false
+    leaderboardModule: true
+    leaderboardName: false
+    leaderboardStartDate: false
+    printDebugStatements: false
+    printWarningStatements: false
+    remoteMediaModule: true
+    scoreLifetimeOption: false
+    scoreOrdering: false
+    scoreToSubmit: false
+    texts: false
+    userLimit: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 29c2fc89-accb-4742-9b0e-ed52980bb827
+  DeclarationFile: !<reference> 0d21ebaf-154c-40eb-9f1c-7d59b06a50bf
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - leaderboardName: name
+      userLimit: 10
+      scoreLifetimeOption: 3
+      leaderboardStartDate: 12/31/2024
+      scoreOrdering: 1
+      customStickerId: ""
+      bitmojiModule: !<reference.BitmojiModule> bc24cc0c-473c-4cf3-b875-6a9b6963eee3
+      remoteMediaModule: !<reference.RemoteMediaModule> 2f268c65-d2ff-44aa-be05-b291a8a4269d
+      leaderboardModule: !<reference.LeaderboardModule> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+      debugMode: 0
+      entriesCount: 10
+      scoreToSubmit: 100
+      printDebugStatements: true
+      printWarningStatements: true
+      autoInitialize: true
+      enableTextOnlyWhenLoaded: true
+      disableWhenAllRequiredTagsAreUndefined: true
+      texts: !<reference.Text[]>
+        []
+      bitmojis:
+        []
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"You can find an example of initialization here: <a href=\"https://developers.snap.com/lens-studio/features/games/leaderboard#initializeWithOptions\">developers.snap.com/&hellip;/leaderboard</a>", "showIf":"autoInitialize", "showIfValue":false}'
+    - '// @input string leaderboardName {"hint":"Changing leaderboard name will reset scores", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int userLimit = "10" {"hint":"Maximum user limit is 50", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int scoreLifetimeOption = "3" {"label":"Score Reset Interval", "widget":"combobox", "values":[{"label":"Day", "value":0}, {"label":"Week", "value":1}, {"label":"Month", "value":2}, {"label":"Year", "value":3}], "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input string leaderboardStartDate = "12/31/2024" {"label":"Score Reset Anchor", "hint":"In format mm/dd/yyyy, this is the start date for the recurring score reset interval.<br>For example, if you select \"Week\" as the Score Reset Interval and set this date to 12/31/2024, the leaderboard will reset every week on Tuesday.", "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input int scoreOrdering = "1" {"widget":"combobox", "values":[{"label":"Descending", "value":1}, {"label":"Ascending", "value":2}], "showIf":"autoInitialize", "showIfValue":true}'
+    - '// @input string customStickerId {"hint":"Please enter bitmoji sticker id or leave empty to use selfie sticker"}'
+    - '// @ui {"widget":"separator"}'
+    - // @input Asset.BitmojiModule bitmojiModule
+    - // @input Asset.RemoteMediaModule remoteMediaModule
+    - // @input Asset.LeaderboardModule leaderboardModule
+    - '// @input int debugMode = "0" {"widget":"combobox", "values":[{"label":"None", "value":0}, {"label":"Submit score", "value":1}, {"label":"Custom entries count", "value":2}]}'
+    - '// @input int entriesCount = "10"'
+    - '// @input int scoreToSubmit = "100" {"showIf":"debugMode", "showIfValue":1}'
+    - '// @input bool printDebugStatements = "true" {"label":"Print Info"}'
+    - '// @input bool printWarningStatements = "true" {"label":"Print Warnings"}'
+    - '// @input bool autoInitialize = true {"showIf":"autoInitialize", "showIfValue":false}'
+    - '// @ui {"widget":"separator"}'
+    - // @input bool enableTextOnlyWhenLoaded = true
+    - '// @input bool disableWhenAllRequiredTagsAreUndefined = true {"hint":"If true, text components will be disabled when none of the <b>required</b> tags are available, for example if there is no score in that position.<br>Optional tags do not affect this."}'
+    - "// @input Component.Text[] texts"
+    - /*
+    - "@typedef BitmojiVisualSettings"
+    - "@property {Component.MaterialMeshVisual} visual"
+    - '@property {int} positionType {"widget":"combobox", "values":[{"label":"Absolute position", "value":0}, {"label":"Relative to current user", "value":1}, {"label":"Current user", "value":2}]}'
+    - '@property {int} position {"widget":"spinbox", "min":0, "max":1000, "step":1, "showIf":"positionType", "showIfValue":0}'
+    - '@property {int} relativePosition = -1 {"widget":"spinbox", "min":-1000, "max":1000, "step":1, "showIf":"positionType", "showIfValue":1}'
+    - '@property {string} textureParameter = "baseTex"'
+    - '@property {string} stickerId {"hint":"If empty, the Leaderboard \"Custom Sticker Id\" will be used"}'
+    - "*/"
+    - "// @input BitmojiVisualSettings[] bitmojis"
+    - '// @ui {"widget":"group_start", "label":"Help"}'
+    - '// @ui {"widget":"label", "label":"Code values for populating text components that will be replaced with leaderboard information:<br>"}'
+    - '// @ui {"widget":"label", "label":"<code>{displayName[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{username[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{globalExactRank[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{globalRankPercentile[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{position[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{score[0]}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserDisplayName}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserUsername}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserGlobalExactRank}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserGlobalRankPercentile}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserPosition}</code>"}'
+    - '// @ui {"widget":"label", "label":"<code>{currentUserScore}</code>"}'
+    - '// @ui {"widget":"label", "label":"<br>Replace <code>0</code> with the index you want to display, for example <code>{displayName[1]}</code> for the second record in the leaderboard."}'
+    - '// @ui {"widget":"label", "label":"<br>You can also use a (positive or negative) index relative to the current user, like <code>{displayName[+1]}</code> for record right after the current user record."}'
+    - '// @ui {"widget":"label", "label":"<br>Optional tags: add a <code>?</code> to make the tag optional. You can also add a default value like <code>{displayName[0]?No name}</code>."}'
+    - '// @ui {"widget":"group_end"}'
+- !<AssetImportMetadata/df94393d-899b-87d0-1262-2d2f41297a9b>
+  ImportedAssetIds:
+    BitmojiModule: !<reference> bc24cc0c-473c-4cf3-b875-6a9b6963eee3
+  ImporterName: BitmojiModuleImporter
+  PrimaryAsset: !<reference> bc24cc0c-473c-4cf3-b875-6a9b6963eee3
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/eaec3c11-e09e-43de-b3b4-ef2926df7c44>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: b3d6034c-6dc8-4fa5-85d4-530bff3b136f
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []
+- !<TypeScriptAssetData/f1565920-f730-4479-af7d-9559f3044755>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 0fe5e080-251c-4452-a2af-02f62e2a94b4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    []

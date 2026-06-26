@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    e0a9d613-990c-4f5d-93b7-b3c1ef6862c8: 9d7df619-9582-4fcd-be41-a863d57cf7a9/07cbd986597754393288186e51bae60a/Data/user.JPG
+  Assets:
+    - !<FileTexture/e0a9d613-990c-4f5d-93b7-b3c1ef6862c8>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 07cbd986597754393288186e51bae60a
+  FileHash: 4ebe3e5759b05db54b871ed5569fcc79
+  NativePackageItems:
+    []

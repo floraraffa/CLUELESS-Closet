@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    486ea65b-120a-434a-8f2b-25f1e87e4e43: 2fedc9d1-e2ff-4128-87cf-b739996991dd/16464518bf7052c9dfa51b5c16078a05/Data/Brown Cookies.otf
+  Assets:
+    - !<Font/486ea65b-120a-434a-8f2b-25f1e87e4e43>
+      PackagePath: ""
+  SourceHash: 16464518bf7052c9dfa51b5c16078a05
+  FileHash: 84852ef9dc653caf6f98b3f3bec0fbc9
+  NativePackageItems:
+    []

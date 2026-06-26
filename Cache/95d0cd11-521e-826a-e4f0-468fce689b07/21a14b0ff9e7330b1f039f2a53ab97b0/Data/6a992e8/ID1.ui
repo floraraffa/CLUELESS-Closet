@@ -1,0 +1,185 @@
+{ 
+	"ui": 
+	[
+		{
+        	"label": "Graph Parameters",
+        	"widget": "group_start"
+        },
+{
+                	"bindingName": "Tweak_N1",
+                	"label":       "Reflection_intensity",
+                	"widget":      "slider",
+                	"min":         0,
+                	"max":         3,
+                	"step":        "0.01",
+                	"sortIndex":   "0",
+                	"hint":        "",
+                	"default":     "1.0"
+                },
+                
+                { 
+                	"bindingName": "Tweak_N25", 
+                	"label":       "Custom Map", 
+                	"widget":      "texture_group",
+                	"sortIndex":   "0",
+                	"hint":        ""
+                },
+                
+                {
+                	"label": "ID 01 COLOR RGB_8",
+                	"widget": "group_start"
+                },                    
+                    {
+                    	"bindingName": "colorId01",
+                    	"label":       "ID Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "0",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOnOffId01",
+                    	"label":       "PATTERN ON/OFF",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternColorId01",
+                    	"label":       "Pattern Color",
+                    	"widget":      "color",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "pngPatternId01",
+                    	"label":       "PNG Pattern",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    { 
+                    	"bindingName": "patternTextureId01", 
+                    	"label":       "Pattern Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "1",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "patternScaleId01",
+                    	"label":       "Pattern Scale",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternOffsetId01",
+                    	"label":       "Pattern Offset",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "patternRotateId01",
+                    	"label":       "Pattern Rotate",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "1",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimOnOffId01",
+                    	"label":       "Rim On/Off",
+                    	"widget":      "checkbox",
+                    	"sortIndex":   "4",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "rimExpId01",
+                    	"label":       "Rim Exp",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "4",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    {
+                    	"bindingName": "rimIntId01",
+                    	"label":       "Rim Int",
+                    	"widget":      "spinbox",
+                    	"step":        "0.01",
+                    	"sortIndex":   "4",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+                
+                {
+                	"label": "BASE",
+                	"widget": "group_start"
+                },                    
+                    { 
+                    	"bindingName": "Tweak_N27", 
+                    	"label":       "Bake Ligth or AO Map", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "150",
+                    	"hint":        ""
+                    },
+                    
+                    {
+                    	"bindingName": "Tweak_N47",
+                    	"label":       "Color Int",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         2,
+                    	"step":        "0.01",
+                    	"sortIndex":   "150",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                {
+                	"widget": "group_end"
+                },
+
+        {
+        	"widget": "group_end"
+        },
+        
+		
+	{
+		"bindingName": "alphaTestThreshold",
+		"widget": "slider",
+		"min" : 0.0,
+		"max" : 1.0,
+		"step": 0.001,
+		"default": 0.5,
+		"hint": "When the 'Alpha Test' blend mode is enabled, pixels with alpha values lower than this disappear."
+	}
+	
+	],
+	
+	"shaderType": "Mesh3d",
+	
+	"extraDefines":
+	[
+		"SC_ENABLE_RT_CASTER"
+	]
+}

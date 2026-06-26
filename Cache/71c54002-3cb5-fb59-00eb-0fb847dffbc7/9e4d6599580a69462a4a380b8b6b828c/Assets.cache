@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    24236c56-57a7-4303-97ac-bb27d800f1fb: 71c54002-3cb5-fb59-00eb-0fb847dffbc7/9e4d6599580a69462a4a380b8b6b828c/Data/supabase-edge-function.txt
+  Assets:
+    - !<BinAsset/24236c56-57a7-4303-97ac-bb27d800f1fb>
+      PackagePath: ""
+  SourceHash: 9e4d6599580a69462a4a380b8b6b828c
+  FileHash: 0a04f305a2ab4803f444fb106973fb09
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    cbbb95db-2200-461c-9789-0e106752d970: e50c6e80-231f-c45f-e93a-b1c8b442692b/8bcc8d7de9e1f2a2504663f59e155c3b/Data/04.png
+  Assets:
+    - !<FileTexture/cbbb95db-2200-461c-9789-0e106752d970>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1642
+        Height: 1866
+  SourceHash: 8bcc8d7de9e1f2a2504663f59e155c3b
+  FileHash: a284d539a5633a2de7c6f1e41584f67f
+  NativePackageItems:
+    []

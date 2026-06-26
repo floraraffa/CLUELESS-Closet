@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    1a5aced8-1967-4f1c-a753-a544376c9df0: e950acb0-0cf1-468d-9d46-184bbca6020b/fa5429690da41d8b49f917f66a1a2669/Data/hat.png
+  Assets:
+    - !<FileTexture/1a5aced8-1967-4f1c-a753-a544376c9df0>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1491
+  SourceHash: fa5429690da41d8b49f917f66a1a2669
+  FileHash: 421eff778c4d9d2f4c839ee732b4474c
+  NativePackageItems:
+    []

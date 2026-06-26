@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    e85d65e7-6785-4f39-b1af-b417d0a6ecbe: 448238a9-dd93-4584-af6f-262d3d964e7c/68a3bf55a499bf903c0ece97a504810b/Data/SFX2.mp3
+  Assets:
+    - !<FileAudioTrack/e85d65e7-6785-4f39-b1af-b417d0a6ecbe>
+      PackagePath: ""
+  SourceHash: 68a3bf55a499bf903c0ece97a504810b
+  FileHash: 432489ccb06da734f7493d9b1a86bdfe
+  NativePackageItems:
+    []

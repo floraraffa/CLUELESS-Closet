@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    e0938ea7-1fcd-4ace-af6d-b0f9e750de50: f5d14773-7ed8-4a75-a2c3-8e4cccfb0bd8/2283563050ef84973853514de39730a0/Data/Sweetest Cat Ever.ttf
+  Assets:
+    - !<Font/e0938ea7-1fcd-4ace-af6d-b0f9e750de50>
+      PackagePath: ""
+  SourceHash: 2283563050ef84973853514de39730a0
+  FileHash: 64ca8a5cc4c1dd717edc7b526a81d3f2
+  NativePackageItems:
+    []

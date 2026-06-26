@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    f5b3a3f7-d9ff-4079-9b55-9986ac22f9e8: 56b9f368-ccf1-5ada-2aae-687e7402005b/7e1c42622f794e777128fced59b325e9/Data/Finish_gate_AO.jpg
+  Assets:
+    - !<FileTexture/f5b3a3f7-d9ff-4079-9b55-9986ac22f9e8>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 7e1c42622f794e777128fced59b325e9
+  FileHash: 8820d4aff7a65bb817c43e33ad2593db
+  NativePackageItems:
+    []

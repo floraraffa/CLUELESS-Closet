@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    34f53eb0-b0e0-4ebb-94d4-c8a9189b64e1: 141e79b0-a392-4dfe-8849-ac4250e1d748/d7330a23572ceeb73053f05e3c3530bc/Data/background-poster2.png
+  Assets:
+    - !<FileTexture/34f53eb0-b0e0-4ebb-94d4-c8a9189b64e1>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1371
+        Height: 888
+  SourceHash: d7330a23572ceeb73053f05e3c3530bc
+  FileHash: 4f8deecd56e9a17857994ef65f846e2c
+  NativePackageItems:
+    []

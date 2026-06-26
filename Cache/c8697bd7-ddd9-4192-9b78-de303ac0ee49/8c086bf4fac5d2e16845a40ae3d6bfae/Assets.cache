@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    b66aa8a7-8a64-443b-9221-6c38e82b40c3: c8697bd7-ddd9-4192-9b78-de303ac0ee49/8c086bf4fac5d2e16845a40ae3d6bfae/Data/Flag_shadow.jpg
+  Assets:
+    - !<FileTexture/b66aa8a7-8a64-443b-9221-6c38e82b40c3>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 128
+        Height: 128
+  SourceHash: 8c086bf4fac5d2e16845a40ae3d6bfae
+  FileHash: ab93d15ec0085f1f1fd5cede73f073fd
+  NativePackageItems:
+    []

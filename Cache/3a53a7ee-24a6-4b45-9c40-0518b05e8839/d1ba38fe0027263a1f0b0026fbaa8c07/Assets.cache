@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    2130d26e-3b88-492e-bb67-94607c6b1b3b: 3a53a7ee-24a6-4b45-9c40-0518b05e8839/d1ba38fe0027263a1f0b0026fbaa8c07/Data/closet closr.JPG
+  Assets:
+    - !<FileTexture/2130d26e-3b88-492e-bb67-94607c6b1b3b>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1122
+        Height: 1402
+  SourceHash: d1ba38fe0027263a1f0b0026fbaa8c07
+  FileHash: beee44c07b0838064629c8cb93a17472
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    fa36b8a9-9cd6-428d-aada-26502f1fae25: 0917e60d-4ee1-4b31-8598-69d76c767d31/cd262f6c4933ad461472a25804ef06a1/Data/WELCOME.png
+  Assets:
+    - !<FileTexture/fa36b8a9-9cd6-428d-aada-26502f1fae25>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1448
+        Height: 1086
+  SourceHash: cd262f6c4933ad461472a25804ef06a1
+  FileHash: 89bc712e5837b91ad148dd0b4604c30d
+  NativePackageItems:
+    []

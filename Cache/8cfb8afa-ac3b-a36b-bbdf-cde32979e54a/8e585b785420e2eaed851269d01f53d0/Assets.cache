@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0230415b-96a6-46c4-8870-cbab35653d7d: 8cfb8afa-ac3b-a36b-bbdf-cde32979e54a/8e585b785420e2eaed851269d01f53d0/Data/rim.jpg
+  Assets:
+    - !<FileTexture/0230415b-96a6-46c4-8870-cbab35653d7d>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 64
+        Height: 32
+  SourceHash: 8e585b785420e2eaed851269d01f53d0
+  FileHash: 8eabebe6e4ab4d14b4194c1bc10a4820
+  NativePackageItems:
+    []

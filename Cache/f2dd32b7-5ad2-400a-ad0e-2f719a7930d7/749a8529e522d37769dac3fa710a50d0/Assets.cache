@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    e5ce9d9e-fd8e-48bd-b76f-faabd66420e6: f2dd32b7-5ad2-400a-ad0e-2f719a7930d7/749a8529e522d37769dac3fa710a50d0/Data/Poppin-Regular.otf
+  Assets:
+    - !<Font/e5ce9d9e-fd8e-48bd-b76f-faabd66420e6>
+      PackagePath: ""
+  SourceHash: 749a8529e522d37769dac3fa710a50d0
+  FileHash: 25364f2fbffc64c125bd7a6b63fdd049
+  NativePackageItems:
+    []

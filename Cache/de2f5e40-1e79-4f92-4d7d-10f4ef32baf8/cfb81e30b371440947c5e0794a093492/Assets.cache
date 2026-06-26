@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    1ca81e66-6a0e-465f-becd-f2170867d7f4: de2f5e40-1e79-4f92-4d7d-10f4ef32baf8/cfb81e30b371440947c5e0794a093492/Data/Gradient_dushki.jpg
+  Assets:
+    - !<FileTexture/1ca81e66-6a0e-465f-becd-f2170867d7f4>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 32
+        Height: 1
+  SourceHash: cfb81e30b371440947c5e0794a093492
+  FileHash: 51f7598cfc4d4d9c922514f656354ef7
+  NativePackageItems:
+    []

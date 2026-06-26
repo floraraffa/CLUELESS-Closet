@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    b10474b5-9e7a-48df-bec6-b343fc4b366c: 77af6fe8-ee7b-4f67-9251-d36c10c430cf/fbaa39739d5c2dde665bfb44204480fe/Data/france 2.png
+  Assets:
+    - !<FileTexture/b10474b5-9e7a-48df-bec6-b343fc4b366c>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 339
+        Height: 238
+  SourceHash: fbaa39739d5c2dde665bfb44204480fe
+  FileHash: c0868b58fc94630fb85e29db4188dc4a
+  NativePackageItems:
+    []

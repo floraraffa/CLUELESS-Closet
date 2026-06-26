@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    c54af920-9e61-4dd6-9140-540de5ae43fb: b7867948-e445-431b-90a9-0a43f38d62ef/d06c75fbd67243ce1a08444d5e5a8d49/Data/README.txt
+  Assets:
+    - !<BinAsset/c54af920-9e61-4dd6-9140-540de5ae43fb>
+      PackagePath: ""
+  SourceHash: d06c75fbd67243ce1a08444d5e5a8d49
+  FileHash: 920265be2d33a9e878bee677166985f8
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    62f2434e-096b-4338-b5f6-ca3ed0b1c8d2: c0190d88-9ab7-470c-935d-76998bfcfd6a/db54a8e03cbd309a285dd9c7f6eb5ae6/Data/MoreSugar-Thin.ttf
+  Assets:
+    - !<Font/62f2434e-096b-4338-b5f6-ca3ed0b1c8d2>
+      PackagePath: ""
+  SourceHash: db54a8e03cbd309a285dd9c7f6eb5ae6
+  FileHash: 3f5dd17024f27602b58487895d30a984
+  NativePackageItems:
+    []

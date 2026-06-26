@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    236ec9d9-0a9f-4743-95e8-dcd0b71f175b: b541e109-0d75-4c64-9d88-9d9e9a487a15/a38fdd6c325c9b3c0723ddc8e3dd0875/Data/Menu1.mp3
+  Assets:
+    - !<FileAudioTrack/236ec9d9-0a9f-4743-95e8-dcd0b71f175b>
+      PackagePath: ""
+  SourceHash: a38fdd6c325c9b3c0723ddc8e3dd0875
+  FileHash: ecbdbb8b5efc1293950620834dc6ec19
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    93ab6323-d418-485a-a669-70b8ab6cd86c: ea9ea403-4651-44bc-9571-69ed13e957ae/a9a4322ef804a62c315148a799f2c661/Data/Almond Milky.otf
+  Assets:
+    - !<Font/93ab6323-d418-485a-a669-70b8ab6cd86c>
+      PackagePath: ""
+  SourceHash: a9a4322ef804a62c315148a799f2c661
+  FileHash: b59bbba6c957ebd40886858bff2e6f0a
+  NativePackageItems:
+    []

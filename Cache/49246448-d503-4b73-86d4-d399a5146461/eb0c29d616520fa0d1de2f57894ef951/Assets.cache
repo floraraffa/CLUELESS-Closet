@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    7d65281a-5639-4dc8-a2da-0fdb76eaffc1: 49246448-d503-4b73-86d4-d399a5146461/eb0c29d616520fa0d1de2f57894ef951/Data/CormorantGaramond-Medium.ttf
+  Assets:
+    - !<Font/7d65281a-5639-4dc8-a2da-0fdb76eaffc1>
+      PackagePath: ""
+  SourceHash: eb0c29d616520fa0d1de2f57894ef951
+  FileHash: 650b2259a331c51a9c08f35f2988fd64
+  NativePackageItems:
+    []

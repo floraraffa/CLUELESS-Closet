@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    cf6eb03a-c6a2-47a2-9407-0d44e094e373: 3871ce64-367b-43c1-a65a-6bb69a0a5c88/fc20d7225c2d15dfe1299f49d9c7bc9e/Data/lvl-26.png
+  Assets:
+    - !<FileTexture/cf6eb03a-c6a2-47a2-9407-0d44e094e373>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1024
+        Height: 1024
+  SourceHash: fc20d7225c2d15dfe1299f49d9c7bc9e
+  FileHash: 1c533bded9808cd4c2e1e5d2b60ad44d
+  NativePackageItems:
+    []

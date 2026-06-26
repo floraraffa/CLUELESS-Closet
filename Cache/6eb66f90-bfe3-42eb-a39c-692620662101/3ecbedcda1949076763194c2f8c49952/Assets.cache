@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    cfefa9a5-fbb3-40d8-9694-418b1be2d3d8: 6eb66f90-bfe3-42eb-a39c-692620662101/3ecbedcda1949076763194c2f8c49952/Data/S1-peugeot-307-cc-2003-2009-pour-rouler-a-ciel-ouvert-en-famille-des-2-800-eur-776228.jpg
+  Assets:
+    - !<FileTexture/cfefa9a5-fbb3-40d8-9694-418b1be2d3d8>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 705
+        Height: 420
+  SourceHash: 3ecbedcda1949076763194c2f8c49952
+  FileHash: a5e8c2e01139180997bed04caa9ccda4
+  NativePackageItems:
+    []

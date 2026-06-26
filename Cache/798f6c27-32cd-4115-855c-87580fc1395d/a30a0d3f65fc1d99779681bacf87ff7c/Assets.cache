@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    9c1a8694-d164-4875-ab32-d9ec07bb53a0: 798f6c27-32cd-4115-855c-87580fc1395d/a30a0d3f65fc1d99779681bacf87ff7c/Data/Papernotes Sketch.woff2
+  Assets:
+    - !<BinAsset/9c1a8694-d164-4875-ab32-d9ec07bb53a0>
+      PackagePath: ""
+  SourceHash: a30a0d3f65fc1d99779681bacf87ff7c
+  FileHash: 94dee8ca3e13f803d01665f31c4a53db
+  NativePackageItems:
+    []

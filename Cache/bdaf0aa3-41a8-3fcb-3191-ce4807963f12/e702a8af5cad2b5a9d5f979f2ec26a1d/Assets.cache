@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    b476d610-ffcb-4d51-8982-f2ae72818d61: bdaf0aa3-41a8-3fcb-3191-ce4807963f12/e702a8af5cad2b5a9d5f979f2ec26a1d/Data/Coin_simple.jpg
+  Assets:
+    - !<FileTexture/b476d610-ffcb-4d51-8982-f2ae72818d61>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 128
+        Height: 128
+  SourceHash: e702a8af5cad2b5a9d5f979f2ec26a1d
+  FileHash: 1c905d1b57400694f107bbea00a55b20
+  NativePackageItems:
+    []

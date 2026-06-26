@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    9cad77f0-0c8a-4a9a-919e-0beb4a97ca10: 91231fc2-d50f-43b4-aa5a-ae611465ae61/2c3b276a6856eabbf84b1d371211dd1d/Data/spain.png
+  Assets:
+    - !<FileTexture/9cad77f0-0c8a-4a9a-919e-0beb4a97ca10>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 332
+        Height: 239
+  SourceHash: 2c3b276a6856eabbf84b1d371211dd1d
+  FileHash: 823176c60a58112c75177cffa3dc9e93
+  NativePackageItems:
+    []

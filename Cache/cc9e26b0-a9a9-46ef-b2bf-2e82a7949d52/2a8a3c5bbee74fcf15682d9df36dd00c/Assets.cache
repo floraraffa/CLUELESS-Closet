@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    65dae802-bc56-4f61-aa5f-b0ef2a1ed80e: cc9e26b0-a9a9-46ef-b2bf-2e82a7949d52/2a8a3c5bbee74fcf15682d9df36dd00c/Data/Originfonts Font Usage Terms.txt
+  Assets:
+    - !<BinAsset/65dae802-bc56-4f61-aa5f-b0ef2a1ed80e>
+      PackagePath: ""
+  SourceHash: 2a8a3c5bbee74fcf15682d9df36dd00c
+  FileHash: 12f51ca1bb258fa5c2c6a1cbe322624e
+  NativePackageItems:
+    []

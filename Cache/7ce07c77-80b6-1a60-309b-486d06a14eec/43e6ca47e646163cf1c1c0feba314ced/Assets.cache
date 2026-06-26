@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    50673fab-2b3a-4989-9679-faffa7ba9cbf: 7ce07c77-80b6-1a60-309b-486d06a14eec/43e6ca47e646163cf1c1c0feba314ced/Data/Gem_diffuse_orange.jpg
+  Assets:
+    - !<FileTexture/50673fab-2b3a-4989-9679-faffa7ba9cbf>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 43e6ca47e646163cf1c1c0feba314ced
+  FileHash: dd071f8e944ed271552f42dc2588f159
+  NativePackageItems:
+    []

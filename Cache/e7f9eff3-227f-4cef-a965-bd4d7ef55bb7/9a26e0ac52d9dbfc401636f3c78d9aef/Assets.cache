@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    ebc922b3-9c40-4141-944a-8b9b0fa831ca: e7f9eff3-227f-4cef-a965-bd4d7ef55bb7/9a26e0ac52d9dbfc401636f3c78d9aef/Data/Readme.txt
+  Assets:
+    - !<BinAsset/ebc922b3-9c40-4141-944a-8b9b0fa831ca>
+      PackagePath: ""
+  SourceHash: 9a26e0ac52d9dbfc401636f3c78d9aef
+  FileHash: 47c8b9a76bbfa0296c17a1e221f05392
+  NativePackageItems:
+    []

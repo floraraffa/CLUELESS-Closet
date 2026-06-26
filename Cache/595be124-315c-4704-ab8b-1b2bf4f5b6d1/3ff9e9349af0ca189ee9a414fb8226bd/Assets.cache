@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    c6fe06a4-4847-4cf9-a814-f0d0e3f42395: 595be124-315c-4704-ab8b-1b2bf4f5b6d1/3ff9e9349af0ca189ee9a414fb8226bd/Data/Manrope-VariableFont_wght.ttf
+  Assets:
+    - !<Font/c6fe06a4-4847-4cf9-a814-f0d0e3f42395>
+      PackagePath: ""
+  SourceHash: 3ff9e9349af0ca189ee9a414fb8226bd
+  FileHash: 34377a4409cff2776b981f07322903cb
+  NativePackageItems:
+    []

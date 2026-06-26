@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    bbebd1b5-7647-4701-887a-6f5f6105c39e: a9e87b2e-946c-46cc-9b9d-67afea8161a1/db66cbdd5732e5124871ff2eb673f7b2/Data/Papernotes.woff2
+  Assets:
+    - !<BinAsset/bbebd1b5-7647-4701-887a-6f5f6105c39e>
+      PackagePath: ""
+  SourceHash: db66cbdd5732e5124871ff2eb673f7b2
+  FileHash: b8d4b46174359a48ac7145aa5413d47d
+  NativePackageItems:
+    []

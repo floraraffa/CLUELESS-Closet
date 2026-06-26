@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    1bf14adf-76ed-408f-af4b-53e7a0521889: e8cf7887-34b8-4ccf-a492-3aff3b2e71e4/09645d9ce1bb9e095b4bfdd63d330964/Data/Camera Frame.png
+  Assets:
+    - !<FileTexture/1bf14adf-76ed-408f-af4b-53e7a0521889>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1024
+        Height: 1536
+  SourceHash: 09645d9ce1bb9e095b4bfdd63d330964
+  FileHash: bbfa04dc4759146c67725f0d9b235ff0
+  NativePackageItems:
+    []

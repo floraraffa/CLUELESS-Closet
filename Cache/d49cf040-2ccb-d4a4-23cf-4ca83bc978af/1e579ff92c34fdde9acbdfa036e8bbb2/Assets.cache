@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    184e4a8f-baa0-43a0-878e-5bd3328a7772: d49cf040-2ccb-d4a4-23cf-4ca83bc978af/1e579ff92c34fdde9acbdfa036e8bbb2/Data/Spring_Coil_ID.png
+  Assets:
+    - !<FileTexture/184e4a8f-baa0-43a0-878e-5bd3328a7772>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 1e579ff92c34fdde9acbdfa036e8bbb2
+  FileHash: f94dee2d2bd271c3a6c307dd99a950ae
+  NativePackageItems:
+    []

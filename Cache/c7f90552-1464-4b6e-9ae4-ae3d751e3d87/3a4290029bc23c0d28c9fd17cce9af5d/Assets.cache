@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    654e9ac4-3ba3-475c-8d26-40df7ff9d122: c7f90552-1464-4b6e-9ae4-ae3d751e3d87/3a4290029bc23c0d28c9fd17cce9af5d/Data/CormorantGaramond-Italic-VariableFont_wght.ttf
+  Assets:
+    - !<Font/654e9ac4-3ba3-475c-8d26-40df7ff9d122>
+      PackagePath: ""
+  SourceHash: 3a4290029bc23c0d28c9fd17cce9af5d
+  FileHash: a276e72ecf39df0601dc1da53b8d938b
+  NativePackageItems:
+    []

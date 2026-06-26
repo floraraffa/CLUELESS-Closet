@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    dced0bcf-9f68-4604-85d9-eb4a8608307c: 483a35cf-b388-4509-b089-38304ac81ab8/e5de7e69efe38514d7e006b93b7ddcc2/Data/MoreSugar-Thin.otf
+  Assets:
+    - !<Font/dced0bcf-9f68-4604-85d9-eb4a8608307c>
+      PackagePath: ""
+  SourceHash: e5de7e69efe38514d7e006b93b7ddcc2
+  FileHash: bd31dac62c8e4751fbb0c3577c25aeb8
+  NativePackageItems:
+    []

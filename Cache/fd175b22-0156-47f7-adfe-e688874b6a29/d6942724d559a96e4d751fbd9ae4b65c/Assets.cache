@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    be1b8bcc-76ea-4f66-834a-c4470b522c8a: fd175b22-0156-47f7-adfe-e688874b6a29/d6942724d559a96e4d751fbd9ae4b65c/Data/scan.mp3
+  Assets:
+    - !<FileAudioTrack/be1b8bcc-76ea-4f66-834a-c4470b522c8a>
+      PackagePath: ""
+  SourceHash: d6942724d559a96e4d751fbd9ae4b65c
+  FileHash: e17970cf4abe0e5299aed415e568c4ec
+  NativePackageItems:
+    []

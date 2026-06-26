@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    e557501b-c5a9-4e86-bc7a-49bf2fc388bf: 8d12a541-dd54-bdc2-5588-d2e0e3aed54d/b44b4e3085e7a8f4f135674c4434603c/Data/Shadow.jpg
+  Assets:
+    - !<FileTexture/e557501b-c5a9-4e86-bc7a-49bf2fc388bf>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: b44b4e3085e7a8f4f135674c4434603c
+  FileHash: 7bbe748c9cb3aaee2017502cef714a92
+  NativePackageItems:
+    []

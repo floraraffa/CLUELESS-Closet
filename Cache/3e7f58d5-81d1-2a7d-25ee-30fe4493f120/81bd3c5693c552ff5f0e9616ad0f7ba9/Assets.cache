@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    a61f9f25-4220-4e59-b1a4-fabae95a8766: 3e7f58d5-81d1-2a7d-25ee-30fe4493f120/81bd3c5693c552ff5f0e9616ad0f7ba9/Data/Ladder_AO.jpg
+  Assets:
+    - !<FileTexture/a61f9f25-4220-4e59-b1a4-fabae95a8766>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 81bd3c5693c552ff5f0e9616ad0f7ba9
+  FileHash: 13698195327a579e0b41068a2e217c72
+  NativePackageItems:
+    []

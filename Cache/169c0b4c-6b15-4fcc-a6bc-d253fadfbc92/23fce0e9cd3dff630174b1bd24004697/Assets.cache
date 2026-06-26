@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    5f605e99-d1c0-44ec-8158-69b0e836f584: 169c0b4c-6b15-4fcc-a6bc-d253fadfbc92/23fce0e9cd3dff630174b1bd24004697/Data/Papernotes Bold.woff2
+  Assets:
+    - !<BinAsset/5f605e99-d1c0-44ec-8158-69b0e836f584>
+      PackagePath: ""
+  SourceHash: 23fce0e9cd3dff630174b1bd24004697
+  FileHash: 54c093277f3e5affdff9a7bb41dd1fd6
+  NativePackageItems:
+    []

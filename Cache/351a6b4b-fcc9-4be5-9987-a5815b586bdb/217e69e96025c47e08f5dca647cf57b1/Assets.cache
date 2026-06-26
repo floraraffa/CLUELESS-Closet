@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    6768b923-533b-4510-8f2d-5afa8356fd6b: 351a6b4b-fcc9-4be5-9987-a5815b586bdb/217e69e96025c47e08f5dca647cf57b1/Data/MoreSugar-Extras.ttf
+  Assets:
+    - !<Font/6768b923-533b-4510-8f2d-5afa8356fd6b>
+      PackagePath: ""
+  SourceHash: 217e69e96025c47e08f5dca647cf57b1
+  FileHash: e823c3a4fc6face5e37b46f41247cd20
+  NativePackageItems:
+    []

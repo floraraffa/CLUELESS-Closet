@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    b7fee98d-776d-421d-90b8-4535a8169f88: 564bf799-7b7b-e7ae-fd89-9d1bd96f4545/2c770b86cc40f54853ebbb2b308ed8c6/Data/Gem_diffuse.jpg
+  Assets:
+    - !<FileTexture/b7fee98d-776d-421d-90b8-4535a8169f88>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 2c770b86cc40f54853ebbb2b308ed8c6
+  FileHash: bd4d3815728e3285dcf077e77d116170
+  NativePackageItems:
+    []

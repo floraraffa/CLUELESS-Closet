@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    099d090b-b314-4251-b3c7-0843ccec6a25: 52452cf4-75c8-9769-3a90-550157c21c3c/ae11bc96f1f46356455229981ba8b19e/Data/cursor_debug.csv
+  Assets:
+    - !<BinAsset/099d090b-b314-4251-b3c7-0843ccec6a25>
+      PackagePath: ""
+  SourceHash: ae11bc96f1f46356455229981ba8b19e
+  FileHash: dd96e03def200bc225790f80177a07f1
+  NativePackageItems:
+    []

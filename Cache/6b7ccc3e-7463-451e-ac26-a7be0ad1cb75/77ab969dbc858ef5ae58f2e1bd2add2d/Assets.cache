@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    79f7a97d-4fd7-44c3-80e0-39d15aeed010: 6b7ccc3e-7463-451e-ac26-a7be0ad1cb75/77ab969dbc858ef5ae58f2e1bd2add2d/Data/scan.JPG
+  Assets:
+    - !<FileTexture/79f7a97d-4fd7-44c3-80e0-39d15aeed010>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 77ab969dbc858ef5ae58f2e1bd2add2d
+  FileHash: 7cba6b24ce172b732ffcf61790a7fdfe
+  NativePackageItems:
+    []

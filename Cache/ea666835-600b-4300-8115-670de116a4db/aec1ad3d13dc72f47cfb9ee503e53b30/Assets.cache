@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    73d4a7b0-6114-4fbc-953c-6e7b3eff9169: ea666835-600b-4300-8115-670de116a4db/aec1ad3d13dc72f47cfb9ee503e53b30/Data/eeuu.png
+  Assets:
+    - !<FileTexture/73d4a7b0-6114-4fbc-953c-6e7b3eff9169>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 372
+        Height: 232
+  SourceHash: aec1ad3d13dc72f47cfb9ee503e53b30
+  FileHash: 20626addb0f89ae59ce380c2eb47bbe6
+  NativePackageItems:
+    []

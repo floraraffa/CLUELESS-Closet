@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    b7aca9e5-42f0-460c-9633-60339bf7c5f6: b157c2f9-19ba-43d4-9113-904503add14e/b2ce1b8d93d4c4061ea340800e67495a/Data/MoreSugar-Regular.otf
+  Assets:
+    - !<Font/b7aca9e5-42f0-460c-9633-60339bf7c5f6>
+      PackagePath: ""
+  SourceHash: b2ce1b8d93d4c4061ea340800e67495a
+  FileHash: 4dfc09cd4234cd9039ef7b79601643b9
+  NativePackageItems:
+    []

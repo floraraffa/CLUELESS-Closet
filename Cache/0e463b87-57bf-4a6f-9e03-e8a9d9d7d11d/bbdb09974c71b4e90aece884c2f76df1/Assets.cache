@@ -1,0 +1,12 @@
+- !<AssetCache>
+  AssetFiles:
+    c5b14626-da7f-4195-be50-c7ea6c74c75c: 0e463b87-57bf-4a6f-9e03-e8a9d9d7d11d/bbdb09974c71b4e90aece884c2f76df1/Data/DGNS Pocket Garageretake.mp4
+  Assets:
+    - !<VideoTexture/c5b14626-da7f-4195-be50-c7ea6c74c75c>
+      PackagePath: ""
+      AutoPlay: true
+      Volume: 0.000000
+  SourceHash: bbdb09974c71b4e90aece884c2f76df1
+  FileHash: 01017d4872afdd7fe87733db0591caf3
+  NativePackageItems:
+    []

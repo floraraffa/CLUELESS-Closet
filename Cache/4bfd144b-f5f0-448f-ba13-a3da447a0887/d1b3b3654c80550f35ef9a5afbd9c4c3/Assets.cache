@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    a9b9f6db-89f5-4789-a9fb-c96fcae8d974: 4bfd144b-f5f0-448f-ba13-a3da447a0887/d1b3b3654c80550f35ef9a5afbd9c4c3/Data/Flag_metallicRoughness.png
+  Assets:
+    - !<FileTexture/a9b9f6db-89f5-4789-a9fb-c96fcae8d974>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1024
+        Height: 1024
+  SourceHash: d1b3b3654c80550f35ef9a5afbd9c4c3
+  FileHash: f50ad247544aba2d92fdc9640f68cb44
+  NativePackageItems:
+    []

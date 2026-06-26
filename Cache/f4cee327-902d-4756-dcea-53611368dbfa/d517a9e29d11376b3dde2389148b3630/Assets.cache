@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    37512592-9ad8-48af-baaa-3a68bce78dfa: f4cee327-902d-4756-dcea-53611368dbfa/d517a9e29d11376b3dde2389148b3630/Data/Portal_1_ID.png
+  Assets:
+    - !<FileTexture/37512592-9ad8-48af-baaa-3a68bce78dfa>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: d517a9e29d11376b3dde2389148b3630
+  FileHash: eb9dd49f65acc27220da22a591e4fd84
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    c36cc39f-1518-4daf-a3a5-f935dc7bd6bf: d3c08008-d891-d08f-3542-c856b11f7c1c/e24b28a2c15e033a5b52dd7a390dcead/Data/package-lock.json
+  Assets:
+    - !<JsonAsset/c36cc39f-1518-4daf-a3a5-f935dc7bd6bf>
+      PackagePath: ""
+  SourceHash: e24b28a2c15e033a5b52dd7a390dcead
+  FileHash: 5f42b95c869ff0e1d848d4588b1709a5
+  NativePackageItems:
+    []

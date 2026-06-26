@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    14b5a2bd-2194-43cb-855f-cd30ec41b44e: f63a8507-9b25-4d58-8732-984a8b7bf7a7/3ffa9a3319ab70886439745b611acb03/Data/DK Lemon Yellow Sun.otf
+  Assets:
+    - !<Font/14b5a2bd-2194-43cb-855f-cd30ec41b44e>
+      PackagePath: ""
+  SourceHash: 3ffa9a3319ab70886439745b611acb03
+  FileHash: 3a2af46114b0069bbcbf822f4ee5db0f
+  NativePackageItems:
+    []

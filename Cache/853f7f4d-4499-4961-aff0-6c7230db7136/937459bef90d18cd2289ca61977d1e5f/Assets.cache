@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    f2ccd321-9a87-4534-ad78-3b735fb9fc26: 853f7f4d-4499-4961-aff0-6c7230db7136/937459bef90d18cd2289ca61977d1e5f/Data/MoreSugar-Regular.ttf
+  Assets:
+    - !<Font/f2ccd321-9a87-4534-ad78-3b735fb9fc26>
+      PackagePath: ""
+  SourceHash: 937459bef90d18cd2289ca61977d1e5f
+  FileHash: 7f6750c787b25bfa664456d40594f046
+  NativePackageItems:
+    []

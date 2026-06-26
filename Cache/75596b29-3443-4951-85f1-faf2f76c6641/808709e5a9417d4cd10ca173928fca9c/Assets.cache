@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    64a3b259-b239-4783-a694-ac5449a68ed8: 75596b29-3443-4951-85f1-faf2f76c6641/808709e5a9417d4cd10ca173928fca9c/Data/pants.png
+  Assets:
+    - !<FileTexture/64a3b259-b239-4783-a694-ac5449a68ed8>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1491
+  SourceHash: 808709e5a9417d4cd10ca173928fca9c
+  FileHash: b2238a0d2480ee8fc75b1eedcd8a7fd1
+  NativePackageItems:
+    []

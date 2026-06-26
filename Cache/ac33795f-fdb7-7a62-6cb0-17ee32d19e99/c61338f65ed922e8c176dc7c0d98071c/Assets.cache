@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    05e671d1-503f-47bf-b3f1-aa6735309a4d: ac33795f-fdb7-7a62-6cb0-17ee32d19e99/c61338f65ed922e8c176dc7c0d98071c/Data/Hazard_ID.png
+  Assets:
+    - !<FileTexture/05e671d1-503f-47bf-b3f1-aa6735309a4d>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: c61338f65ed922e8c176dc7c0d98071c
+  FileHash: 1e68420cc82203cd8b32e79643610aaf
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    b908a618-fa9d-4b5b-8b4f-ec98eed2caf0: 10d15792-e571-4f81-80d6-89e9d54ee43b/94a0ad18b3da45989bc65550199eb400/Data/Britanica-Heavy Regular.ttf
+  Assets:
+    - !<Font/b908a618-fa9d-4b5b-8b4f-ec98eed2caf0>
+      PackagePath: ""
+  SourceHash: 94a0ad18b3da45989bc65550199eb400
+  FileHash: 3f85db94d366f34c06d7c2aab6941884
+  NativePackageItems:
+    []

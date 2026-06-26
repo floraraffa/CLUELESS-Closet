@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0da0eda8-5ea5-42c0-b2a7-8e777ad50309: c18af08c-3e3b-43a1-a1b3-be8cbfadbc37/37791188e9a2aa599a5ce8fa3da138d6/Data/papel base2.png
+  Assets:
+    - !<FileTexture/0da0eda8-5ea5-42c0-b2a7-8e777ad50309>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1535
+        Height: 1024
+  SourceHash: 37791188e9a2aa599a5ce8fa3da138d6
+  FileHash: 473ab18f45e4235bb94bd6cd957cf98f
+  NativePackageItems:
+    []

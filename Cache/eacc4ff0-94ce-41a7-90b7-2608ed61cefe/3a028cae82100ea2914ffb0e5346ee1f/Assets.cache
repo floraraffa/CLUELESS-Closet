@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0831c690-c05d-4444-8b10-3e9e9e0fc920: eacc4ff0-94ce-41a7-90b7-2608ed61cefe/3a028cae82100ea2914ffb0e5346ee1f/Data/Wardrope-close.png
+  Assets:
+    - !<FileTexture/0831c690-c05d-4444-8b10-3e9e9e0fc920>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 647
+        Height: 973
+  SourceHash: 3a028cae82100ea2914ffb0e5346ee1f
+  FileHash: 42c6613b742e8497a542b5af07d1e313
+  NativePackageItems:
+    []

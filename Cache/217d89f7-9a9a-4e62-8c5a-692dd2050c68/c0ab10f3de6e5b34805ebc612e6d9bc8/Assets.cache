@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    d1806afc-796e-46bb-9751-d0c7f0cb5d08: 217d89f7-9a9a-4e62-8c5a-692dd2050c68/c0ab10f3de6e5b34805ebc612e6d9bc8/Data/Quaint HF.ttf
+  Assets:
+    - !<Font/d1806afc-796e-46bb-9751-d0c7f0cb5d08>
+      PackagePath: ""
+  SourceHash: c0ab10f3de6e5b34805ebc612e6d9bc8
+  FileHash: 804288bb7f1154d75e887c51023cbfed
+  NativePackageItems:
+    []

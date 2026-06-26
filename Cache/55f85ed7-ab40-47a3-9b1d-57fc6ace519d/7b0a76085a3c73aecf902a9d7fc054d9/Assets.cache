@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    a921fe5c-1a87-414e-83f1-df87b83f4c3a: 55f85ed7-ab40-47a3-9b1d-57fc6ace519d/7b0a76085a3c73aecf902a9d7fc054d9/Data/Hanoded Fonts License & FAQ - DO READ.pdf
+  Assets:
+    - !<BinAsset/a921fe5c-1a87-414e-83f1-df87b83f4c3a>
+      PackagePath: ""
+  SourceHash: 7b0a76085a3c73aecf902a9d7fc054d9
+  FileHash: e11a3b9696e29da3303913a9b6e5f64d
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    589ae562-312c-4130-987a-b2d8ee73813d: 68e4f5b3-3f3e-43bc-833b-144cfb211612/a7b4a593e7087bf5df4ad9950203c2f1/Data/Modul-5.mp3
+  Assets:
+    - !<FileAudioTrack/589ae562-312c-4130-987a-b2d8ee73813d>
+      PackagePath: ""
+  SourceHash: a7b4a593e7087bf5df4ad9950203c2f1
+  FileHash: 1759f6c6877610da0b9a36815ff297a8
+  NativePackageItems:
+    []

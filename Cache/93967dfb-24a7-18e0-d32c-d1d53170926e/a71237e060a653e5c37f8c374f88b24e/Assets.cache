@@ -1,0 +1,17 @@
+- !<AssetCache>
+  AssetFiles:
+    f8401504-ce18-4319-94fd-88572e539c52: 93967dfb-24a7-18e0-d32c-d1d53170926e/a71237e060a653e5c37f8c374f88b24e/Data/B_hat.mesh
+  Assets:
+    - !<FileMesh/f8401504-ce18-4319-94fd-88572e539c52>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 3899
+        Vertices: 2442
+        Blendshapes:
+          []
+        Joints: 0
+        AabbSize: {x: 25.196133, y: 26.872028, z: 17.787552}
+  SourceHash: a71237e060a653e5c37f8c374f88b24e
+  FileHash: b2a967430bc84b93d221873b3c408fb5
+  NativePackageItems:
+    []

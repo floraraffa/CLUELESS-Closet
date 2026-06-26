@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    5a18cbd0-bb2a-4c95-b9a7-b9ecddca15bd: c4752c9f-abdc-4051-ba10-f343a56fac16/73882bede5a05ab1526eea959e37c983/Data/opacity-all-images-rounded.png
+  Assets:
+    - !<FileTexture/5a18cbd0-bb2a-4c95-b9a7-b9ecddca15bd>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 605
+        Height: 644
+  SourceHash: 73882bede5a05ab1526eea959e37c983
+  FileHash: c2ea29b9ae83c0ffd62ea86a57bc6e2b
+  NativePackageItems:
+    []

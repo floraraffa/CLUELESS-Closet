@@ -1,0 +1,17 @@
+- !<AssetCache>
+  AssetFiles:
+    7dcb0a7b-8fcd-4da3-8400-efb09c61c861: c4589ce3-d371-3f8f-a796-c3498c3114c8/837f1c3eed7f523546a6440c1d1b53b1/Data/stich.mesh
+  Assets:
+    - !<FileMesh/7dcb0a7b-8fcd-4da3-8400-efb09c61c861>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 600
+        Vertices: 612
+        Blendshapes:
+          []
+        Joints: 0
+        AabbSize: {x: 24.997120, y: 26.548777, z: 9.526999}
+  SourceHash: 837f1c3eed7f523546a6440c1d1b53b1
+  FileHash: b3f0ee3de72488cf7287b186eab197d2
+  NativePackageItems:
+    []

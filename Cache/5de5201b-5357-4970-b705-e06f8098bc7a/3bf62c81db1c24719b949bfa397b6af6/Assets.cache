@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    1928e86f-c3f3-4024-bdc1-52562e5cc111: 5de5201b-5357-4970-b705-e06f8098bc7a/3bf62c81db1c24719b949bfa397b6af6/Data/SFX3.mp3
+  Assets:
+    - !<FileAudioTrack/1928e86f-c3f3-4024-bdc1-52562e5cc111>
+      PackagePath: ""
+  SourceHash: 3bf62c81db1c24719b949bfa397b6af6
+  FileHash: b80b9aaea7bac9ceda489c4f6380c0ee
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    caf465ba-2cf5-4260-8ab3-8fc72b43262d: 51c15bca-6f38-4752-abc4-181658490932/987204b5dada0df335ec0837315c143f/Data/make-your-outfit-bk.png
+  Assets:
+    - !<FileTexture/caf465ba-2cf5-4260-8ab3-8fc72b43262d>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1491
+  SourceHash: 987204b5dada0df335ec0837315c143f
+  FileHash: 5838841eb97708c0083f431dd8095cda
+  NativePackageItems:
+    []

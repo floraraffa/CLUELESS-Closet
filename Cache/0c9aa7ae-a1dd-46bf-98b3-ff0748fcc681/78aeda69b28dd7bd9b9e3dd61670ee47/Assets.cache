@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    2ab37ab4-a73b-4901-983c-1c18651c89f5: 0c9aa7ae-a1dd-46bf-98b3-ff0748fcc681/78aeda69b28dd7bd9b9e3dd61670ee47/Data/SFX18.mp3
+  Assets:
+    - !<FileAudioTrack/2ab37ab4-a73b-4901-983c-1c18651c89f5>
+      PackagePath: ""
+  SourceHash: 78aeda69b28dd7bd9b9e3dd61670ee47
+  FileHash: 68aaf6782b813176a982a8a31e0b74f4
+  NativePackageItems:
+    []

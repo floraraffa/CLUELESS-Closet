@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    98bb95f1-3c1c-4eb1-8af7-b32479b703a5: 2cac8eea-dc33-4179-8bfd-ca45d96361a8/eb0341c3b0d5d131d7f4ed14f8c33e1d/Data/PapernotesRegular.woff
+  Assets:
+    - !<BinAsset/98bb95f1-3c1c-4eb1-8af7-b32479b703a5>
+      PackagePath: ""
+  SourceHash: eb0341c3b0d5d131d7f4ed14f8c33e1d
+  FileHash: 7657526be5da968999fa2aa976e5146a
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    804babd8-65ce-4e0c-8029-c45062152454: 28558a68-86b9-4f20-9d37-a35712ce7f4a/fc1c734bb46bcce3f19159eac1103ce9/Data/PolaroidFrame_original_opaque.png
+  Assets:
+    - !<FileTexture/804babd8-65ce-4e0c-8029-c45062152454>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: fc1c734bb46bcce3f19159eac1103ce9
+  FileHash: dbc271e3694fad77a0aba8c3ce566660
+  NativePackageItems:
+    []

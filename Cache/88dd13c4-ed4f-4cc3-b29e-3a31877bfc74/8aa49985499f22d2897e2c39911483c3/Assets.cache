@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    44891687-1bac-462d-be23-522c79ac7b1e: 88dd13c4-ed4f-4cc3-b29e-3a31877bfc74/8aa49985499f22d2897e2c39911483c3/Data/sound on.JPG
+  Assets:
+    - !<FileTexture/44891687-1bac-462d-be23-522c79ac7b1e>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 8aa49985499f22d2897e2c39911483c3
+  FileHash: 07087b553d88e69396cebf7033f13a31
+  NativePackageItems:
+    []

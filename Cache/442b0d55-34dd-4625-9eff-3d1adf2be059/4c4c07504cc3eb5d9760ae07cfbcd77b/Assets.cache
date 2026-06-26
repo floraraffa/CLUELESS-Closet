@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    39257fa3-bbd6-4b57-aae7-495a76c21d9c: 442b0d55-34dd-4625-9eff-3d1adf2be059/4c4c07504cc3eb5d9760ae07cfbcd77b/Data/EN.png
+  Assets:
+    - !<FileTexture/39257fa3-bbd6-4b57-aae7-495a76c21d9c>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 500
+        Height: 500
+  SourceHash: 4c4c07504cc3eb5d9760ae07cfbcd77b
+  FileHash: 3907dbdb6027fd316c0692f0fbb33ec7
+  NativePackageItems:
+    []

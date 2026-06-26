@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    0d4ddce9-17fa-4689-97f2-1ce54f21d0be: 0f8452f9-9e08-41cb-b47c-61ef391cef3c/864a14f1073b0729fa7851df36130b50/Data/Manrope-ExtraLight.ttf
+  Assets:
+    - !<Font/0d4ddce9-17fa-4689-97f2-1ce54f21d0be>
+      PackagePath: ""
+  SourceHash: 864a14f1073b0729fa7851df36130b50
+  FileHash: a218018f90e5aceac5eb1a7c2d380842
+  NativePackageItems:
+    []

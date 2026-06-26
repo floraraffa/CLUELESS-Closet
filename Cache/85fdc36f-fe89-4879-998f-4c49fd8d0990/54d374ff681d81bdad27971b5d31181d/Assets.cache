@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    80786d46-48c5-4cad-b031-596f966bb17f: "85fdc36f-fe89-4879-998f-4c49fd8d0990/54d374ff681d81bdad27971b5d31181d/Data/Capture d'écran 2026-02-16 224147.png"
+  Assets:
+    - !<FileTexture/80786d46-48c5-4cad-b031-596f966bb17f>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1499
+        Height: 744
+  SourceHash: 54d374ff681d81bdad27971b5d31181d
+  FileHash: 0af7b8e4462bcc1c2949cebda8cb186a
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    71876da3-cae0-40fa-b03f-6bb2fd2e7dcb: c2356835-e37c-4ba6-bc9f-af9aaa1f148f/ecbe01196fdcc6da0c60a0414126d4ff/Data/button-music-off.png
+  Assets:
+    - !<FileTexture/71876da3-cae0-40fa-b03f-6bb2fd2e7dcb>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: ecbe01196fdcc6da0c60a0414126d4ff
+  FileHash: 413e8a1dae1b128ce96fc9fc95fdf7cf
+  NativePackageItems:
+    []

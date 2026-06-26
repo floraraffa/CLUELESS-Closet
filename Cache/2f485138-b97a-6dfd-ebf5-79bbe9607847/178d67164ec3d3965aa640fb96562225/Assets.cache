@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ecdf0c7f-e3aa-45fa-9322-13f47d3dae92: 2f485138-b97a-6dfd-ebf5-79bbe9607847/178d67164ec3d3965aa640fb96562225/Data/Panama_nm0.jpg
+  Assets:
+    - !<FileTexture/ecdf0c7f-e3aa-45fa-9322-13f47d3dae92>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 256
+  SourceHash: 178d67164ec3d3965aa640fb96562225
+  FileHash: 02ac4ade3301fc86839f2821edb2b465
+  NativePackageItems:
+    []

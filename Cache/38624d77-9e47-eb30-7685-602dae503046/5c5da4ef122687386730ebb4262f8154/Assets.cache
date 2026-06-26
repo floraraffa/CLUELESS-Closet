@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    d146c33f-2db3-4c3b-affd-961ef7ec1876: 38624d77-9e47-eb30-7685-602dae503046/5c5da4ef122687386730ebb4262f8154/Data/Spikes_AO.jpg
+  Assets:
+    - !<FileTexture/d146c33f-2db3-4c3b-affd-961ef7ec1876>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 5c5da4ef122687386730ebb4262f8154
+  FileHash: cda075fda8b5d12b7f85e772592f4910
+  NativePackageItems:
+    []

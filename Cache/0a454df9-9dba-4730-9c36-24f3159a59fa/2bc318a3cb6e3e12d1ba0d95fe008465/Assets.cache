@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    1d6dd7fa-74ea-4700-98f6-f91774529473: 0a454df9-9dba-4730-9c36-24f3159a59fa/2bc318a3cb6e3e12d1ba0d95fe008465/Data/2-SCAN3.png
+  Assets:
+    - !<FileTexture/1d6dd7fa-74ea-4700-98f6-f91774529473>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1224
+        Height: 1920
+  SourceHash: 2bc318a3cb6e3e12d1ba0d95fe008465
+  FileHash: 46827bc90af3f9337cd7c031ee692bb7
+  NativePackageItems:
+    []

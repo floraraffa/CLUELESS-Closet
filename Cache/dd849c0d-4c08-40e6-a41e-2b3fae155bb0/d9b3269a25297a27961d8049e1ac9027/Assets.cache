@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    6fdacdf4-39be-4ae0-9fb9-8672fd3f5ae8: dd849c0d-4c08-40e6-a41e-2b3fae155bb0/d9b3269a25297a27961d8049e1ac9027/Data/CormorantGaramond-Light.ttf
+  Assets:
+    - !<Font/6fdacdf4-39be-4ae0-9fb9-8672fd3f5ae8>
+      PackagePath: ""
+  SourceHash: d9b3269a25297a27961d8049e1ac9027
+  FileHash: 097778c40c5f8d1afd6ca52db7a37234
+  NativePackageItems:
+    []

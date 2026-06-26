@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    8a588740-6ac3-49d9-9bbc-d7ea75efbcd8: db7d8705-013f-47d1-bb54-ad85ac621555/48676003f6140f1f94034b52240eaa07/Data/Manrope-Medium.ttf
+  Assets:
+    - !<Font/8a588740-6ac3-49d9-9bbc-d7ea75efbcd8>
+      PackagePath: ""
+  SourceHash: 48676003f6140f1f94034b52240eaa07
+  FileHash: 60878468e87caadac0f05037ffc5f3ab
+  NativePackageItems:
+    []

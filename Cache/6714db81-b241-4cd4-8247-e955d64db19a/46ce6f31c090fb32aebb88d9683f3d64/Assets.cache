@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    17132ed2-7b00-446c-a755-e6021e3653e4: 6714db81-b241-4cd4-8247-e955d64db19a/46ce6f31c090fb32aebb88d9683f3d64/Data/shoes.png
+  Assets:
+    - !<FileTexture/17132ed2-7b00-446c-a755-e6021e3653e4>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1086
+        Height: 1491
+  SourceHash: 46ce6f31c090fb32aebb88d9683f3d64
+  FileHash: b62b32e2c4c64b4dd43cc511d887138a
+  NativePackageItems:
+    []

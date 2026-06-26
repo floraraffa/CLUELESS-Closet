@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    f96d0b0a-fef4-4e5a-a95d-07fdb6492e29: 6da7ee29-425a-eb3a-7a05-165c64631cf4/35ea7633f9dc6f700abe4730b52ad892/Data/Rotating_arm_ID.png
+  Assets:
+    - !<FileTexture/f96d0b0a-fef4-4e5a-a95d-07fdb6492e29>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 35ea7633f9dc6f700abe4730b52ad892
+  FileHash: a52b94e480c8b2219048b45bb78909d2
+  NativePackageItems:
+    []

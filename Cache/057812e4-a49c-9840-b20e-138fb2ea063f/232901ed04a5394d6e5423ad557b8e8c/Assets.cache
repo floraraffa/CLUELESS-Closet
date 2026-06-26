@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    b46ee5be-a335-410b-a062-a778e6c71e88: 057812e4-a49c-9840-b20e-138fb2ea063f/232901ed04a5394d6e5423ad557b8e8c/Data/supabase-edge-function-guide.md
+  Assets:
+    - !<MarkdownAsset/b46ee5be-a335-410b-a062-a778e6c71e88>
+      PackagePath: ""
+  SourceHash: 232901ed04a5394d6e5423ad557b8e8c
+  FileHash: 51d7a471089ea783f6a9fb12eda8b800
+  NativePackageItems:
+    []

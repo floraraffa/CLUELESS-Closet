@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    f368ffb4-5395-4d6f-b8f5-0e3a24afc833: 31584969-00f5-4dce-abf7-23c8a67e9328/127ebefc3a5e9b253a0870386d709e7d/Data/delete.JPG
+  Assets:
+    - !<FileTexture/f368ffb4-5395-4d6f-b8f5-0e3a24afc833>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 127ebefc3a5e9b253a0870386d709e7d
+  FileHash: 37b1bfc9091e9a7e67d4a0893dc68b32
+  NativePackageItems:
+    []

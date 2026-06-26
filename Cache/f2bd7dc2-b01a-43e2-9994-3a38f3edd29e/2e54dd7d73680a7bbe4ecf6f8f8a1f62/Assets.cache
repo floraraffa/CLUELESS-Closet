@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    58f65193-d842-4352-bbcc-21d33eb0ea3b: f2bd7dc2-b01a-43e2-9994-3a38f3edd29e/2e54dd7d73680a7bbe4ecf6f8f8a1f62/Data/play-pause.png
+  Assets:
+    - !<FileTexture/58f65193-d842-4352-bbcc-21d33eb0ea3b>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 2e54dd7d73680a7bbe4ecf6f8f8a1f62
+  FileHash: afd5b6f92bbb019aeb33e213096306e7
+  NativePackageItems:
+    []

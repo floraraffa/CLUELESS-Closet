@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    f648e36c-2c8e-4987-843b-98264c69786b: b6d6db1d-ff31-43d1-a05f-321e091d3dd3/1f5f3c557e1541c0b321b0b98f6b5cd1/Data/CarPlay.mp3
+  Assets:
+    - !<FileAudioTrack/f648e36c-2c8e-4987-843b-98264c69786b>
+      PackagePath: ""
+  SourceHash: 1f5f3c557e1541c0b321b0b98f6b5cd1
+  FileHash: 38f8bd234f2fbef0b4f4c2a678fd6b65
+  NativePackageItems:
+    []

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    bca56345-f446-4f24-8266-2d80713f0966: e1b7fc92-6680-1715-f596-b1fed2f3844f/327b3b7eca65e6f60f750f3ddc19333e/Data/env.template
+  Assets:
+    - !<BinAsset/bca56345-f446-4f24-8266-2d80713f0966>
+      PackagePath: ""
+  SourceHash: 327b3b7eca65e6f60f750f3ddc19333e
+  FileHash: a7736f8804999bdf24095f9f010190c9
+  NativePackageItems:
+    []

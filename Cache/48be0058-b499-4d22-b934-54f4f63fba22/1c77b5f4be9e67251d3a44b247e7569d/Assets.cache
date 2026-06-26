@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    11a5e37c-97ed-4bcb-ae27-c082d9320501: 48be0058-b499-4d22-b934-54f4f63fba22/1c77b5f4be9e67251d3a44b247e7569d/Data/airstrike.ttf
+  Assets:
+    - !<Font/11a5e37c-97ed-4bcb-ae27-c082d9320501>
+      PackagePath: ""
+  SourceHash: 1c77b5f4be9e67251d3a44b247e7569d
+  FileHash: 612c6f4d47e336eef9bf45604cfbd79d
+  NativePackageItems:
+    []

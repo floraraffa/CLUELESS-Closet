@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    b6c082ee-3902-448d-932f-55c16bdee1c3: b52861c0-d108-488d-b751-ca2ce643be9a/c3d99289dcb5267a61cab9345537a82d/Data/sound-off.png
+  Assets:
+    - !<FileTexture/b6c082ee-3902-448d-932f-55c16bdee1c3>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: c3d99289dcb5267a61cab9345537a82d
+  FileHash: e82a89d3f63f8765d6c58ea8ff725484
+  NativePackageItems:
+    []

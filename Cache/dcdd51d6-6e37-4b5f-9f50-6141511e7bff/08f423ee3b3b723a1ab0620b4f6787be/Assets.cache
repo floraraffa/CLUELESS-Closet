@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    bb51a581-6158-4118-9d01-ab1d6909db69: dcdd51d6-6e37-4b5f-9f50-6141511e7bff/08f423ee3b3b723a1ab0620b4f6787be/Data/CormorantGaramond-SemiBold.ttf
+  Assets:
+    - !<Font/bb51a581-6158-4118-9d01-ab1d6909db69>
+      PackagePath: ""
+  SourceHash: 08f423ee3b3b723a1ab0620b4f6787be
+  FileHash: 00995fefe09c043ca8babf7b805acf74
+  NativePackageItems:
+    []

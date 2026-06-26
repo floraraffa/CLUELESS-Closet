@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    3f8c17a3-156c-4d58-bd14-ea5dc73ed046: 8f3386d2-e7cb-31a5-787f-98f2e261b83c/81a4b4e9573a4b306f8883299f14cde0/Data/Rotating_arm_AO.jpg
+  Assets:
+    - !<FileTexture/3f8c17a3-156c-4d58-bd14-ea5dc73ed046>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 81a4b4e9573a4b306f8883299f14cde0
+  FileHash: fc799c83c961e042928b6e6efd0e4eaa
+  NativePackageItems:
+    []

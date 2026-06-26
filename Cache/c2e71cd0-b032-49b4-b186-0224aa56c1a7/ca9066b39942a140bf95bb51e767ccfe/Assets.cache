@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ae68746b-6bb6-42ee-9501-01d5ca664367: c2e71cd0-b032-49b4-b186-0224aa56c1a7/ca9066b39942a140bf95bb51e767ccfe/Data/LANGUAGE.png
+  Assets:
+    - !<FileTexture/ae68746b-6bb6-42ee-9501-01d5ca664367>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1224
+        Height: 1920
+  SourceHash: ca9066b39942a140bf95bb51e767ccfe
+  FileHash: a9270cb47a2729fdecba9425bbd3da0d
+  NativePackageItems:
+    []

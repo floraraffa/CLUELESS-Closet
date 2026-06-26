@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    8792de61-e01e-4427-9711-a5120147f9bf: f8063798-d359-bc42-d345-2e0389566d93/eebbfa5b4d9e706d7f2ac78d9d1d07a5/Data/nixpacks.toml
+  Assets:
+    - !<BinAsset/8792de61-e01e-4427-9711-a5120147f9bf>
+      PackagePath: ""
+  SourceHash: eebbfa5b4d9e706d7f2ac78d9d1d07a5
+  FileHash: 0b0d87a0dc9ea3c73171e9736cf8b43e
+  NativePackageItems:
+    []

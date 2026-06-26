@@ -1,0 +1,16 @@
+- !<AssetImportMetadata/f4c00f28-da7b-48be-b457-68271cd00b72>
+  ImportedAssetIds:
+    LeaderboardModule: !<reference> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+  ImporterName: LeaderboardModuleImporter
+  PrimaryAsset: !<reference> b64949b3-b8e6-4e2f-9ebb-ef25f6f223d5
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    {}
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000

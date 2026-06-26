@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    a09c995c-bc7e-45f1-89bf-997240c91079: 58f8b19c-f910-4359-944c-16d49970c92a/8ca7459715dc7b66218295481c2016c8/Data/papel-base-chico2.png
+  Assets:
+    - !<FileTexture/a09c995c-bc7e-45f1-89bf-997240c91079>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1535
+        Height: 512
+  SourceHash: 8ca7459715dc7b66218295481c2016c8
+  FileHash: a5d27641480d84e4643a8f80ee6d9a9f
+  NativePackageItems:
+    []

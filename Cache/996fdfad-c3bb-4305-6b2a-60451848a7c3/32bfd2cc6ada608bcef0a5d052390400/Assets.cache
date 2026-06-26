@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    db11e37e-bfe9-44d9-9eda-8c15a9f0cfd4: 996fdfad-c3bb-4305-6b2a-60451848a7c3/32bfd2cc6ada608bcef0a5d052390400/Data/alpha.jpg
+  Assets:
+    - !<FileTexture/db11e37e-bfe9-44d9-9eda-8c15a9f0cfd4>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 64
+        Height: 64
+  SourceHash: 32bfd2cc6ada608bcef0a5d052390400
+  FileHash: d492deef29d0a0d4b0f763c7611329fc
+  NativePackageItems:
+    []

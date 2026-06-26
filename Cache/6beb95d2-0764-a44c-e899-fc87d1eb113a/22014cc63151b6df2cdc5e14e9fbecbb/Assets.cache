@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7603400f-430c-4cf9-8821-f1651a880c55: 6beb95d2-0764-a44c-e899-fc87d1eb113a/22014cc63151b6df2cdc5e14e9fbecbb/Data/B_hat_NM.jpg
+  Assets:
+    - !<FileTexture/7603400f-430c-4cf9-8821-f1651a880c55>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 193
+        Height: 193
+  SourceHash: 22014cc63151b6df2cdc5e14e9fbecbb
+  FileHash: e9b90d76494283de1135fce3b2482c1e
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    3b859b33-82f6-40b2-9e6c-4a88db1eb7f2: 3781e2dc-6588-4dba-815b-af92bc181371/21b9889a39d18821efa342b783a73b7e/Data/button.png
+  Assets:
+    - !<FileTexture/3b859b33-82f6-40b2-9e6c-4a88db1eb7f2>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 566
+        Height: 159
+  SourceHash: 21b9889a39d18821efa342b783a73b7e
+  FileHash: d8b3ed86e98d0b4f2ed07f4e368f31b0
+  NativePackageItems:
+    []

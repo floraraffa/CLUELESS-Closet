@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    293fc7e6-c985-44d5-a352-22fd21572ca5: 7fb79f64-1b33-41fe-a345-1c6d3324a69d/e697715235bc5fcd4d9d75cfdee1ea7f/Data/Papernotes.otf
+  Assets:
+    - !<Font/293fc7e6-c985-44d5-a352-22fd21572ca5>
+      PackagePath: ""
+  SourceHash: e697715235bc5fcd4d9d75cfdee1ea7f
+  FileHash: 48a4135cb69517201592424270321d35
+  NativePackageItems:
+    []

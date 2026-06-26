@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    3bbe4f60-80c5-4aa5-809a-4bcaee2fe24b: c2a22d84-8e15-4b79-a132-323b9b1b6d63/9c71d9ece80eed6095747234bf7d94d9/Data/closet-open.png
+  Assets:
+    - !<FileTexture/3bbe4f60-80c5-4aa5-809a-4bcaee2fe24b>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1120
+        Height: 1404
+  SourceHash: 9c71d9ece80eed6095747234bf7d94d9
+  FileHash: 7aaaa38ea2f37bdecba70a0103ad8b19
+  NativePackageItems:
+    []

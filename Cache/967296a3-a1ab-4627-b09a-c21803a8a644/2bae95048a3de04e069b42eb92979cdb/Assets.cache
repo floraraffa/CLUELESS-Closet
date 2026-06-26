@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    0ac98672-1ddc-4ac6-a1eb-8c5a608a0b5a: 967296a3-a1ab-4627-b09a-c21803a8a644/2bae95048a3de04e069b42eb92979cdb/Data/Papernotes Sketch.otf
+  Assets:
+    - !<Font/0ac98672-1ddc-4ac6-a1eb-8c5a608a0b5a>
+      PackagePath: ""
+  SourceHash: 2bae95048a3de04e069b42eb92979cdb
+  FileHash: 70c5fa49cdcb7167e343951118475252
+  NativePackageItems:
+    []

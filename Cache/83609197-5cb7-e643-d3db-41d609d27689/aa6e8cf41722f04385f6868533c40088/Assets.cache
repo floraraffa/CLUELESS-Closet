@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    f4d45d2d-fdca-466c-b215-39a7f8eb8199: 83609197-5cb7-e643-d3db-41d609d27689/aa6e8cf41722f04385f6868533c40088/Data/platform_AO.jpg
+  Assets:
+    - !<FileTexture/f4d45d2d-fdca-466c-b215-39a7f8eb8199>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: aa6e8cf41722f04385f6868533c40088
+  FileHash: 99a921fec847b7f006c38e78d933475d
+  NativePackageItems:
+    []

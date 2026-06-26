@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    2c65565f-c211-4534-be98-52410d47d092: ef2a43de-95a7-4941-83b2-a7a6a232a5c2/91a44a0d0bb933743419aac136e6882f/Data/Papernotes Bold.otf
+  Assets:
+    - !<Font/2c65565f-c211-4534-be98-52410d47d092>
+      PackagePath: ""
+  SourceHash: 91a44a0d0bb933743419aac136e6882f
+  FileHash: 00c45ea799647084edc192e0ed6686b7
+  NativePackageItems:
+    []

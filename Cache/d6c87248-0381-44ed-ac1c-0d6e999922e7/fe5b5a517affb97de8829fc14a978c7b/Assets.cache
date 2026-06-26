@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    fbaf9c2e-198f-4351-8da0-372f4e5d0d99: d6c87248-0381-44ed-ac1c-0d6e999922e7/fe5b5a517affb97de8829fc14a978c7b/Data/wardrope-open.png
+  Assets:
+    - !<FileTexture/fbaf9c2e-198f-4351-8da0-372f4e5d0d99>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 750
+        Height: 969
+  SourceHash: fe5b5a517affb97de8829fc14a978c7b
+  FileHash: e8e07f6c400f64e77586297c6d387363
+  NativePackageItems:
+    []

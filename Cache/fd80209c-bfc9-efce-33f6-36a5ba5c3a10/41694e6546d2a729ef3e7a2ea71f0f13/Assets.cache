@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    2f478fcc-07e3-4928-9d77-187617a40d25: fd80209c-bfc9-efce-33f6-36a5ba5c3a10/41694e6546d2a729ef3e7a2ea71f0f13/Data/Coin_AO.jpg
+  Assets:
+    - !<FileTexture/2f478fcc-07e3-4928-9d77-187617a40d25>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 41694e6546d2a729ef3e7a2ea71f0f13
+  FileHash: 90fd6d49b578d42b8575f6b319c7f250
+  NativePackageItems:
+    []

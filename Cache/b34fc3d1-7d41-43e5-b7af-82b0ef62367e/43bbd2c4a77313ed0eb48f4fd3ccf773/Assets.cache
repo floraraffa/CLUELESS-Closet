@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    481b82c3-7ab4-4ad1-a564-f1decaf7bb2f: b34fc3d1-7d41-43e5-b7af-82b0ef62367e/43bbd2c4a77313ed0eb48f4fd3ccf773/Data/NightRide.mp3
+  Assets:
+    - !<FileAudioTrack/481b82c3-7ab4-4ad1-a564-f1decaf7bb2f>
+      PackagePath: ""
+  SourceHash: 43bbd2c4a77313ed0eb48f4fd3ccf773
+  FileHash: 1040d066b5eb9f598e5e8d86a0283815
+  NativePackageItems:
+    []

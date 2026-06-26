@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    222714ef-acdd-4fff-bc9b-daeadc298943: 02418d13-bf63-42fa-bf9d-0cd3bc9dae12/237d081bd71387ea5cb3e30de02cc138/Data/Diary Story.otf
+  Assets:
+    - !<Font/222714ef-acdd-4fff-bc9b-daeadc298943>
+      PackagePath: ""
+  SourceHash: 237d081bd71387ea5cb3e30de02cc138
+  FileHash: f56f78ed590f00f02123bcc700dab4f9
+  NativePackageItems:
+    []

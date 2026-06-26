@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    a4948fce-93ba-4761-869b-c2eeba491feb: f515e8f9-6431-4335-892e-ae8f63b9fb22/579a95c863f298baf0a6e3993ba23eb6/Data/sound-on.png
+  Assets:
+    - !<FileTexture/a4948fce-93ba-4761-869b-c2eeba491feb>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 579a95c863f298baf0a6e3993ba23eb6
+  FileHash: a22c8e918496ea2624ad87cb55c41766
+  NativePackageItems:
+    []

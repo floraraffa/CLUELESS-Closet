@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    409b1cc9-3192-437e-83f9-6e7271162d41: 20f191c0-9d59-4172-b0b6-7f2b64bf1a85/92aef7f43c5b28cfc85f1ee95ae106ad/Data/Funk.wav
+  Assets:
+    - !<FileAudioTrack/409b1cc9-3192-437e-83f9-6e7271162d41>
+      PackagePath: ""
+  SourceHash: 92aef7f43c5b28cfc85f1ee95ae106ad
+  FileHash: cbd92fb7f483c1c0dd3391fea64f4e0c
+  NativePackageItems:
+    []

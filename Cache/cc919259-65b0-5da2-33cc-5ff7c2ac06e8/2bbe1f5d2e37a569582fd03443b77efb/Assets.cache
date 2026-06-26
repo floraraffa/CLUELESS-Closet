@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    e8b595ca-a16d-4c0e-95bf-d3b4a2891da6: cc919259-65b0-5da2-33cc-5ff7c2ac06e8/2bbe1f5d2e37a569582fd03443b77efb/Data/Flag_AO.jpg
+  Assets:
+    - !<FileTexture/e8b595ca-a16d-4c0e-95bf-d3b4a2891da6>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 256
+        Height: 256
+  SourceHash: 2bbe1f5d2e37a569582fd03443b77efb
+  FileHash: 000f5b669a8c538d96ea13ab8a6e8941
+  NativePackageItems:
+    []

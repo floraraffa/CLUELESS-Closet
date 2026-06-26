@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    85b4cbf0-de54-4d58-b179-e887d70cf8e1: f5666902-8fcb-4fd4-bfc9-6d7833bdc38d/8f6863b951427bcb31b8c1395faf9f10/Data/Manrope-Light.ttf
+  Assets:
+    - !<Font/85b4cbf0-de54-4d58-b179-e887d70cf8e1>
+      PackagePath: ""
+  SourceHash: 8f6863b951427bcb31b8c1395faf9f10
+  FileHash: 2d9e8b59ff6c276e29c1f65b22275e42
+  NativePackageItems:
+    []

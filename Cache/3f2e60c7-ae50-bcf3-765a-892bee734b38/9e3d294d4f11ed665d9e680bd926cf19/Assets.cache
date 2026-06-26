@@ -1,0 +1,17 @@
+- !<AssetCache>
+  AssetFiles:
+    27058c57-4b91-4cc1-b77b-407cf00e4272: 3f2e60c7-ae50-bcf3-765a-892bee734b38/9e3d294d4f11ed665d9e680bd926cf19/Data/pim.mesh
+  Assets:
+    - !<FileMesh/27058c57-4b91-4cc1-b77b-407cf00e4272>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 18
+        Vertices: 36
+        Blendshapes:
+          []
+        Joints: 0
+        AabbSize: {x: 12.748468, y: 4.361901, z: 2.599696}
+  SourceHash: 9e3d294d4f11ed665d9e680bd926cf19
+  FileHash: e1bb283ac8e1f61b28bd749f8d9afff1
+  NativePackageItems:
+    []

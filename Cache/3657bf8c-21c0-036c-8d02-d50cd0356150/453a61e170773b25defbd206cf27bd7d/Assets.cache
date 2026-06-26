@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    9d6179fb-4f5c-47cb-a8e2-1f643dfa0a94: 3657bf8c-21c0-036c-8d02-d50cd0356150/453a61e170773b25defbd206cf27bd7d/Data/stitchAlpha.jpg
+  Assets:
+    - !<FileTexture/9d6179fb-4f5c-47cb-a8e2-1f643dfa0a94>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 32
+        Height: 32
+  SourceHash: 453a61e170773b25defbd206cf27bd7d
+  FileHash: 03f5477fd067d334320a79a05926bd56
+  NativePackageItems:
+    []

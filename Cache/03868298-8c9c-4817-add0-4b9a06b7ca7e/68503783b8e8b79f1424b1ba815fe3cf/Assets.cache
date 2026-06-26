@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    3cf7b4b7-4218-44cc-a372-1512ab3cf81f: 03868298-8c9c-4817-add0-4b9a06b7ca7e/68503783b8e8b79f1424b1ba815fe3cf/Data/Manrope-Regular.ttf
+  Assets:
+    - !<Font/3cf7b4b7-4218-44cc-a372-1512ab3cf81f>
+      PackagePath: ""
+  SourceHash: 68503783b8e8b79f1424b1ba815fe3cf
+  FileHash: f2d23ca850bce63b9dcfc518f59c92bb
+  NativePackageItems:
+    []

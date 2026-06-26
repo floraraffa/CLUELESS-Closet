@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    7f5ed9bc-d790-4050-8087-d2923f48b3db: d352fd04-7650-4415-ac03-55c92a6889fa/e804d94a6ca25f97e79d925ee515dc5e/Data/Photo-card.png
+  Assets:
+    - !<FileTexture/7f5ed9bc-d790-4050-8087-d2923f48b3db>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 737
+        Height: 865
+  SourceHash: e804d94a6ca25f97e79d925ee515dc5e
+  FileHash: 5162565d04ed49292cb5be51fe3c2dec
+  NativePackageItems:
+    []

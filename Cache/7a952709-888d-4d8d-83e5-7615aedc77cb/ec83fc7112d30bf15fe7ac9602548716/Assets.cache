@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    eec1fb02-2d13-43f6-a75d-268ea0ceb2a6: 7a952709-888d-4d8d-83e5-7615aedc77cb/ec83fc7112d30bf15fe7ac9602548716/Data/MJTYPE-EULA.pdf
+  Assets:
+    - !<BinAsset/eec1fb02-2d13-43f6-a75d-268ea0ceb2a6>
+      PackagePath: ""
+  SourceHash: ec83fc7112d30bf15fe7ac9602548716
+  FileHash: bcdb300b278c2e2cc9b7aae4c5148245
+  NativePackageItems:
+    []

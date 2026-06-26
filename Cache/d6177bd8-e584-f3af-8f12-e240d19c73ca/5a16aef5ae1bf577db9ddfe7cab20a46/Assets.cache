@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    e1a2b2c6-a5f1-49bc-b7e6-f5849aebe39e: d6177bd8-e584-f3af-8f12-e240d19c73ca/5a16aef5ae1bf577db9ddfe7cab20a46/Data/video-stream-viewer.html
+  Assets:
+    - !<BinAsset/e1a2b2c6-a5f1-49bc-b7e6-f5849aebe39e>
+      PackagePath: ""
+  SourceHash: 5a16aef5ae1bf577db9ddfe7cab20a46
+  FileHash: fe71b70e73d723e61265acc3cf0beda1
+  NativePackageItems:
+    []

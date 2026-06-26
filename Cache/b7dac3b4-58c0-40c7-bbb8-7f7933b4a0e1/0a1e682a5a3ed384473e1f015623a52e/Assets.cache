@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    fdb771d1-5437-4508-8300-75571b25428a: b7dac3b4-58c0-40c7-bbb8-7f7933b4a0e1/0a1e682a5a3ed384473e1f015623a52e/Data/user.png
+  Assets:
+    - !<FileTexture/fdb771d1-5437-4508-8300-75571b25428a>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 1254
+        Height: 1254
+  SourceHash: 0a1e682a5a3ed384473e1f015623a52e
+  FileHash: 04f2d48d439a763e3f19ce10672c298b
+  NativePackageItems:
+    []
