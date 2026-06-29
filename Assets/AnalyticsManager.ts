@@ -96,14 +96,6 @@ export class AnalyticsManager extends BaseScriptComponent {
         this.saveStats();
     }
 
-    /** Record a completed trade. */
-    logTrade(type: 'given' | 'received', method: 'colocated' | 'async'): void {
-        this.tradesThisSession++;
-        this.cumulativeStats.totalTrades++;
-        this.saveStats();
-        this.logEvent('trade', type, method);
-    }
-
     /** Record an anti-cheat block. */
     logAntiCheatBlock(): void {
         this.antiCheatBlocksThisSession++;

@@ -37,18 +37,76 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     // Language Container
     // -----------------------------------------------------------------
     accept_button:          { en: 'Accept', fr: 'Accepter', es: 'Aceptar' },
+    language_welcome_heading:{ en: 'Choose your\nlanguage', fr: 'Choisissez\nvotre langue', es: 'Elige tu\nidioma' },
+    language_select_hint:   { en: 'Select language', fr: 'Selectionnez la langue', es: 'Selecciona idioma' },
+
+    // -----------------------------------------------------------------
+    // Onboarding tutorial (first launch only)
+    // -----------------------------------------------------------------
+    onb_skip_button:        { en: 'Skip Tutorial', fr: 'Passer le tuto', es: 'Saltar tutorial' },
+    onb_welcome:            {
+        en: 'Welcome to Closet Club. To set your language, pinch far on a flag, then press Accept.',
+        fr: 'Bienvenue dans Closet Club. Pour choisir votre langue, faites un pincement à distance sur un drapeau, puis appuyez sur Accepter.',
+        es: 'Bienvenido a Closet Club. Para elegir tu idioma, haz un pellizco a distancia sobre una bandera y pulsa Aceptar.',
+    },
+    onb_skip_hint:          {
+        en: 'Great. If you want to skip this tutorial, press the Skip button, or simply say "Skip Tutorial" out loud.',
+        fr: 'Parfait. Si vous voulez passer ce tutoriel, appuyez sur le bouton Passer, ou dites simplement « Skip Tutorial » à voix haute.',
+        es: 'Genial. Si quieres saltar este tutorial, pulsa el botón Saltar, o simplemente di "Skip Tutorial" en voz alta.',
+    },
+    onb_scan:               {
+        en: "Let's scan your first garment. Frame a piece of clothing in the camera window, then pinch the Scan button.",
+        fr: "Scannons votre premier vêtement. Cadrez une pièce dans la fenêtre vidéo, puis pincez le bouton Scan.",
+        es: "Escaneemos tu primera prenda. Encuadra una prenda en la ventana de la cámara y pellizca el botón Escanear.",
+    },
+    onb_save:               {
+        en: 'Nice! Here is your garment card with its AI rating. Press "Save the look" to keep it in your closet.',
+        fr: 'Bien joué ! Voici la fiche de votre vêtement avec sa note IA. Appuyez sur « Sauvegarder le look » pour le garder dans votre dressing.',
+        es: '¡Genial! Aquí está la card de tu prenda con su valoración IA. Pulsa "Guardar el look" para guardarla en tu armario.',
+    },
+    onb_congrats:           {
+        en: 'Congratulations! Your first piece is saved to your closet.',
+        fr: 'Félicitations ! Votre première pièce est sauvegardée dans votre dressing.',
+        es: '¡Felicidades! Tu primera prenda está guardada en tu armario.',
+    },
+    onb_closet_intro:       {
+        en: 'Your saved cards live in a carousel around your left wrist. Press the closet button on your left wrist to open it.',
+        fr: 'Vos cartes sauvegardées tournent dans un carrousel autour de votre poignet gauche. Appuyez sur le bouton dressing sur votre poignet gauche pour l\'ouvrir.',
+        es: 'Tus cards guardadas viven en un carrusel alrededor de tu muñeca izquierda. Pulsa el botón del armario en tu muñeca izquierda para abrirlo.',
+    },
+    onb_carousel:           {
+        en: 'The carousel only turns counter-clockwise. To scroll it, move your right hand upward beside it, like spinning a wheel. Go ahead, try it...',
+        fr: 'Le carrousel ne tourne que dans le sens anti-horaire. Pour le faire défiler, faites monter votre main droite à côté, comme pour faire tourner une roue. Allez-y, essayez...',
+        es: 'El carrusel solo gira en sentido antihorario. Para desplazarlo, mueve tu mano derecha hacia arriba a su lado, como girando una rueda. Vamos, inténtalo...',
+    },
+    onb_grid:               {
+        en: 'Now open your hand, palm facing outward, to spread all your cards into a grid. Go ahead, try it...',
+        fr: 'Maintenant, ouvrez la main, paume vers l\'extérieur, pour étaler toutes vos cartes en grille. Allez-y, essayez...',
+        es: 'Ahora abre la mano, con la palma hacia afuera, para desplegar todas tus cards en una cuadrícula. Vamos, inténtalo...',
+    },
+    onb_outfit:             {
+        en: 'Opening your closet also opens the Outfit Tester, with a slot for each part of your body. Fill the slots yourself, or let the AI build an outfit that matches the season, time, location, and trends.',
+        fr: 'Ouvrir votre dressing ouvre aussi l\'Outfit Tester, avec un emplacement pour chaque partie du corps. Remplissez les emplacements vous-même, ou laissez l\'IA composer une tenue cohérente avec la saison, l\'heure, le lieu et les tendances.',
+        es: 'Abrir tu armario también abre el Outfit Tester, con un slot para cada parte del cuerpo. Llena los slots tú mismo, o deja que la IA arme un outfit acorde a la temporada, la hora, la ubicación y las tendencias.',
+    },
+    onb_done:               {
+        en: "That's it, you're all set! Enjoy the Closet Club.",
+        fr: "C'est tout, vous êtes prêt ! Profitez bien de Closet Club.",
+        es: "¡Eso es todo, ya estás listo! Disfruta de Closet Club.",
+    },
 
     // -----------------------------------------------------------------
     // Welcome Container
     // -----------------------------------------------------------------
-    welcome_title:          { en: 'Start Scanning your clothes', fr: 'Commencez a scanner vos vetements', es: 'Empieza a escanear tu ropa' },
+    welcome_title:          { en: 'Scan\nyour clothes', fr: 'Scannez\nvos vêtements', es: 'Escanea\ntu ropa.' },
     welcome_description:    {
-        en: 'Scan garments and outfits with Spectacles. Closet Club reads the item, builds a smart closet, and turns every save into a clean polaroid-style wardrobe card.',
-        fr: 'Scannez des vêtements et des looks avec Spectacles. Closet Club identifie la pièce, crée un dressing intelligent et transforme chaque sauvegarde en carte façon polaroid.',
-        es: 'Escanea prendas y looks con Spectacles. Closet Club interpreta la ropa, crea un armario inteligente y convierte cada guardado en una card estilo polaroid.',
+        en: 'Scan clothes and outfits with Spectacles. \n\nCloset Club reads every garment, creates a smart wardrobe, and turns every save into a Polaroid-style closet card. Scan your garment individually or stand in front of a mirror and scan your entire outfit.',
+        fr: 'Scannez vos vêtements et tenues avec vos Spectacles. \n\nCloset Club analyse chaque vêtement, crée une garde-robe intelligente et transforme chaque sauvegarde en une fiche de dressing façon Polaroid. Scannez vos vêtements individuellement ou placez-vous devant un miroir pour scanner votre tenue complète.',
+        es: 'Escanea prendas y looks con Spectacles.\n\nCloset Club lee cada prenda, crea un armario inteligente y convierte cada guardado en una card de armario estilo polaroid. Escanea tu prenda individualmente o parate frente a un espejo y escanea tu look completo.',
     },
     solo:                   { en: 'Scan Clothes', fr: 'Scanner Vetements', es: 'Escanear Ropa' },
     connected_lens:         { en: 'Shared Closet', fr: 'Shared Closet', es: 'Armario compartido' },
+    closet_club_title:      { en: 'Closet Club', fr: 'Closet Club', es: 'Closet Club' },
 
     // -----------------------------------------------------------------
     // Static Container Texts (Yes/Cancel/warnings)
@@ -59,6 +117,7 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     delete_card_question:   { en: 'Are you sure you want to delete this card?', fr: 'Voulez-vous supprimer cette carte ?', es: '¿Quieres eliminar esta carta?' },
     share_question:         { en: 'Are you sure you want to share your collection?', fr: 'Voulez-vous partager votre collection ?', es: '¿Quieres compartir tu colección?' },
     reset_question:         { en: 'Are you sure you want to reset your closet?', fr: 'Voulez-vous réinitialiser votre dressing ?', es: '¿Quieres reiniciar tu armario?' },
+    reset_closet_question:  { en: 'Reset your closet?\nAll saved wardrobe cards will be lost!', fr: 'Réinitialiser votre dressing ?\nToutes les cartes sauvegardées seront perdues !', es: '¿Reiniciar tu armario?\nSe perderán todas las cards guardadas.' },
     give_card_default:      { en: 'Do you want to share this closet card with username?', fr: 'Voulez-vous partager cette carte dressing avec username ?', es: '¿Quieres compartir esta card de armario con username?' },
     trade_card_default:     { en: 'Do you want to request this closet card from username?', fr: 'Voulez-vous demander cette carte dressing à username ?', es: '¿Quieres pedir esta card de armario a username?' },
 
@@ -68,6 +127,10 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     dgns_title:             { en: 'Closet Club', fr: 'Closet Club', es: 'Closet Club' },
     loading_text:           { en: 'Loading', fr: 'Chargement', es: 'Cargando' },
     press_button_hint:      { en: 'Look at a garment or outfit', fr: 'Regardez un vêtement ou un look', es: 'Mira una prenda o un look' },
+    scan_looks_build:       { en: 'Scan looks, build your closet.', fr: 'Scannez des looks, construisez votre dressing.', es: 'Escanea looks, arma tu armario.' },
+    save_the_look:          { en: 'Save the look', fr: 'Sauvegarder le look', es: 'Guardar el look' },
+    mute_narrator:          { en: 'Mute\nNarrator', fr: 'Couper\nNarrateur', es: 'Silenciar\nNarrador' },
+    music_player:           { en: 'Music Player', fr: 'Lecteur musique', es: 'Reproductor musical' },
 
     // -----------------------------------------------------------------
     // Scanner UI
@@ -92,6 +155,9 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     combine_in_progress:    { en: 'Combination already in progress...', fr: 'Combinaison déjà en cours...', es: 'Combinación ya en curso...' },
     combining_look:         { en: 'Combining from your closet', fr: 'Combinaison depuis votre dressing', es: 'Combinando desde tu armario' },
     combine_look_button:    { en: 'Combine', fr: 'Combiner', es: 'Combinar' },
+    delete_btn:             { en: 'Delete', fr: 'Supprimer', es: 'Eliminar' },
+    get_more_info_button:   { en: 'Get More Info', fr: 'Plus d\'infos', es: 'Mas info' },
+    combine_looks_button:   { en: 'Combine Looks', fr: 'Composer looks', es: 'Combinar looks' },
     combine_need_more_items:{ en: 'Save at least one more closet item before combining looks.', fr: 'Sauvegardez au moins une autre pièce avant de combiner des looks.', es: 'Guarda al menos una prenda más antes de combinar looks.' },
     outfit_need_items:     { en: 'Add at least two pieces to the outfit slots first.', fr: 'Ajoutez au moins deux pièces dans les emplacements du look.', es: 'Agrega al menos dos prendas en los slots del outfit.' },
     outfit_feedback_loading:{ en: 'Reviewing your outfit', fr: 'Analyse de votre look', es: 'Revisando tu outfit' },
@@ -99,6 +165,7 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     outfit_wrong_slot:     { en: '{item} belongs in {correctSlot}, not {slot}.', fr: '{item} va dans {correctSlot}, pas dans {slot}.', es: '{item} va en {correctSlot}, no en {slot}.' },
     outfit_category_unknown:{ en: 'I could not place {item}. Scan/category is unclear.', fr: 'Impossible de placer {item}. Le scan ou la catégorie n’est pas clair.', es: 'No pude ubicar {item}. El scan o la categoría no está claro.' },
     outfit_composed:       { en: 'Composed {count} outfit slots', fr: '{count} emplacements de look composés', es: 'Outfit armado con {count} slots' },
+    composing_outfit_ai:   { en: 'Styling your outfit...', fr: 'Composition de ta tenue...', es: 'Creando tu look...' },
     outfit_feedback_fallback_match:{
         en: 'Match: this outfit combines {items}. The strongest move is to keep the colors connected and let one piece be the visual lead. If it feels busy, simplify the shoes or accessories first.',
         fr: 'Match : ce look combine {items}. Le plus important est de garder les couleurs cohérentes et de laisser une pièce guider le style. Si cela semble chargé, simplifiez d’abord les chaussures ou les accessoires.',
@@ -123,6 +190,14 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     // -----------------------------------------------------------------
     // Stat Labels (Closet Card)
     // -----------------------------------------------------------------
+    item_name_label:        { en: 'Item Name', fr: 'Nom de la piece', es: 'Nombre de prenda' },
+    category_label:         { en: 'Category', fr: 'Categorie', es: 'Categoria' },
+    closet_card_code_label: { en: 'Closet Card', fr: 'Carte dressing', es: 'Card de armario' },
+    occasion_label:         { en: 'Occasion', fr: 'Occasion', es: 'Ocasión' },
+    year_label:             { en: 'Year', fr: 'Annee', es: 'Año' },
+    date_label:             { en: 'date', fr: 'date', es: 'fecha' },
+    city_label:             { en: 'city', fr: 'ville', es: 'ciudad' },
+    closet_value_label:     { en: 'Closet Value', fr: 'Valeur dressing', es: 'Valor de armario' },
     top_speed:              { en: 'Condition', fr: 'Etat', es: 'Condición' },
     acceleration:           { en: 'Versatility', fr: 'Polyvalence', es: 'Versatilidad' },
     braking:                { en: 'Matchability', fr: 'Association', es: 'Combinabilidad' },
@@ -148,9 +223,13 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     collection_shared:      { en: 'Closet shared!', fr: 'Dressing partagé !', es: '¡Armario compartido!' },
     share_unavail_short:    { en: 'Share unavailable', fr: 'Partage indisponible', es: 'Compartir no disponible' },
     reset_profile_q:        { en: 'Reset closet?', fr: 'Réinitialiser le dressing ?', es: '¿Reiniciar armario?' },
+    reset_profile_button:   { en: 'Reset Profile ⚠️', fr: 'Réinitialiser profil ⚠️', es: 'Reiniciar perfil ⚠️' },
+    delete_card_button:     { en: 'Delete\nCard', fr: 'Supprimer\nCarte', es: 'Eliminar\nCard' },
     reset_cancelled:        { en: 'Reset cancelled', fr: 'Réinitialisation annulée', es: 'Reinicio cancelado' },
     profile_reset:          { en: 'Closet reset — {count} cards deleted', fr: 'Dressing réinitialisé — {count} cartes supprimées', es: 'Armario reiniciado — {count} cards eliminadas' },
     no_card_delete:         { en: 'No card to delete', fr: 'Pas de carte à supprimer', es: 'No hay carta para eliminar' },
+    delete_place_first:     { en: 'Take the card out of the closet to delete it', fr: 'Sortez la carte du dressing pour la supprimer', es: 'Saca la carta del armario para eliminarla' },
+    delete_item_button:     { en: 'Delete Item', fr: 'Supprimer', es: 'Eliminar' },
     delete_confirm:         { en: 'Delete {name}?', fr: 'Supprimer {name} ?', es: '¿Eliminar {name}?' },
     card_deleted:           { en: '{name} deleted', fr: '{name} supprimé', es: '{name} eliminado' },
     delete_cancelled:       { en: 'Delete cancelled', fr: 'Suppression annulée', es: 'Eliminación cancelada' },
@@ -165,6 +244,8 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     card_instantiation_fail:{ en: 'ERROR: Card instantiation failed', fr: 'ERREUR : Création de carte échouée', es: 'ERROR: Fallo al crear la carta' },
     card_ready:             { en: '{name} card ready!', fr: 'Carte {name} prête !', es: '¡Carta {name} lista!' },
     added_to_collection:    { en: '{name} saved to closet! ({count} cards)', fr: '{name} ajouté au dressing ! ({count} cartes)', es: '¡{name} guardado en armario! ({count} cards)' },
+    outfit_card_progress:   { en: 'Cutting out {name} ({index}/{total})...', fr: 'Découpe de {name} ({index}/{total})...', es: 'Recortando {name} ({index}/{total})...' },
+    outfit_ready:           { en: 'Outfit ready — {count} cards!', fr: 'Tenue prête — {count} cartes !', es: '¡Look listo — {count} cartas!' },
     card_gen_failed:        { en: 'Could not generate card, please try again later...', fr: 'Impossible de générer la carte, réessayez plus tard...', es: 'No se pudo generar la carta, inténtalo más tarde...' },
     save_error:             { en: 'SAVE ERROR: {error}', fr: 'ERREUR SAUVEGARDE : {error}', es: 'ERROR DE GUARDADO: {error}' },
     wait_reveal:            { en: 'Wait for card reveal to finish...', fr: 'Attendez la fin de la révélation...', es: 'Espera a que termine la revelación...' },
@@ -178,7 +259,10 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     generating_card_n:      { en: 'Generating Polaroid ({n}/{total})', fr: 'Génération Polaroid ({n}/{total})', es: 'Generando Polaroid ({n}/{total})' },
     generating_garment_cutout:{ en: 'Creating closet image...', fr: 'Création de l’image dressing...', es: 'Creando imagen para el armario...' },
     garment_cutout_ready:   { en: '{name} closet image ready!', fr: 'Image dressing de {name} prête !', es: '¡Imagen de {name} lista en el armario!' },
-    garment_cutout_failed:  { en: 'Could not create closet image, keeping scan photo', fr: 'Impossible de créer l’image dressing, photo conservée', es: 'No se pudo crear la imagen, queda la foto escaneada' },
+    garment_cutout_failed:  { en: 'Image generation failed — tap Retry on the card', fr: 'Génération d’image échouée — appuyez sur Réessayer sur la carte', es: 'Generación de imagen fallida — toca Reintentar en la carta' },
+    garment_cutout_retrying:{ en: 'Retrying image generation...', fr: 'Nouvelle tentative de génération...', es: 'Reintentando la generación de imagen...' },
+    garment_cutout_no_source:{ en: 'No saved photo to regenerate from', fr: 'Pas de photo enregistrée pour régénérer', es: 'No hay foto guardada para regenerar' },
+    image_ready:            { en: 'Closet image ready!', fr: 'Image dressing prête !', es: '¡Imagen lista!' },
     closet_slot_opened:     { en: 'Opening {name} card', fr: 'Ouverture de la carte {name}', es: 'Abriendo card de {name}' },
     closet_page_status:     { en: 'Closet page {page}/{pages}', fr: 'Page dressing {page}/{pages}', es: 'Página del armario {page}/{pages}' },
     image_gen_busy:         { en: 'Image generation busy, try again later', fr: 'Génération d\'image occupée, réessayez plus tard', es: 'Generación de imagen ocupada, inténtalo más tarde' },
@@ -189,22 +273,53 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     // -----------------------------------------------------------------
     // XP Manager
     // -----------------------------------------------------------------
-    lvl_prefix:             { en: 'LVL ', fr: 'NIV ', es: 'NIV ' },
-    xp_max:                 { en: 'XP {xp} / MAX', fr: 'XP {xp} / MAX', es: 'XP {xp} / MAX' },
-    xp_progress:            { en: 'XP {xp}/{next}', fr: 'XP {xp}/{next}', es: 'XP {xp}/{next}' },
-    streak_long:            { en: '\u2728 {days}-day streak! x{mult} XP \u2728', fr: '\u2728 Série de {days} jours ! x{mult} XP \u2728', es: '\u2728 ¡Racha de {days} días! x{mult} XP \u2728' },
-    streak_short:           { en: '\u2B50 2-day streak! x{mult} XP', fr: '\u2B50 Série de 2 jours ! x{mult} XP', es: '\u2B50 ¡Racha de 2 días! x{mult} XP' },
-    no_streak:              { en: 'No Streak...\nCome back tomorrow!', fr: 'Pas de série...\nRevenez demain !', es: 'Sin racha...\n¡Vuelve mañana!' },
-    prestige_label:         { en: 'Prestige', fr: 'Prestige', es: 'Prestigio' },
-    xp_popup:               { en: '+{amount} XP', fr: '+{amount} XP', es: '+{amount} XP' },
-    trust_popup:            { en: '+{amount}% Trust', fr: '+{amount}% Confiance', es: '+{amount}% Confianza' },
-    trust_penalty:          { en: '-{amount}% Trust', fr: '-{amount}% Confiance', es: '-{amount}% Confianza' },
-    level_up:               { en: 'LEVEL UP! LVL {level}: {name}', fr: 'NIVEAU SUPÉRIEUR ! NIV {level} : {name}', es: '¡SUBIDA DE NIVEL! NIV {level}: {name}' },
-    level_up_reveal_title:  { en: 'LEVEL UP!', fr: 'NIVEAU SUPÉRIEUR !', es: '¡SUBIDA DE NIVEL!' },
-    level_up_reveal_body:   { en: 'You go from LVL {from} to LVL {to}: {name}. Congratulations!', fr: 'Vous passez de NIV {from} à NIV {to} : {name}. Félicitations !', es: 'Pasas de NIV {from} a NIV {to}: {name}. ¡Felicidades!' },
-    prestige_up:            { en: 'Prestige {n}! Back to Learner Driver', fr: 'Prestige {n} ! Retour à Learner Driver', es: '¡Prestigio {n}! Vuelves a Learner Driver' },
-    streak_bonus_long:      { en: '\u2728 {days}-day streak! \u2728\nx{mult} XP bonus!', fr: '\u2728 Série de {days} jours ! \u2728\nx{mult} XP bonus !', es: '\u2728 ¡Racha de {days} días! \u2728\n¡x{mult} XP bonus!' },
-    streak_bonus_short:     { en: '\u2B50 2-day streak! \u2B50\nx{mult} XP bonus!', fr: '\u2B50 Série de 2 jours ! \u2B50\nx{mult} XP bonus !', es: '\u2B50 ¡Racha de 2 días! \u2B50\n¡x{mult} XP bonus!' },
+    lvl_prefix:             { en: 'Style Lv. ', fr: 'Style niv. ', es: 'Estilo niv. ' },
+    xp_max:                 { en: 'Style points {xp} / MAX', fr: 'Points style {xp} / MAX', es: 'Puntos de estilo {xp} / MAX' },
+    xp_progress:            { en: 'Style points {xp}/{next}', fr: 'Points style {xp}/{next}', es: 'Puntos de estilo {xp}/{next}' },
+    streak_long:            { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    streak_short:           { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    no_streak:              { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    prestige_label:         { en: 'Signature cycle', fr: 'Cycle signature', es: 'Ciclo signature' },
+    xp_popup:               { en: '+{amount} style points', fr: '+{amount} points style', es: '+{amount} puntos de estilo' },
+    trust_popup:            { en: '+{amount}% Fashion Trust', fr: '+{amount}% Confiance mode', es: '+{amount}% Confianza fashion' },
+    trust_penalty:          { en: '-{amount}% Fashion Trust', fr: '-{amount}% Confiance mode', es: '-{amount}% Confianza fashion' },
+    fashion_trust_score:    { en: 'Fashion Trust: {score}%', fr: 'Confiance mode : {score}%', es: 'Confianza fashion: {score}%' },
+    rank_style_icon:        { en: 'Style Icon', fr: 'Icône style', es: 'Icono de estilo' },
+    rank_trusted_stylist:   { en: 'Trusted Stylist', fr: 'Styliste fiable', es: 'Stylist confiable' },
+    rank_closet_lover:      { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    rank_style_explorer:    { en: 'Style Explorer', fr: 'Explorateur style', es: 'Explorador de estilo' },
+    rank_needs_review:      { en: 'Needs Style Review', fr: 'Besoin de revue style', es: 'Necesita revisión de estilo' },
+    rank_scan_rookie:       { en: 'Scan Rookie', fr: 'Debutant scan', es: 'Nuevo escaneando' },
+    rank_closet_newcomer:   { en: 'Closet Newcomer', fr: 'Nouveau dressing', es: 'Nuevo en closet' },
+    rank_unverified:        { en: 'Unverified Stylist', fr: 'Styliste non verifie', es: 'Stylist sin verificar' },
+    level_up:               { en: 'STYLE LEVEL UP! {level}: {name}', fr: 'NIVEAU STYLE ! {level} : {name}', es: '¡NUEVO NIVEL DE ESTILO! {level}: {name}' },
+    level_up_reveal_title:  { en: 'STYLE LEVEL UP!', fr: 'NIVEAU STYLE !', es: '¡NUEVO NIVEL DE ESTILO!' },
+    level_up_reveal_body:   { en: 'You moved from style level {from} to {to}: {name}.', fr: 'Vous passez du niveau style {from} à {to} : {name}.', es: 'Pasas del nivel de estilo {from} al {to}: {name}.' },
+    prestige_up:            { en: 'Signature cycle {n}! Back to Style Starter', fr: 'Cycle signature {n} ! Retour à Style Starter', es: '¡Ciclo signature {n}! Vuelves a Style Starter' },
+    streak_bonus_long:      { en: 'Welcome back, {name}', fr: 'Bon retour, {name}', es: 'Bienvenido de nuevo, {name}' },
+    streak_bonus_short:     { en: 'Welcome back, {name}', fr: 'Bon retour, {name}', es: 'Bienvenido de nuevo, {name}' },
+    welcome_user:           { en: 'Welcome, {name}', fr: 'Bienvenue, {name}', es: 'Bienvenido, {name}' },
+    welcome_back_user:      { en: 'Welcome back, {name}', fr: 'Bon retour, {name}', es: 'Bienvenido de nuevo, {name}' },
+    daily_bonus:            { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    daily_bonus_none:       { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    style_level_line:       { en: 'Style level {level}: {name}', fr: 'Niveau style {level} : {name}', es: 'Nivel de estilo {level}: {name}' },
+    style_level_short:      { en: 'Style {level}', fr: 'Style {level}', es: 'Estilo {level}' },
+    style_level_static:     { en: 'Style Level: Icon', fr: 'Niveau style : Icône', es: 'Nivel de estilo: Icono' },
+    xp_placeholder:         { en: 'Closet Lover', fr: 'Fan du dressing', es: 'Closet lover' },
+    style_score_static:     { en: 'Style Icon | Fashion Trust: 100%', fr: 'Icône style | Confiance mode : 100%', es: 'Icono de estilo | Confianza fashion: 100%' },
+    level_placeholder:      { en: 'Style level ready', fr: 'Niveau style prêt', es: 'Nivel de estilo listo' },
+    user_profile_title:     { en: 'User Profile', fr: 'Profil utilisateur', es: 'Perfil de usuario' },
+    prestige_button:        { en: 'Prestige ✨', fr: 'Prestige ✨', es: 'Prestigio ✨' },
+    look_analysis_label:    { en: 'LOOK ANALYSIS', fr: 'LOOK ANALYSIS', es: 'LOOK ANALYSIS' },
+    match_label:            { en: 'MATCH', fr: 'MATCH', es: 'MATCH' },
+    lorem_placeholder:      { en: 'Your AI style note will appear here.', fr: 'Votre note style IA apparaîtra ici.', es: 'Tu nota de estilo de IA aparecera aqui.' },
+    card_review_placeholder:{ en: '{item}\nTap Get More Info for an AI style note.', fr: '{item}\nTouchez Plus d\'infos pour une note style IA.', es: '{item}\nToca Mas info para una nota de estilo IA.' },
+    card_label_collection:  { en: 'Collection', fr: 'Collection', es: 'Coleccion' },
+    card_label_versatility: { en: 'Versatility', fr: 'Polyvalence', es: 'Versatilidad' },
+    card_label_quality:     { en: 'Quality', fr: 'Qualite', es: 'Calidad' },
+    card_label_pairing:     { en: 'Pairing', fr: 'Association', es: 'Combinacion' },
+    collection_title:       { en: 'Your Closet Collection', fr: 'Votre collection dressing', es: 'Tu coleccion de armario' },
+    scanned_by_preview:     { en: 'Styled by: Username\nFashion Trust: 100%', fr: 'Stylé par : Username\nConfiance mode : 100%', es: 'Estilizado por: Username\nConfianza fashion: 100%' },
 
     // -----------------------------------------------------------------
     // Cloud Manager
@@ -254,7 +369,7 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
     connected_lens_unavail: { en: 'Shared Closet unavailable', fr: 'Dressing partagé indisponible', es: 'Armario compartido no disponible' },
     session_error:          { en: 'Session error: {desc}', fr: 'Erreur de session : {desc}', es: 'Error de sesión: {desc}' },
     connection_failed:      { en: 'Connection failed\n{desc}', fr: 'Connexion échouée\n{desc}', es: 'Conexión fallida\n{desc}' },
-    no_internet:            { en: 'No internet connection\nPlease check your WiFi', fr: 'Pas de connexion internet\nVérifiez votre WiFi', es: 'Sin conexión a internet\nRevisa tu WiFi' },
+    no_internet:            { en: 'No internet — connect WiFi via the Spectacles app on your phone', fr: 'Pas d’internet — connectez le WiFi via l’app Spectacles sur votre téléphone', es: 'Sin internet — conecta el WiFi con la app Spectacles en tu teléfono' },
     session_lost:           { en: 'Session lost\nReturning to menu...', fr: 'Session perdue\nRetour au menu...', es: 'Sesión perdida\nVolviendo al menú...' },
     give_request_busy:      { en: 'Player is busy with another share request', fr: 'Le joueur est occupé avec une autre demande de partage', es: 'El jugador está ocupado con otra solicitud' },
     disconnected:           { en: 'Disconnected from session', fr: 'Déconnecté de la session', es: 'Desconectado de la sesión' },
@@ -318,26 +433,26 @@ const IDLE_PHRASES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         'Ready when the outfit is.',
     ],
     fr: [
-        'Trouvez des voitures, collectionnez-les toutes...',
-        'Pointez une voiture et appuyez sur Scanner !',
-        'Certains disent que ce scanner est plus rapide qu\'un tour du Stig...',
-        'Vous cherchez quelque chose à quatre roues ?',
-        'Chaque voiture a une histoire. Quelle est la vôtre ?',
-        'Vous avez repéré une beauté ? Scannez-la !',
-        'C\'est pas si compliqué ! Appuyez sur le bouton !',
-        'Vitesse. Puissance. Bouton Scanner.',
-        'Les voitures ne se scannent pas toutes seules... pas encore.',
-        'Votre collection attend sa prochaine carte.',
-        'C\'est une Lambo ? Un seul moyen de le savoir...',
-        'Ambition. Vitesse. Un appareil photo. C\'est parti.',
-        'Ce soir dans l\'émission... vous scannez une voiture !',
-        'Dans le monde... le meilleur scanner...',
-        'PUISSAAANCE ! Et aussi... scanner.',
-        'Prêt à ajouter des chevaux à votre collection ?',
-        'Cette voiture a l\'air seule. Offrez-lui une carte.',
-        'Même une Reliant Robin mérite sa carte.',
-        'Clarkson approuverait. Scannez ce truc.',
-        'Ceci n\'est pas un exercice. C\'est un scanner.',
+        'Pointez une piece et appuyez sur Scanner.',
+        'Votre dressing attend sa prochaine carte.',
+        'Scannez un look. Gardez les bonnes idees.',
+        'Un bon outfit merite une archive.',
+        'Regardez une piece et laissez Closet Club la lire.',
+        'Scannez hauts, bas, chaussures ou un look complet.',
+        'Votre dressing devient searchable.',
+        'Un scan de plus vers un dressing intelligent.',
+        'Ce look a quelque chose a dire.',
+        'Trouvez la piece. Sauvegardez le look.',
+        'Scannez maintenant, stylisez plus tard.',
+        'Un peu d intelligence de dressing ne fait pas de mal.',
+        'Laissez le Lens lire le fit.',
+        'Construisez votre dressing une polaroid a la fois.',
+        'Pas de saisie. Scannez juste la piece.',
+        'Le prochain outfit commence ici.',
+        'Cataloguez la piece pendant qu elle est devant vous.',
+        'Votre dressing va s organiser.',
+        'Scannez la piece. Sauvegardez son histoire.',
+        'Pret quand le look l est.',
     ],
     es: [
         'Apunta a una prenda y pulsa Escanear.',
@@ -376,31 +491,31 @@ const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         "Closet Club wants fabric,\nshape, and color in real space.",
         "That is not a live scan.\nFind the actual piece.",
         "A closet card should start\nwith a real garment.",
-        "Your Trust score dropped.\nScan clothing in person.",
+        "Your Fashion Trust dropped.\nScan clothing in person.",
         "This is a wardrobe scanner,\nnot a screenshot collector.",
         "Point at a top, bottom,\nshoe, or full outfit.",
         "The archive gets smarter\nwhen the scan is real.",
         "Try again with the item\nin front of the camera.",
         "Closet Club can read style,\nbut not shortcuts.",
         "Real clothes only.\nYour closet deserves better.",
-        "Trust drops again.\nScan real wardrobe pieces.",
+        "Fashion Trust drops again.\nScan real wardrobe pieces.",
     ],
     fr: [
-        "C'est pas une vraie voiture, mon ami.\nSors dehors et trouve-en une !\nTes jambes fonctionnent, non ?",
-        "Bien essayé, mais je ne suis pas\nné de la dernière pluie.\nScanne une VRAIE voiture.",
-        "Un écran ? Sérieusement ?\nC'est comme mettre une photo\nde nourriture dans ton assiette.",
-        "J'ai vu de meilleurs tricheurs\nqu'un GPS recalculant.\nTon score de Confiance vient de chuter.",
-        "Hammond serait\ndéçu de toi.\nEn fait non, il ferait pareil.",
-        "Si tu continues comme ça,\nta réputation sera pire\nqu'une Reliant Robin.",
-        "C'est une photo, espèce\nd'âne ! Va trouver quelque\nchose avec de vraies roues !",
-        "Ton score de Confiance chute\nplus vite qu'une caravane\nd'une falaise. Arrête de tricher.",
-        "Franchement, c'est si dur\nde trouver une vraie voiture ?\nIl y en a PARTOUT.",
-        "Bon. À ce rythme ton\nrang de Confiance affichera\n'Voleur de Voitures'. Je dis ça...",
-        "C'est un jeu de scan,\npas un jeu de captures d'écran.\nSors de chez toi !",
-        "Oh non. Bref...\nTon score de Confiance vient\nde prendre un autre coup.",
-        "Certains disent que tu as triché.\nTout ce qu'on sait, c'est que\ntu as perdu plus de Confiance.",
-        "Tricher dans un jeu de voitures ?\nC'est comme mettre\nune perruque à un cochon.",
-        "Sur ce coup de théâtre...\nton score de Confiance baisse\nENCORE. Scanne de vraies voitures !",
+        "Cela ressemble a un ecran.\nPointez Closet Club vers de vrais vetements.",
+        "Bien essaye, mais ce dressing\na besoin de vraies pieces.",
+        "Les captures ne vont pas\ndans l archive du dressing.",
+        "Scannez la piece devant vous,\npas une photo.",
+        "Closet Club veut tissu,\nforme et couleur en vrai espace.",
+        "Ce n est pas un scan live.\nTrouvez la vraie piece.",
+        "Une carte dressing commence\navec un vrai vetement.",
+        "Votre confiance mode baisse.\nScannez les vetements en personne.",
+        "C est un scanner de dressing,\npas de captures d ecran.",
+        "Pointez un haut, un bas,\ndes chaussures ou un look complet.",
+        "L archive devient plus intelligente\nquand le scan est reel.",
+        "Reessayez avec la piece\ndevant la camera.",
+        "Closet Club sait lire le style,\npas les raccourcis.",
+        "Vrais vetements seulement.\nVotre dressing merite mieux.",
+        "La confiance mode baisse encore.\nScannez de vraies pieces.",
     ],
     es: [
         "Eso parece una pantalla.\nApunta Closet Club a ropa real.",
@@ -410,51 +525,14 @@ const CHEAT_MESSAGES_TABLE: { en: string[]; fr: string[]; es: string[] } = {
         "Closet Club necesita tela,\nforma y color en espacio real.",
         "Eso no es un scan en vivo.\nBusca la prenda real.",
         "Una card de armario debería\nnacer de una prenda real.",
-        "Tu Confianza bajó.\nEscanea ropa en persona.",
+        "Tu confianza fashion bajó.\nEscanea ropa en persona.",
         "Esto es un scanner de armario,\nno de screenshots.",
         "Apunta a un top, bottom,\nzapato o look completo.",
         "El archivo mejora cuando\nel scan es real.",
         "Intenta otra vez con la prenda\nfrente a la cámara.",
         "Closet Club puede leer estilo,\npero no atajos.",
         "Solo ropa real.\nTu armario merece algo mejor.",
-        "La Confianza baja otra vez.\nEscanea prendas reales.",
-    ],
-};
-
-// =====================================================================
-// COLOCATION GUIDANCE ARRAYS
-// =====================================================================
-
-const COLOCATION_GUIDANCE_TABLE: { en: string[]; fr: string[]; es: string[] } = {
-    en: [
-        'Look around slowly\nScan the room to build a shared 3D map',
-        'Face your friend, within 2 meters\nBoth Spectacles need to see each other',
-        'Keep scanning...\nLook at walls, floor, ceiling, and objects',
-        'Stay close to your friend\nFace-to-face helps alignment',
-        'Good lighting helps!\nAvoid dark or featureless areas',
-        'Aligning spaces...\nKeep looking around and stay within 2m',
-        'Both players: look around slowly\nThe room is being mapped for shared AR',
-        'Tip: stay within 2m of each other\nThe closer you are, the faster it syncs',
-    ],
-    fr: [
-        'Regardez lentement autour de vous\nScannez la pièce pour créer une carte 3D partagée',
-        'Faites face à votre ami, à moins de 2 mètres\nLes deux Spectacles doivent se voir',
-        'Continuez à scanner...\nRegardez murs, sol, plafond et objets',
-        'Restez proche de votre ami\nFace à face aide l\'alignement',
-        'Un bon éclairage aide !\nÉvitez les zones sombres ou uniformes',
-        'Alignement en cours...\nContinuez à regarder autour, restez à 2m',
-        'Les deux joueurs : regardez autour lentement\nLa pièce est cartographiée pour l\'AR partagé',
-        'Astuce : restez à moins de 2m l\'un de l\'autre\nPlus vous êtes proches, plus c\'est rapide',
-    ],
-    es: [
-        'Mira lentamente a tu alrededor\nEscanea la sala para crear un mapa 3D compartido',
-        'Mira a tu amigo, a menos de 2 metros\nAmbas Spectacles deben verse',
-        'Sigue escaneando...\nMira paredes, suelo, techo y objetos',
-        'Quédate cerca de tu amigo\nCara a cara ayuda a la alineación',
-        '¡Buena iluminación ayuda!\nEvita zonas oscuras o sin rasgos',
-        'Alineando espacios...\nSigue mirando alrededor, quédate a 2m',
-        'Ambos jugadores: miren lentamente\nLa sala se mapea para AR compartido',
-        'Consejo: quédense a menos de 2m\nMás cerca = sincronización más rápida',
+        "La confianza fashion baja otra vez.\nEscanea prendas reales.",
     ],
 };
 
@@ -479,14 +557,137 @@ export function tf(key: string, params: { [k: string]: string | number }): strin
     return text;
 }
 
+const STATIC_TEXT_TO_KEY: { [normalizedText: string]: string } = {
+    'Welcome to Closet Club': 'language_welcome_heading',
+    'Choose your language': 'language_welcome_heading',
+    'Sélectionnez la langue - Select language - Selecciona idioma': 'language_select_hint',
+    'Seleccionez la langue - Select language - Selecciona idioma': 'language_select_hint',
+    'Select language': 'language_select_hint',
+    'Accept': 'accept_button',
+    'Yes': 'yes',
+    'Cancel': 'cancel_btn',
+    'Scan Clothes': 'solo',
+    'Start Scanning your clothes': 'welcome_title',
+    'Scan garments and outfits with Spectacles. Closet Club reads each item, builds a smart closet, and turns every save into a polaroid-style wardrobe card.': 'welcome_description',
+    'Scan garments and outfits with Spectacles. Closet Club reads each item, builds a smart closet, and turns every save into a polaroid-style wardrobe card. Look at your outfit in front of a mirror, or just scan your clothes individually. Just Scan It!': 'welcome_description',
+    'Look at a garment or outfit, or just scan you in front of a mirror': 'welcome_title',
+    'LOOK ANALYSIS': 'look_analysis_label',
+    'MATCH': 'match_label',
+    'Loading': 'loading_text',
+    'Scan Look': 'scan_vehicle',
+    'Open Scanner': 'open_scanner',
+    'Scan looks, build your closet.': 'scan_looks_build',
+    'Save the look': 'save_the_look',
+    'Mute Narrator': 'mute_narrator',
+    'Music Player': 'music_player',
+    'Combine Look': 'get_more_info_button',
+    'Get More Info': 'get_more_info_button',
+    'Delete Item': 'delete_item_button',
+    'Delete Card': 'delete_card_button',
+    'Combine Looks': 'combine_looks_button',
+    'Reset Profile ⚠️': 'reset_profile_button',
+    'Reset your closet? All saved wardrobe cards will be lost!': 'reset_closet_question',
+    'Are you sure you want to delete this card?': 'delete_card_question',
+    '⚠️CAUTION: This action cannot be undone.⚠️': 'action_undone',
+    '⚠️This action cannot be undone.⚠️': 'action_undone',
+    'XP XXXX/XXXX': 'xp_placeholder',
+    'Daily style bonus': 'xp_placeholder',
+    'Closet Lover': 'xp_placeholder',
+    'Grand Tourer | Trust: 100%': 'style_score_static',
+    'LVL 10: Legend': 'style_level_static',
+    'Style Level: Icon': 'style_level_static',
+    'Style Icon | Style Score: 100%': 'style_score_static',
+    'Style Icon | Fashion Trust: 100%': 'style_score_static',
+    'Level body text': 'level_placeholder',
+    'Style level ready': 'level_placeholder',
+    'User Profile': 'user_profile_title',
+    'Prestige ✨': 'prestige_button',
+    'Texto simulado, texto simulado,': 'lorem_placeholder',
+    'Your AI style note will appear here.': 'lorem_placeholder',
+    'Car Brand and model': 'item_name_label',
+    'Car Type': 'category_label',
+    'DGNS-C28E-5D1A-26AC': 'closet_card_code_label',
+    'CLOSET-CARD-0000': 'closet_card_code_label',
+    'Item Name': 'item_name_label',
+    'Category': 'category_label',
+    'Closet Card': 'closet_card_code_label',
+    'Occ': 'occasion_label',
+    'Year': 'year_label',
+    'date': 'date_label',
+    'date ': 'date_label',
+    'city': 'city_label',
+    'Closet Value': 'closet_value_label',
+    'Collection': 'card_label_collection',
+    'Versatility': 'card_label_versatility',
+    'Quality': 'card_label_quality',
+    'Pairing': 'card_label_pairing',
+    'Open Collection': 'open_collection',
+    'Your Closet Collection': 'collection_title',
+    'Cluelees WareRope': 'closet_club_title',
+    'Closet Club': 'closet_club_title',
+    'Scanned by: Username Fashion Trust: 100%': 'scanned_by_preview',
+    'Styled by: Username Style Score: 100%': 'scanned_by_preview',
+    'Styled by: Username Fashion Trust: 100%': 'scanned_by_preview',
+    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.': 'lorem_placeholder',
+};
+
+const STATIC_OBJECT_NAME_TO_KEY: { [normalizedName: string]: string } = {
+    'Level Up Title': 'level_up_reveal_title',
+    'Tittle Start Scanning your clothes': 'welcome_title',
+    'Tittle Start Scanning your clothes 1': 'welcome_title',
+    'Confirm Delete Card Container': 'delete_card_question',
+    'Confirm Reset Profile Container': 'reset_closet_question',
+    'Reset Profile': 'reset_profile_button',
+    'Delete Card Button': 'delete_card_button',
+    'Scanner Button': 'open_scanner',
+    'Scan vehicle button text': 'scan_vehicle',
+    'Level Number': 'welcome_back_user',
+    'XP counter': 'xp_placeholder',
+    'Bonus info': 'style_level_line',
+    'User Profile Info': 'user_profile_title',
+};
+
+function normalizeStaticText(text: string): string {
+    return (text || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\u2028/g, '\n')
+        .replace(/\u2029/g, '\n')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+export function translateStaticText(text: string): string {
+    const normalized = normalizeStaticText(text);
+    if (normalized.length === 0) return text;
+
+    const directKey = STATIC_TEXT_TO_KEY[normalized];
+    if (directKey) return t(directKey);
+
+    const keys = Object.keys(STATIC_TEXT_TO_KEY);
+    for (let i = 0; i < keys.length; i++) {
+        const key = STATIC_TEXT_TO_KEY[keys[i]];
+        const entry = S[key];
+        if (!entry) continue;
+        if (normalizeStaticText(entry.en) === normalized ||
+            normalizeStaticText(entry.fr) === normalized ||
+            normalizeStaticText(entry.es) === normalized) {
+            return t(key);
+        }
+    }
+
+    return text;
+}
+
+export function translateStaticTextForObject(objectName: string, text: string): string {
+    const objectKey = STATIC_OBJECT_NAME_TO_KEY[normalizeStaticText(objectName)];
+    if (objectKey && objectKey !== 'welcome_back_user' && objectKey !== 'style_level_line') return t(objectKey);
+    return translateStaticText(text);
+}
+
 export function getIdlePhrases(): string[] {
     return IDLE_PHRASES_TABLE[currentLang] || IDLE_PHRASES_TABLE['en'];
 }
 
 export function getCheatMessages(): string[] {
     return CHEAT_MESSAGES_TABLE[currentLang] || CHEAT_MESSAGES_TABLE['en'];
-}
-
-export function getColocationGuidanceMessages(): string[] {
-    return COLOCATION_GUIDANCE_TABLE[currentLang] || COLOCATION_GUIDANCE_TABLE['en'];
 }

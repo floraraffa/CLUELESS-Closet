@@ -34,7 +34,7 @@ export class BrandLogoLoader extends BaseScriptComponent {
     // =====================================================================
 
     /** User-Agent required by Wikimedia Commons (anti-bot policy). */
-    private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles CarScanner/1.0';
+    private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles ClosetClub/1.0';
 
     /** Brand name (lowercase) -> logo image URL. */
     private readonly BRAND_LOGO_URLS: { [key: string]: string } = {

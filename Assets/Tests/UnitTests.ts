@@ -1,7 +1,7 @@
 /**
  * UnitTests.ts — Unit test runner for DGNS Vehicle Scanner
  *
- * Validates pure functions from VehicleTypes.ts and related modules.
+ * Validates pure functions from ClosetTypes.ts and related modules.
  * Attach to a SceneObject and set runTests = true in the Inspector to execute.
  * Results are printed to the console log.
  *
@@ -15,7 +15,9 @@ import {
     getStreakMultiplier, formatPrestigeStars, formatCarType,
     formatScanDate, createDefaultProfile,
     LEVEL_TABLE, XP_PER_RARITY,
-} from '../VehicleTypes';
+    normalizeScanContext,
+    getTrustRank, getTrustPenalty, TRUST_DEFAULT, TRUST_SCAN_REWARD,
+} from '../ClosetTypes';
 
 @component
 export class UnitTests extends BaseScriptComponent {
@@ -52,6 +54,11 @@ export class UnitTests extends BaseScriptComponent {
             this.testCreateDefaultProfile();
             this.testLevelTable();
             this.testXPPerRarity();
+            this.testNormalizeScanContext();
+            this.testSerialBatchUniqueness();
+            this.testFormatScanDateEdgeCases();
+            this.testTrustSystem();
+            this.testJsonCollectionRoundTrip();
 
             print('');
             print('========================================');
@@ -247,5 +254,82 @@ export class UnitTests extends BaseScriptComponent {
             }
         }
         this.assert(xpIncreasing, 'XP per rarity is strictly increasing');
+    }
+
+    // =====================================================================
+    // REGRESSION: PERSISTENCE & SCAN FLOW
+    // =====================================================================
+
+    private testNormalizeScanContext(): void {
+        print('--- normalizeScanContext ---');
+        this.assertEqual(normalizeScanContext('worn'), 'worn', 'worn is valid');
+        this.assertEqual(normalizeScanContext('flat_lay'), 'flat_lay', 'flat_lay is valid');
+        this.assertEqual(normalizeScanContext('hanger'), 'hanger', 'hanger is valid');
+        this.assertEqual(normalizeScanContext('rack'), 'rack', 'rack is valid');
+        this.assertEqual(normalizeScanContext('mannequin'), 'mannequin', 'mannequin is valid');
+        this.assertEqual(normalizeScanContext('garbage'), 'unknown', 'unknown on invalid');
+        this.assertEqual(normalizeScanContext(null), 'unknown', 'unknown on null');
+        this.assertEqual(normalizeScanContext(undefined), 'unknown', 'unknown on undefined');
+        this.assertEqual(normalizeScanContext(''), 'unknown', 'unknown on empty string');
+    }
+
+    private testSerialBatchUniqueness(): void {
+        print('--- serial batch uniqueness ---');
+        const N = 50;
+        const seen: { [k: string]: boolean } = {};
+        let allUnique = true;
+        for (let i = 0; i < N; i++) {
+            const s = generateSerial();
+            if (seen[s]) { allUnique = false; break; }
+            seen[s] = true;
+        }
+        this.assert(allUnique, 'no duplicate among ' + N + ' serials');
+    }
+
+    private testFormatScanDateEdgeCases(): void {
+        print('--- formatScanDate edge cases ---');
+        const zero = formatScanDate(0);
+        this.assert(zero.length > 0, 'epoch 0 does not crash');
+        const huge = formatScanDate(9999999999999);
+        this.assert(huge.length > 0, 'far-future date does not crash');
+        const d1 = formatScanDate(1700000000000);
+        const d2 = formatScanDate(1800000000000);
+        this.assert(d1 !== d2, 'different timestamps → different dates');
+    }
+
+    private testTrustSystem(): void {
+        print('--- trust system ---');
+        this.assertEqual(typeof TRUST_DEFAULT, 'number', 'TRUST_DEFAULT is a number');
+        this.assert(TRUST_DEFAULT > 0 && TRUST_DEFAULT <= 100, 'TRUST_DEFAULT in range');
+        this.assert(TRUST_SCAN_REWARD > 0, 'scan reward is positive');
+        const r100 = getTrustRank(100);
+        const r0 = getTrustRank(0);
+        this.assert(r100.name.length > 0, 'rank at 100 has name');
+        this.assert(r0.name.length > 0, 'rank at 0 has name');
+        this.assert(r100.name !== r0.name, 'max != min rank name');
+        this.assert(getTrustPenalty(0) > 0, 'penalty > 0 for first cheat');
+        this.assert(getTrustPenalty(5) > getTrustPenalty(0), 'penalty escalates');
+    }
+
+    private testJsonCollectionRoundTrip(): void {
+        print('--- JSON collection round-trip ---');
+        const card = {
+            serial: generateSerial(),
+            brand_model: 'Test Item',
+            item_name: 'Test Item',
+            savedAt: 1700000000000,
+            imageGenerated: false,
+            rarity: 2,
+            dateScanned: formatScanDate(1700000000000),
+            scan_context: normalizeScanContext('worn'),
+        };
+        const json = JSON.stringify([card]);
+        const parsed = JSON.parse(json);
+        this.assert(Array.isArray(parsed), 'parsed is array');
+        this.assertEqual(parsed.length, 1, 'one item after round-trip');
+        this.assertEqual(parsed[0].serial, card.serial, 'serial survives round-trip');
+        this.assertEqual(parsed[0].savedAt, card.savedAt, 'savedAt survives round-trip');
+        this.assertEqual(parsed[0].rarity, 2, 'rarity survives round-trip');
+        this.assertEqual(parsed[0].imageGenerated, false, 'imageGenerated survives round-trip');
     }
 }

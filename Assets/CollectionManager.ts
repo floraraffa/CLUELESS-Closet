@@ -22,13 +22,13 @@
 
 import { OpenAI } from 'RemoteServiceGateway.lspkg/HostedExternal/OpenAI';
 import {
-    VehicleData, SavedVehicleData, SimplifiedCard, TradeHistoryEntry,
+    VehicleData, SavedVehicleData,
     findChildByName, enableAllDescendants, formatCarType,
     getRarityLabel, formatRarityText, clampStat, generateSerial,
-    formatScanDate, getTrustColor, normalizeScanContext,
-} from './VehicleTypes';
+    formatScanDate, normalizeScanContext,
+} from './ClosetTypes';
 import { BrandLogoLoader } from './BrandLogoLoader';
-import { t, tf } from './Localization';
+import { t, tf, translateStaticTextForObject } from './Localization';
 import { CardInteraction } from './CardInteraction';
 
 @component
@@ -130,31 +130,6 @@ export class CollectionManager extends BaseScriptComponent {
     // =====================================================================
     @input
     @allowUndefined
-    @hint('"Share Collection" button on left hand (inside User Card Info)')
-    shareCollectionButton: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Confirm Share Container" with confirmation text, URL text, Yes/Cancel buttons')
-    confirmShareContainer: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Yes CapsuleButton" inside Confirm Share Container')
-    confirmShareYesButton: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Cancel CapsuleButton" inside Confirm Share Container')
-    confirmShareCancelButton: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Collection Shared Confirmation" Text — displays the URL after sharing')
-    shareConfirmationText: Text;
-
-    @input
-    @allowUndefined
     @hint('"Reset Profile" button inside User Card Info')
     resetCollectionButton: SceneObject;
 
@@ -224,7 +199,7 @@ export class CollectionManager extends BaseScriptComponent {
     onHideCardStatus: ((seconds: number) => void) | null = null;
     /** Called to hide description after delay. */
     onHideDescriptionAfterDelay: ((seconds: number) => void) | null = null;
-    /** Called to connect a button (utility from VehicleCardUI). */
+    /** Called to connect a button (utility from ClosetCardUI). */
     onConnectButton: ((obj: SceneObject, cb: () => void, name: string) => boolean) | null = null;
     /** Legacy callback for older collector card review behavior. */
     onReviewVehicle: ((data: SavedVehicleData, cardReviewText?: Text) => void) | null = null;
@@ -244,8 +219,6 @@ export class CollectionManager extends BaseScriptComponent {
     onCardGenerationFailed: (() => void) | null = null;
     /** Called when reveal card starts flying back to inventory. */
     onCardFlyToInventory: (() => void) | null = null;
-    /** Called when the carousel visibility changes (for Connected Lens sync). angle in radians. */
-    onCarouselVisibilityChanged: ((visible: boolean, cardData: SimplifiedCard[], carouselAngle?: number) => void) | null = null;
     /** Called to sync a single vehicle to cloud after save. */
     onCloudSyncVehicle: ((vehicle: SavedVehicleData) => void) | null = null;
     /** Called to upload a card image to cloud storage. */
@@ -254,14 +227,16 @@ export class CollectionManager extends BaseScriptComponent {
     onCloudDeleteVehicle: ((serial: string) => void) | null = null;
     /** Called to sync full collection to cloud (on startup). */
     onCloudSyncFullCollection: ((vehicles: SavedVehicleData[]) => void) | null = null;
-    /** Called to share the collection to the web gallery. Returns the gallery URL via callback. */
-    onShareCollection: ((callback: (url: string) => void) => void) | null = null;
-    /** Called to reset (delete all) vehicles from cloud + gallery. */
+    /** Called to reset (delete all) vehicles from cloud. */
     onCloudResetCollection: (() => void) | null = null;
     /** Returns trust display string for populating cards (username + rank + trust%). */
     onGetTrustDisplayString: (() => string) | null = null;
     /** Returns the note currently visible/edited on the result Closet Card. */
     onGetCurrentNote: (() => string) | null = null;
+    /** Fired when the collection (carousel + outfit builder) is opened. */
+    onCollectionOpened: (() => void) | null = null;
+    /** Shows a status banner to the user (kind: 'info' | 'success' | 'error' | 'warning'). */
+    onStatusBanner: ((message: string, kind: string) => void) | null = null;
 
     // =====================================================================
     // CONSTANTS
@@ -271,8 +246,7 @@ export class CollectionManager extends BaseScriptComponent {
     private readonly GARMENT_CUTOUT_KEY_PREFIX: string = 'clueless_cutout_';
     private readonly OUTFIT_SLOTS_KEY: string = 'clueless_outfit_slots';
     private readonly DELETED_SERIALS_KEY: string = 'clueless_deleted_serials';
-    private readonly TRADE_HISTORY_KEY: string = 'dgns_trade_history';
-    private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles CarScanner/1.0';
+    private readonly HTTP_USER_AGENT: string = 'LensStudio/5.15 SnapSpectacles ClosetClub/1.0';
 
     // Card states (mirrors CardInteraction constants)
     private readonly STATE_IN_COLLECTION: number = 0;
@@ -300,10 +274,13 @@ export class CollectionManager extends BaseScriptComponent {
     private outfitTesterContainer: SceneObject | null = null;
     private outfitSlotObjects: SceneObject[] = [];
     private outfitSlotDefaultTextures: Array<Texture | null> = [];
-    private outfitSlotToSavedIndex: number[] = [-1, -1, -1, -1];
+    private outfitSlotToSavedIndex: number[] = [-1, -1, -1, -1, -1];
     private outfitSlotButtonConnected: boolean[] = [];
     private askOutfitButtonConnected: boolean = false;
     private composeOutfitButtonConnected: boolean = false;
+    private aiPickButtonConnected: boolean = false;
+    private combineButtonSuppressDropIndex: number = -1;
+    private combineButtonSuppressDropUntil: number = 0;
     private garmentPrevPageButtonConnected: boolean = false;
     private garmentNextPageButtonConnected: boolean = false;
     private saveButtonConnected: boolean = false;
@@ -315,11 +292,6 @@ export class CollectionManager extends BaseScriptComponent {
 
     // Last captured photo (Base64, compressed) — used for OpenAI Image Edit (gpt-image-1)
     private lastCapturedBase64: string = '';
-
-    // Trade history — persistent log of all trades
-    private tradeHistory: TradeHistoryEntry[] = [];
-    /** Called to sync a trade history entry to cloud. */
-    onCloudSyncTradeHistory: ((entry: TradeHistoryEntry) => void) | null = null;
 
     // Image generation queue — processes one at a time to avoid overwhelming OpenAI API
     private _imageQueue: Array<{
@@ -334,11 +306,6 @@ export class CollectionManager extends BaseScriptComponent {
     private deleteTargetCardIndex: number = -1;
     private deleteButtonConnected: boolean = false;
     private confirmDeleteConnected: boolean = false;
-
-    // Share collection state
-    private shareButtonConnected: boolean = false;
-    private confirmShareConnected: boolean = false;
-    private isSharing: boolean = false;
 
     // Reset profile state
     private resetButtonConnected: boolean = false;
@@ -369,7 +336,6 @@ export class CollectionManager extends BaseScriptComponent {
     onAwake(): void {
         if (this.deleteCardButton) this.deleteCardButton.enabled = false;
         if (this.confirmDeleteContainer) this.confirmDeleteContainer.enabled = false;
-        if (this.confirmShareContainer) this.confirmShareContainer.enabled = false;
         if (this.confirmResetProfileContainer) this.confirmResetProfileContainer.enabled = false;
         this.hideGarmentPlaceholderContainer();
         print('CollectionManager: [GARMENT-CUTOUT] Config — enabled=' + this.generateGarmentCutoutOnSave
@@ -384,11 +350,9 @@ export class CollectionManager extends BaseScriptComponent {
             this.setupOpenCollectionButton();
             this.setupSaveButton();
             this.setupDeleteCardButton();
-            this.setupShareButton();
             this.setupResetButton();
             this.loadDeletedSerials();
             this.loadCollectionFromStorage();
-            this.loadTradeHistory();
             this.hookFrameCloseButtons();
         });
     }
@@ -549,7 +513,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     /**
-     * Stores the compressed Base64 photo captured by VehicleScanner.
+     * Stores the compressed Base64 photo captured by ClothingScanner.
      * This image will be sent to OpenAI Image Edit (gpt-image-1) to create
      * a collector card using the actual vehicle photo.
      */
@@ -733,83 +697,6 @@ export class CollectionManager extends BaseScriptComponent {
         }
     }
 
-    private setupShareButton(): void {
-        if (this.shareCollectionButton && !this.shareButtonConnected && this.onConnectButton) {
-            if (this.onConnectButton(this.shareCollectionButton, () => this.onShareButtonPressed(), 'ShareCollection')) {
-                this.shareButtonConnected = true;
-            }
-        }
-        if (this.confirmShareYesButton && !this.confirmShareConnected && this.onConnectButton) {
-            if (this.onConnectButton(this.confirmShareYesButton, () => this.onConfirmShareYes(), 'ShareYes')) {
-                this.confirmShareConnected = true;
-            }
-            if (this.confirmShareCancelButton) {
-                this.onConnectButton(this.confirmShareCancelButton, () => this.onConfirmShareCancel(), 'ShareCancel');
-            }
-        }
-    }
-
-    // =====================================================================
-    // SHARE COLLECTION
-    // =====================================================================
-
-    private onShareButtonPressed(): void {
-        if (this.isSharing) return;
-        if (this.savedVehicles.length === 0) {
-            if (this.onShowDescription) this.onShowDescription(t('no_vehicles_share'));
-            return;
-        }
-        if (this.confirmShareContainer) {
-            this.showContainer(this.confirmShareContainer, () => this.onConfirmShareCancel(), 'ConfirmShareClose');
-        }
-        if (this.shareConfirmationText) this.shareConfirmationText.text = t('share_confirm');
-        if (this.onShowDescription) this.onShowDescription(t('share_collection_q'));
-    }
-
-    private onConfirmShareYes(): void {
-        if (this.isSharing) return;
-        this.isSharing = true;
-
-        if (this.shareConfirmationText) this.shareConfirmationText.text = t('sharing');
-        if (this.onShowDescription) this.onShowDescription(t('sharing_collection'));
-
-        if (this.onShareCollection) {
-            this.onShareCollection((url: string) => {
-                this.isSharing = false;
-                if (this.shareConfirmationText) this.shareConfirmationText.text = t('share_url') + url;
-                if (this.onShowDescription) this.onShowDescription(t('collection_shared'));
-
-                const hideDelay = this.createEvent('DelayedCallbackEvent');
-                (hideDelay as any).reset(8.0);
-                hideDelay.bind(() => {
-                    if (this.confirmShareContainer) this.confirmShareContainer.enabled = false;
-                });
-            });
-        } else {
-            this.isSharing = false;
-            if (this.shareConfirmationText) this.shareConfirmationText.text = t('share_unavailable');
-            if (this.onShowDescription) this.onShowDescription(t('share_unavail_short'));
-
-            const hideDelay = this.createEvent('DelayedCallbackEvent');
-            (hideDelay as any).reset(4.0);
-            hideDelay.bind(() => {
-                if (this.confirmShareContainer) this.confirmShareContainer.enabled = false;
-            });
-        }
-    }
-
-    private onConfirmShareCancel(): void {
-        this.isSharing = false;
-        if (this.shareConfirmationText) this.shareConfirmationText.text = t('collection_not_shared');
-        if (this.onShowDescription) this.onShowDescription(t('collection_not_shared'));
-
-        const hideDelay = this.createEvent('DelayedCallbackEvent') as any;
-        hideDelay.reset(3.0);
-        hideDelay.bind(() => {
-            if (this.confirmShareContainer) this.confirmShareContainer.enabled = false;
-        });
-    }
-
     // =====================================================================
     // RESET COLLECTION
     // =====================================================================
@@ -885,7 +772,7 @@ export class CollectionManager extends BaseScriptComponent {
             if (serial.length > 0) this.rememberDeletedSerial(serial);
         }
 
-        // Cloud reset: deletes vehicles, shared gallery, and storage images
+        // Cloud reset: deletes vehicles and storage images
         if (this.onCloudResetCollection) {
             print('CollectionManager: [RESET] Triggering cloud reset (' + count + ' vehicles + gallery + images)');
             this.onCloudResetCollection();
@@ -1054,9 +941,12 @@ export class CollectionManager extends BaseScriptComponent {
             this.deleteCardButton.enabled = false;
             return;
         }
+        // Enable ONLY when a card is actually taken OUT of the collection (placed
+        // in the world). NOT while it is merely PICKED/held during a grab — that
+        // fired false positives every time the user grabbed a card in the carousel.
         let hasCardOutside = false;
         for (let i = 0; i < this.cardStates.length; i++) {
-            if (this.cardStates[i] === this.STATE_PICKED || this.cardStates[i] === this.STATE_PLACED_IN_WORLD) {
+            if (this.cardStates[i] === this.STATE_PLACED_IN_WORLD) {
                 hasCardOutside = true; break;
             }
         }
@@ -1172,7 +1062,6 @@ export class CollectionManager extends BaseScriptComponent {
      */
     translateStaticTexts(): void {
         if (this.confirmDeleteContainer) this.walkAndTranslate(this.confirmDeleteContainer);
-        if (this.confirmShareContainer) this.walkAndTranslate(this.confirmShareContainer);
         if (this.confirmResetProfileContainer) this.walkAndTranslate(this.confirmResetProfileContainer);
         this.updateCollectionButtonLabel();
         print('CollectionManager: Static UI texts translated');
@@ -1183,7 +1072,10 @@ export class CollectionManager extends BaseScriptComponent {
         try {
             const textComp = obj.getComponent('Component.Text') as Text;
             if (textComp) {
-                if (name === 'Yes') {
+                const translated = translateStaticTextForObject(name, textComp.text);
+                if (translated !== textComp.text) {
+                    textComp.text = translated;
+                } else if (name === 'Yes') {
                     textComp.text = t('yes');
                 } else if (name === 'Cancel') {
                     textComp.text = t('cancel_btn');
@@ -1191,8 +1083,6 @@ export class CollectionManager extends BaseScriptComponent {
                     textComp.text = t('action_undone');
                 } else if (name.indexOf('delete this card') >= 0) {
                     textComp.text = t('delete_card_question');
-                } else if (name.indexOf('share your collection') >= 0) {
-                    textComp.text = t('share_question');
                 } else if (name.indexOf('Reset your closet') >= 0 || name.indexOf('reset your closet') >= 0) {
                     textComp.text = t('reset_question');
                 }
@@ -1205,14 +1095,11 @@ export class CollectionManager extends BaseScriptComponent {
         }
     }
 
-    /** Close all popup containers (confirm delete, confirm share, confirm reset). */
+    /** Close all popup containers (confirm delete, confirm reset). */
     closeAllPopups(): void {
         if (this.confirmDeleteContainer) {
             this.confirmDeleteContainer.enabled = false;
             this.deleteTargetCardIndex = -1;
-        }
-        if (this.confirmShareContainer) {
-            this.confirmShareContainer.enabled = false;
         }
         if (this.confirmResetProfileContainer) {
             this.confirmResetProfileContainer.enabled = false;
@@ -1273,6 +1160,13 @@ export class CollectionManager extends BaseScriptComponent {
                 this.onShowDescription(tf('max_cards', { max: maxSize }));
             }
             this.isSavingCard = false;
+            return;
+        }
+
+        // Mirror / full outfit: generate one collector card per worn garment
+        if (this.lastVehicleData.mode === 'full_look'
+            && this.lastVehicleData.items && this.lastVehicleData.items.length >= 2) {
+            this.saveFullLookAsCards();   // takes over; manages isSavingCard
             return;
         }
 
@@ -1344,9 +1238,6 @@ export class CollectionManager extends BaseScriptComponent {
             this.savedVehicles.push(savedData);
             this.enterGarmentInventoryMode();
             this.hideGarmentPlaceholderContainer();
-            if (capturedPhotoBase64.length > 0) {
-                this.saveCardImageBase64ToStorage(vehicleName, savedData.savedAt, capturedPhotoBase64);
-            }
             this.saveCollectionToStorage();
 
             // Cloud sync (fire-and-forget)
@@ -1369,7 +1260,10 @@ export class CollectionManager extends BaseScriptComponent {
             this.populateCollectorCard(cardObj, savedData);
 
             const texture = await this.decodeBase64Texture(capturedPhotoBase64);
-            if (texture) this.applyCardImage(cardObj, texture);
+            if (texture) {
+                this.applyCardImage(cardObj, texture);
+                this.saveCardImageToStorage(vehicleName, savedData.savedAt, texture, savedData.serial);
+            }
             const savedSlotIndex = this.savedVehicles.length - 1;
             this.updateGarmentPlaceholderForSavedItem(savedData, savedSlotIndex, capturedPhotoBase64, texture, cardObj);
 
@@ -1398,7 +1292,10 @@ export class CollectionManager extends BaseScriptComponent {
                 if (this.collectionCardObjects.indexOf(cardObj) < 0) {
                     this.collectionCardObjects.push(cardObj);
                     this.cardStates.push(this.STATE_IN_COLLECTION);
-                    this.cardImageReady.push(texture != null || capturedPhotoBase64.length > 0);
+                    // Only "ready" when a real texture was actually applied. If the raw
+                    // scan failed to decode, keep the image hidden (rather than showing
+                    // Lens Studio's "no image" placeholder) until the async cutout lands.
+                    this.cardImageReady.push(texture != null);
                     this.cardFrameHooked.push(false);
                     this.reviewButtonHooked.push(false);
                 }
@@ -1410,6 +1307,7 @@ export class CollectionManager extends BaseScriptComponent {
                 this.updateCollectionButtonLabel();
                 if (showStatus) showStatus(tf('added_to_collection', { name: vehicleName, count: this.savedVehicles.length }));
                 if (hideStatus) hideStatus(2.5);
+                this.notifyStatus(tf('added_to_collection', { name: vehicleName, count: this.savedVehicles.length }), 'success');
 
                 // Notify orchestrator for XP attribution
                 if (this.onCardSaved) this.onCardSaved(savedData);
@@ -1449,6 +1347,7 @@ export class CollectionManager extends BaseScriptComponent {
         this.enterGarmentOutfitMode();
         this.isCollectionOpen = true;
         this.updateCollectionButtonLabel();
+        if (this.onCollectionOpened) this.onCollectionOpened();
         if (this.cardInteraction) {
             this.cardInteraction.setGrabbedCardIndex(-1);
             this.cardInteraction.carouselAngleOffset = 0;
@@ -1467,6 +1366,10 @@ export class CollectionManager extends BaseScriptComponent {
 
             card.enabled = true;
             enableAllDescendants(card);
+
+            // enableAllDescendants force-enables the Retry button too — re-apply
+            // the real state so it only shows on cards whose generation failed.
+            this.refreshCardRetryVisibility(card, i);
 
             // Hide card images whose texture hasn't loaded yet (BUG 1 fix)
             if (!this.cardImageReady[i]) {
@@ -1501,12 +1404,6 @@ export class CollectionManager extends BaseScriptComponent {
 
         if (this.onShowDescription) this.onShowDescription(tf('collection_count', { count: this.collectionCardObjects.length }));
         if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(3.0);
-
-        // Notify Connected Lens that carousel is now visible (with current angle so remote sees correct rotation)
-        if (this.onCarouselVisibilityChanged) {
-            const angle = this.cardInteraction ? this.cardInteraction.carouselAngleOffset : 0;
-            this.onCarouselVisibilityChanged(true, this.getSimplifiedCardData(), angle);
-        }
     }
 
     hideCollection(): void {
@@ -1516,11 +1413,30 @@ export class CollectionManager extends BaseScriptComponent {
 
         const cs = this.cardInteraction ? this.cardInteraction.collectionCardScale : 0.18;
 
+        // Capture the wrist anchor BEFORE disabling the root — stray cards left out
+        // of the collection animate back to it on close.
+        this.ensureCollectionRoot();
+        let wristPos = vec3.zero();
+        let wristRot = quat.quatIdentity();
+        if (this.collectionRoot) {
+            wristPos = this.collectionRoot.getTransform().getWorldPosition();
+            wristRot = this.collectionRoot.getTransform().getWorldRotation();
+        } else if (this.cardCollectionContainer) {
+            wristPos = this.cardCollectionContainer.getTransform().getWorldPosition();
+            wristRot = this.cardCollectionContainer.getTransform().getWorldRotation();
+        }
+
+        const strays: SceneObject[] = [];
         for (let i = 0; i < this.collectionCardObjects.length; i++) {
             const card = this.collectionCardObjects[i];
             if (!card) continue;
             const state = this.cardStates[i] || this.STATE_IN_COLLECTION;
-            if (state === this.STATE_PLACED_IN_WORLD) continue;
+            // Cards left out of the collection (placed in world, or mid-grab) fly back
+            // to the wrist instead of being snapped/left behind.
+            if (state === this.STATE_PLACED_IN_WORLD || state === this.STATE_PICKED) {
+                strays.push(card);
+                continue;
+            }
 
             if (this.collectionRoot && card.getParent() !== this.collectionRoot) {
                 const oldParent = card.getParent();
@@ -1538,6 +1454,11 @@ export class CollectionManager extends BaseScriptComponent {
             card.enabled = false;
         }
 
+        if (strays.length > 0) {
+            if (this.cardInteraction) this.cardInteraction.setGrabbedCardIndex(-1);
+            this.flyStrayCardsToWrist(strays, wristPos, wristRot, cs);
+        }
+
         if (this.collectionRoot) this.collectionRoot.enabled = false;
         this.hideGarmentPlaceholderContainer();
         this.stopCollectionUpdateLoop();
@@ -1545,64 +1466,67 @@ export class CollectionManager extends BaseScriptComponent {
 
         if (this.onShowDescription) this.onShowDescription(t('collection_closed'));
         if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(1.5);
-
-        // Notify Connected Lens that carousel is now hidden
-        if (this.onCarouselVisibilityChanged) {
-            this.onCarouselVisibilityChanged(false, []);
-        }
     }
-
-    // =====================================================================
-    // CONNECTED LENS — Simplified card data for network transit
-    // =====================================================================
 
     /**
-     * Extracts simplified card data from the saved collection for network transfer.
-     * Omits base64 images and other heavy fields — remote cards display text/stats only.
+     * Animates cards left out of the collection (placed in world or mid-grab) back
+     * to the wrist when the collection closes, then files them away. Each card flies
+     * on its own event so it works even though the collection root is already hidden.
      */
-    getSimplifiedCardData(): SimplifiedCard[] {
-        const result: SimplifiedCard[] = [];
-        for (let i = 0; i < this.savedVehicles.length; i++) {
-            const v = this.savedVehicles[i];
-            if (!v) continue;
-            result.push({
-                brand: v.brand || '',
-                brand_model: v.brand_model || '?',
-                type: v.type || 'unknown',
-                year: v.year || '?',
-                collection: v.collection || '',
-                collection_year: v.collection_year || '',
-                quality: v.quality || '',
-                scan_context: v.scan_context || 'unknown',
-                rarity: v.rarity || 2,
-                rarity_label: v.rarity_label || 'Common',
-                serial: v.serial || '',
-                top_speed: v.top_speed || 1,
-                acceleration: v.acceleration || 1,
-                braking: v.braking || 1,
-                traction: v.traction || 1,
-                comfort: v.comfort || 1,
-                color: v.color || '',
-                material: v.material || '',
-                pattern: v.pattern || '',
-                fit: v.fit || '',
-                style_tags: v.style_tags || [],
-                occasion_tags: v.occasion_tags || [],
-                season_tags: v.season_tags || [],
-                look_summary: v.look_summary || '',
-                suggested_pairings: v.suggested_pairings || [],
-                pairing_note: v.pairing_note || '',
-                feedback: v.feedback || '',
-                ai_note: v.ai_note || '',
-                user_note: v.user_note || '',
-                confidence: v.confidence || 0,
-                savedAt: v.savedAt || 0,
-                dateScanned: v.dateScanned || '',
-                cityScanned: v.cityScanned || '',
+    private flyStrayCardsToWrist(cards: SceneObject[], targetPos: vec3, targetRot: quat, endScale: number): void {
+        if (this.onCardFlyToInventory) this.onCardFlyToInventory();
+        for (let i = 0; i < cards.length; i++) {
+            const cardObj = cards[i];
+            if (!cardObj) continue;
+            cardObj.enabled = true; // ensure visible during the fly
+            const delayEv = this.createEvent('DelayedCallbackEvent') as any;
+            delayEv.bind(() => {
+                const ct = cardObj.getTransform();
+                const startPos = ct.getWorldPosition();
+                const startRot = ct.getWorldRotation();
+                const startScale = ct.getWorldScale().x;
+                const FLY = 0.6;
+                const t0 = getTime();
+                const flyEv = this.createEvent('UpdateEvent');
+                flyEv.bind(() => {
+                    const t = Math.min((getTime() - t0) / FLY, 1.0);
+                    const eased = 1.0 - Math.pow(1.0 - t, 3.0);
+                    ct.setWorldPosition(vec3.lerp(startPos, targetPos, eased));
+                    ct.setWorldRotation(quat.slerp(startRot, targetRot, eased));
+                    const s = startScale + (endScale - startScale) * eased;
+                    ct.setWorldScale(new vec3(s, s, s));
+                    if (t >= 1.0) {
+                        try { flyEv.enabled = false; } catch (e) { /* ignore */ }
+                        this.storeStrayCard(cardObj, endScale);
+                    }
+                });
             });
+            delayEv.reset(i * 0.12);
         }
-        return result;
     }
+
+    /** Files a flown-back stray card into the (closed) collection. */
+    private storeStrayCard(cardObj: SceneObject, scale: number): void {
+        const oldParent = cardObj.getParent();
+        if (this.collectionRoot) {
+            cardObj.setParent(this.collectionRoot);
+            const t = cardObj.getTransform();
+            t.setLocalPosition(vec3.zero());
+            t.setLocalRotation(quat.fromEulerAngles(0, 0, 0));
+            t.setLocalScale(new vec3(scale, scale, scale));
+        }
+        if (oldParent && oldParent.name && oldParent.name.indexOf('WorldCard_') >= 0) {
+            try { oldParent.destroy(); } catch (e) { /* ignore */ }
+        }
+        const idx = this.collectionCardObjects.indexOf(cardObj);
+        if (idx >= 0) this.cardStates[idx] = this.STATE_IN_COLLECTION;
+        cardObj.enabled = false;
+        this.updateDeleteButtonVisibility();
+    }
+
+    // =====================================================================
+    // CARD IMAGE PERSISTENCE
+    // =====================================================================
 
     /**
      * Reads a card image base64 from persistent storage by savedAt key.
@@ -1621,225 +1545,6 @@ export class CollectionManager extends BaseScriptComponent {
             return b64;
         } catch (e) {
             return null;
-        }
-    }
-
-    /**
-     * Returns the savedAt timestamp for a card identified by its serial.
-     * Returns 0 if not found.
-     */
-    getSavedAtForSerial(serial: string): number {
-        for (let i = 0; i < this.savedVehicles.length; i++) {
-            if (this.savedVehicles[i] && this.savedVehicles[i].serial === serial) {
-                return this.savedVehicles[i].savedAt || 0;
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * Adds a card received from another player (Connected Lens trade/give).
-     * Creates a SavedVehicleData from the SimplifiedCard, saves it, and instantiates the card.
-     */
-    addReceivedCard(card: SimplifiedCard, imageB64?: string): void {
-        if (card && this.isDeletedSerial(card.serial || '')) {
-            print('CollectionManager: Ignoring deleted serial from incoming/cloud data — ' + card.serial);
-            return;
-        }
-
-        // Check for duplicates by serial
-        for (let i = 0; i < this.savedVehicles.length; i++) {
-            if (this.savedVehicles[i] && this.savedVehicles[i].serial === card.serial) {
-                print('CollectionManager: Duplicate card ' + card.serial + ' — skipping');
-                if (this.onShowDescription) this.onShowDescription(t('card_duplicate'));
-                return;
-            }
-        }
-
-        const now = Date.now();
-
-        // Build a SavedVehicleData from the SimplifiedCard
-        const savedData: SavedVehicleData = {
-            brand: card.brand || '',
-            brand_model: card.brand_model,
-            item_name: card.brand_model,
-            scan_context: normalizeScanContext(card.scan_context),
-            type: card.type,
-            category: card.type,
-            year: card.year,
-            collection: card.collection || '',
-            collection_year: card.collection_year || '',
-            quality: card.quality || '',
-            color: card.color || '',
-            material: card.material || '',
-            pattern: card.pattern || '',
-            fit: card.fit || '',
-            style_tags: card.style_tags || [],
-            occasion_tags: card.occasion_tags || [],
-            season_tags: card.season_tags || [],
-            look_summary: card.look_summary || '',
-            suggested_pairings: card.suggested_pairings || [],
-            pairing_note: card.pairing_note || '',
-            feedback: card.feedback || '',
-            ai_note: card.ai_note || '',
-            user_note: card.user_note || '',
-            confidence: card.confidence || 0,
-            top_speed: card.top_speed,
-            acceleration: card.acceleration,
-            braking: card.braking,
-            traction: card.traction,
-            comfort: card.comfort,
-            rarity: card.rarity,
-            rarity_label: card.rarity_label,
-            savedAt: now,
-            imageGenerated: !!imageB64,
-            serial: card.serial,
-            dateScanned: card.dateScanned || formatScanDate(now),
-            cityScanned: card.cityScanned || 'Traded',
-        };
-
-        this.savedVehicles.push(savedData);
-
-        // Save the traded image to persistent storage if provided
-        if (imageB64 && imageB64.length > 0) {
-            try {
-                const storageKey = this.IMAGE_KEY_PREFIX + now.toString();
-                global.persistentStorageSystem.store.putString(storageKey, imageB64);
-                print('CollectionManager: Saved traded card image — ' + imageB64.length + ' chars');
-            } catch (e) {
-                print('CollectionManager: Failed to save traded image: ' + e);
-            }
-        }
-
-        // Instantiate the card prefab
-        if (this.verticalCardPrefab) {
-            try {
-                this.ensureCollectionRoot();
-                const parent = this.collectionRoot || this.cardCollectionContainer || null;
-                const cardObj = this.verticalCardPrefab.instantiate(parent);
-                if (cardObj) {
-                    cardObj.enabled = false;
-                    this.collectionCardObjects.push(cardObj);
-                    this.cardStates.push(this.STATE_IN_COLLECTION);
-                    this.cardImageReady.push(!!imageB64);
-                    this.cardFrameHooked.push(false);
-                    this.reviewButtonHooked.push(false);
-                    this.populateCollectorCard(cardObj, savedData);
-
-                    // If image was provided, decode and apply it
-                    if (imageB64 && imageB64.length > 0) {
-                        Base64.decodeTextureAsync(
-                            imageB64,
-                            (texture: Texture) => { this.applyCardImage(cardObj, texture); },
-                            () => { print('CollectionManager: Failed to decode traded card image'); }
-                        );
-                    }
-                }
-            } catch (e) {
-                print('CollectionManager: Error instantiating received card: ' + e);
-            }
-        }
-
-        this.saveCollectionToStorage();
-        print('CollectionManager: Added received card — ' + card.brand_model + ' (serial: ' + card.serial + ')'
-            + (imageB64 ? ' with image' : ' without image'));
-        if (this.onShowDescription) this.onShowDescription(tf('card_added', { name: card.brand_model }));
-        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(3.0);
-    }
-
-    /**
-     * Removes a card from the collection by serial number (Connected Lens give-away).
-     * Handles both the data array and the instantiated SceneObject.
-     */
-    removeCardBySerial(serial: string): void {
-        let idx = -1;
-        for (let i = 0; i < this.savedVehicles.length; i++) {
-            if (this.savedVehicles[i] && this.savedVehicles[i].serial === serial) {
-                idx = i;
-                break;
-            }
-        }
-        if (idx < 0 || idx >= this.savedVehicles.length) {
-            print('CollectionManager: Card serial ' + serial + ' not found — cannot remove');
-            return;
-        }
-
-        const name = this.savedVehicles[idx].brand_model || '?';
-        const savedAt = this.savedVehicles[idx].savedAt;
-        this.rememberDeletedSerial(serial);
-
-        // Cloud delete (fire-and-forget)
-        if (this.onCloudDeleteVehicle) this.onCloudDeleteVehicle(serial);
-
-        // Destroy the SceneObject
-        if (idx < this.collectionCardObjects.length && this.collectionCardObjects[idx]) {
-            try { this.collectionCardObjects[idx].destroy(); } catch (e) { /* ignore */ }
-        }
-
-        if (savedAt) {
-            try {
-                global.persistentStorageSystem.store.putString(this.IMAGE_KEY_PREFIX + savedAt.toString(), '');
-                global.persistentStorageSystem.store.putString(this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString(), '');
-            } catch (e) { /* ignore */ }
-        }
-
-        // Remove from parallel arrays
-        this.savedVehicles.splice(idx, 1);
-        this.collectionCardObjects.splice(idx, 1);
-        this.cardStates.splice(idx, 1);
-        this.cardImageReady.splice(idx, 1);
-        this.cardFrameHooked.splice(idx, 1);
-        this.reviewButtonHooked.splice(idx, 1);
-        this.clampGarmentPageIndex();
-
-        this.rebuildGarmentPlaceholdersFromStorage();
-        this.updateGarmentPlaceholderVisibility();
-        this.saveCollectionToStorage();
-        this.updateCollectionButtonLabel();
-        print('CollectionManager: Removed card — ' + name + ' (serial: ' + serial + ')');
-        if (this.onShowDescription) this.onShowDescription(tf('card_given_away', { name: name }));
-        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(3.0);
-    }
-
-    // =====================================================================
-    // TRADE HISTORY — Persistent log of all trades
-    // =====================================================================
-
-    /** Records a trade event and persists it. */
-    addTradeRecord(entry: TradeHistoryEntry): void {
-        this.tradeHistory.push(entry);
-        this.saveTradeHistory();
-        if (this.onCloudSyncTradeHistory) this.onCloudSyncTradeHistory(entry);
-        print('CollectionManager: Trade logged — ' + entry.type + ' ' + entry.brand_model
-            + (entry.partnerName ? ' with ' + entry.partnerName : ''));
-    }
-
-    /** Returns the full trade history (read-only). */
-    getTradeHistory(): TradeHistoryEntry[] {
-        return this.tradeHistory;
-    }
-
-    private saveTradeHistory(): void {
-        try {
-            const store = global.persistentStorageSystem.store;
-            const json = JSON.stringify(this.tradeHistory);
-            store.putString(this.TRADE_HISTORY_KEY, json);
-        } catch (e) {
-            print('CollectionManager: Error saving trade history: ' + e);
-        }
-    }
-
-    private loadTradeHistory(): void {
-        try {
-            const store = global.persistentStorageSystem.store;
-            const json = store.getString(this.TRADE_HISTORY_KEY);
-            if (json && json.length > 2) {
-                this.tradeHistory = JSON.parse(json) as TradeHistoryEntry[];
-                print('CollectionManager: Loaded ' + this.tradeHistory.length + ' trade history entries');
-            }
-        } catch (e) {
-            print('CollectionManager: Error loading trade history: ' + e);
-            this.tradeHistory = [];
         }
     }
 
@@ -1888,7 +1593,8 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.cardInteraction) {
             this.cardInteraction.initialize(
                 this.collectionCardObjects, this.savedVehicles,
-                this.cardStates, this.cardFrameHooked, this.collectionRoot
+                this.cardStates, this.cardFrameHooked, this.collectionRoot,
+                this.reviewButtonHooked
             );
             this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
                 return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
@@ -1913,7 +1619,8 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.cardInteraction) {
             this.cardInteraction.initialize(
                 this.collectionCardObjects, this.savedVehicles,
-                this.cardStates, this.cardFrameHooked, this.collectionRoot
+                this.cardStates, this.cardFrameHooked, this.collectionRoot,
+                this.reviewButtonHooked
             );
             this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
                 return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
@@ -2021,12 +1728,18 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private populateCollectorCard(cardObj: SceneObject, data: SavedVehicleData): void {
+        this.walkAndTranslate(cardObj);
+
+        // "Retry Image Gen" stays hidden unless this card's generation fails.
+        this.setCardRetryVisible(cardObj, false);
+
         const set = (childName: string, text: string) => {
             const obj = findChildByName(cardObj, childName);
             if (obj) {
                 const tc = obj.getComponent('Component.Text') as Text;
                 if (tc) {
                     tc.text = text;
+                    this.forceTextBlack(tc);
                 } else {
                     print('CollectionManager: [WARN] "' + childName + '" found but has no Text component');
                 }
@@ -2062,6 +1775,7 @@ export class CollectionManager extends BaseScriptComponent {
             if (tc) {
                 const rarity = data.rarity || 2;
                 tc.text = formatRarityText(rarity, data.rarity_label || getRarityLabel(rarity));
+                this.forceTextBlack(tc);
             }
         }
 
@@ -2078,7 +1792,7 @@ export class CollectionManager extends BaseScriptComponent {
         this.setOptionalCardText(cardObj, 'Style Notes', noteText);
         this.setOptionalCardText(cardObj, 'Card Notes', noteText);
         this.setOptionalCardText(cardObj, 'User Note', data.user_note || '');
-        this.setButtonLabel(cardObj, 'Review Button', t('combine_look_button'));
+        this.setButtonLabel(cardObj, 'Review Button', t('delete_btn'));
 
         // Trust / Scanned-by info
         const trustObj = findChildByName(cardObj, 'Scanned by: Username, rank, trust score');
@@ -2099,7 +1813,10 @@ export class CollectionManager extends BaseScriptComponent {
         const obj = findChildByName(cardObj, childName);
         if (!obj) return;
         const tc = obj.getComponent('Component.Text') as Text;
-        if (tc) tc.text = text;
+        if (tc) {
+            tc.text = text;
+            this.forceTextBlack(tc);
+        }
     }
 
     private setButtonLabel(cardObj: SceneObject, buttonName: string, text: string): void {
@@ -2113,6 +1830,7 @@ export class CollectionManager extends BaseScriptComponent {
         const tc = obj.getComponent('Component.Text') as Text;
         if (tc) {
             tc.text = text;
+            this.forceTextBlack(tc);
             return true;
         }
         const childCount = obj.getChildrenCount();
@@ -2126,18 +1844,13 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private applyTrustColorToText(textComp: Text): void {
-        if (!this.onGetTrustDisplayString) return;
+        this.forceTextBlack(textComp);
+    }
+
+    private forceTextBlack(textComp: Text | null): void {
+        if (!textComp) return;
         try {
-            const trustStr = this.onGetTrustDisplayString();
-            const match = trustStr.match(/Trust:\s*(\d+)%/);
-            if (match) {
-                const score = parseInt(match[1], 10);
-                const hex = getTrustColor(score);
-                const r = parseInt(hex.substring(0, 2), 16) / 255;
-                const g = parseInt(hex.substring(2, 4), 16) / 255;
-                const b = parseInt(hex.substring(4, 6), 16) / 255;
-                textComp.textFill.color = new vec4(r, g, b, 1);
-            }
+            textComp.textFill.color = new vec4(0, 0, 0, 1);
         } catch (e) { /* ignore */ }
     }
 
@@ -2214,6 +1927,7 @@ export class CollectionManager extends BaseScriptComponent {
             if (tc) {
                 const rarity = data.rarity || 2;
                 tc.text = formatRarityText(rarity, data.rarity_label || getRarityLabel(rarity));
+                this.forceTextBlack(tc);
             }
         }
     }
@@ -2233,10 +1947,6 @@ export class CollectionManager extends BaseScriptComponent {
      * before its onTriggerUp event becomes available.
      */
     private hookPendingReviewButtons(): void {
-        // Outfit Tester is now a per-session builder. Cards should only be dragged
-        // into slots; automatic composition belongs to the tester's Compose button.
-        if (this.garmentViewMode === 'outfit') return;
-
         const maxAttempts = 120;
         let waitFrames = 0;
         const pollEvent = this.createEvent('UpdateEvent');
@@ -2263,13 +1973,13 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     /**
-     * Combine Look can run from the closet carousel or from a placed card,
-     * but never while the card is being dragged into Outfit Tester.
+     * Automatic Combine Look is only available through the vertical-card button.
+     * A real button press can briefly mark the card as PICKED before this callback
+     * arrives, so both collection and transient picked states are allowed here.
      */
     private canTriggerCombineLook(cardIndex: number): boolean {
         const state = this.cardStates[cardIndex] || this.STATE_IN_COLLECTION;
-        return state === this.STATE_IN_COLLECTION
-            || state === this.STATE_PLACED_IN_WORLD;
+        return state === this.STATE_IN_COLLECTION || state === this.STATE_PICKED;
     }
 
     private triggerCombineLook(cardIndex: number, data: SavedVehicleData, cardReviewText: Text | null, source: string): void {
@@ -2279,15 +1989,34 @@ export class CollectionManager extends BaseScriptComponent {
         }
 
         print('CollectionManager: [COMBINE] Combine Look pressed (' + source + ') for ' + (data.brand_model || '?'));
-        const matchIndexes = this.getBestLookCombinationIndexes(cardIndex, 1);
-        const closetItems = matchIndexes.length > 0
-            ? matchIndexes.map((idx) => this.savedVehicles[idx]).filter((item) => !!item)
-            : this.savedVehicles.slice();
-        if (this.onCombineLook) {
-            this.onCombineLook(data, closetItems, cardReviewText || undefined);
-        } else if (this.onReviewVehicle) {
-            this.onReviewVehicle(data, cardReviewText || undefined);
+        if (cardReviewText) this.setVerticalCardReviewText(cardReviewText, t('composing_outfit_ai'));
+        this.cancelCardGrabForButtonCombine(cardIndex);
+        this.enterGarmentOutfitMode();
+        this.showOutfitBuilderContainer();
+        this.composeOutfitWithAI(cardIndex, cardReviewText);
+    }
+
+    private cancelCardGrabForButtonCombine(cardIndex: number): void {
+        if (cardIndex < 0 || cardIndex >= this.collectionCardObjects.length) return;
+        this.cardStates[cardIndex] = this.STATE_IN_COLLECTION;
+        this.combineButtonSuppressDropIndex = cardIndex;
+        this.combineButtonSuppressDropUntil = getTime() + 1.0;
+        if (this.cardInteraction && this.cardInteraction.getGrabbedCardIndex() === cardIndex) {
+            this.cardInteraction.setGrabbedCardIndex(-1);
         }
+
+        const card = this.collectionCardObjects[cardIndex];
+        if (!card) return;
+        try {
+            if (this.collectionRoot && card.getParent() !== this.collectionRoot) {
+                card.setParent(this.collectionRoot);
+            }
+            card.enabled = true;
+            if (this.cardInteraction) {
+                const scale = this.cardInteraction.collectionCardScale;
+                card.getTransform().setLocalScale(new vec3(scale, scale, scale));
+            }
+        } catch (e) { /* best-effort reset after button press */ }
     }
 
     private showLookCombinationInGarmentPlaceholder(targetIndex: number, matchIndexes: number[]): void {
@@ -2470,6 +2199,7 @@ export class CollectionManager extends BaseScriptComponent {
             }
             card.enabled = true;
             enableAllDescendants(card);
+            this.refreshCardRetryVisibility(card, i);
             if (i < this.savedVehicles.length) this.reapplyCardStatBars(card, this.savedVehicles[i]);
 
             const isTarget = i === targetIndex;
@@ -2561,7 +2291,8 @@ export class CollectionManager extends BaseScriptComponent {
         }
         if (this.hasNeutralLookColor(aColors) || this.hasNeutralLookColor(bColors)) return 3;
         if (this.hasComplementaryLookColors(aColors, bColors)) return 3;
-        return 0;
+        if (this.hasAnalogousLookColors(aColors, bColors)) return 2;
+        return -4;
     }
 
     private getLookColorKeywords(text: string): string[] {
@@ -2593,6 +2324,17 @@ export class CollectionManager extends BaseScriptComponent {
             || this.hasColorPair(a, b, 'pink', 'gray')
             || this.hasColorPair(a, b, 'pink', 'grey')
             || this.hasColorPair(a, b, 'yellow', 'navy');
+    }
+
+    private hasAnalogousLookColors(a: string[], b: string[]): boolean {
+        return this.hasColorPair(a, b, 'blue', 'green')
+            || this.hasColorPair(a, b, 'blue', 'purple')
+            || this.hasColorPair(a, b, 'red', 'pink')
+            || this.hasColorPair(a, b, 'orange', 'brown')
+            || this.hasColorPair(a, b, 'yellow', 'green')
+            || this.hasColorPair(a, b, 'olive', 'green')
+            || this.hasColorPair(a, b, 'tan', 'brown')
+            || this.hasColorPair(a, b, 'cream', 'beige');
     }
 
     private hasColorPair(a: string[], b: string[], first: string, second: string): boolean {
@@ -2668,12 +2410,25 @@ export class CollectionManager extends BaseScriptComponent {
         const callback = (source: string) => {
             const currentIndex = this.collectionCardObjects.indexOf(cardObj);
             const idx = currentIndex >= 0 ? currentIndex : cardIndex;
-            const currentData = this.savedVehicles[idx] || data;
-            if (!currentData) {
-                print('CollectionManager: [COMBINE] Ignored (' + source + ') - card data missing');
+            if (idx < 0 || idx >= this.savedVehicles.length) {
+                print('CollectionManager: [DELETE] Ignored (' + source + ') - card data missing');
                 return;
             }
-            this.triggerCombineLook(idx, currentData, carReviewText, source);
+            // Only allow delete when the card is actually taken OUT of the collection
+            // (placed in the world). Prevents accidental deletes while browsing/grabbing
+            // cards in the carousel.
+            if ((this.cardStates[idx] || this.STATE_IN_COLLECTION) !== this.STATE_PLACED_IN_WORLD) {
+                print('CollectionManager: [DELETE] Ignored (' + source + ') - card still in collection');
+                if (this.onShowDescription) this.onShowDescription(t('delete_place_first'));
+                if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
+                return;
+            }
+            // Same flow as the wrist delete button, but targeting this specific card directly
+            this.deleteTargetCardIndex = idx;
+            if (this.confirmDeleteContainer) {
+                this.showContainer(this.confirmDeleteContainer, () => this.onConfirmDeleteCancel(), 'ConfirmDeleteClose');
+            }
+            if (this.onShowDescription) this.onShowDescription(tf('delete_confirm', { name: this.savedVehicles[idx]?.brand_model || '?' }));
         };
 
         // Strategy 1: Try connectButton utility (checks multiple event types)
@@ -2706,12 +2461,16 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private findCollectorCombineButton(cardObj: SceneObject): SceneObject | null {
-        const names = ['Review Button', 'Combine Button', 'Combine Look Button', 'Look Button'];
+        // This per-card button triggers the delete-confirm flow. The redesigned
+        // card prefab names it "Delete Button"; older car-template names kept for
+        // backward compatibility.
+        const names = ['Delete Button', 'Delete Card Button', 'Delete Clothes', 'Delete Item',
+            'Review Button', 'Combine Button', 'Combine Look Button', 'Look Button'];
         for (let i = 0; i < names.length; i++) {
             const found = findChildByName(cardObj, names[i]);
             if (found) return found;
         }
-        return this.findButtonByVisibleText(cardObj, ['combine', 'combinar', 'combiner'], 0);
+        return this.findButtonByVisibleText(cardObj, ['delete', 'supprimer', 'eliminar', 'combine'], 0);
     }
 
     private findButtonByVisibleText(obj: SceneObject, words: string[], depth: number): SceneObject | null {
@@ -2953,16 +2712,53 @@ export class CollectionManager extends BaseScriptComponent {
             return;
         }
 
+        // Offline at save time: skip the AI call (it would only fail), tell the
+        // user to connect, and surface the per-card Retry button. The scan photo
+        // is already persisted, so retry-on-reload (or the button) recovers it.
+        if (!this.hasInternet()) {
+            print('CollectionManager: [GARMENT-CUTOUT] Skipped — no internet');
+            this.markCardGenerationResult(sourceCardObj, false);
+            this.notifyStatus(t('no_internet'), 'warning');
+            return;
+        }
+
         const statusCb = this.onShowCardStatus || this.onShowAnimatedDescription || this.onShowDescription;
         const hideStatus = this.onHideCardStatus || null;
         if (statusCb) statusCb(t('generating_garment_cutout'));
 
-        this.generateGarmentCutoutTexture(data, capturedBase64)
+        this.setCardGenerating(data.savedAt, true);
+        this.generateGarmentCutoutTexture(data, capturedBase64, true)
             .then((cutoutTexture: Texture) => {
-                const currentIndex = this.findSavedVehicleIndexBySerial(data.serial);
-                if (currentIndex < 0) return;
+                this.setCardGenerating(data.savedAt, false);
+                // Always apply the cutout to the card and persist it — mirror the
+                // outfit path so a transient serial/slot miss or a closed closet
+                // never drops the image (this was the single-garment "no image" bug).
+                if (sourceCardObj) {
+                    this.applyCardImage(sourceCardObj, cutoutTexture);
+                    this.markCardGenerationResult(sourceCardObj, true);
+                    print('CollectionManager: [GARMENT-CUTOUT] Applied generated image to bracelet/card object');
+                }
+                this.saveGarmentCutoutTextureToStorage(data.savedAt, cutoutTexture, (saved: boolean, b64?: string) => {
+                    const stillSavedIndex = this.findSavedVehicleIndexBySerial(data.serial);
+                    if (stillSavedIndex >= 0) {
+                        data.imageGenerated = saved;
+                        this.savedVehicles[stillSavedIndex].imageGenerated = saved;
+                        this.saveCollectionToStorage();
+                    }
+                    if (saved) {
+                        if (data.serial && b64 && this.onCloudUploadImage) {
+                            this.onCloudUploadImage(data.serial, b64);
+                        }
+                        print('CollectionManager: [GARMENT-CUTOUT] Persisted generated image metadata');
+                    } else {
+                        print('CollectionManager: [GARMENT-CUTOUT] Generated image is visible now, but storage did not persist it');
+                    }
+                });
 
-                const currentSlotIndex = (this.garmentPlaceholderContainer
+                // Update the live closet placeholder only when it is currently visible.
+                const currentIndex = this.findSavedVehicleIndexBySerial(data.serial);
+                const currentSlotIndex = (currentIndex >= 0
+                    && this.garmentPlaceholderContainer
                     && this.garmentPlaceholderContainer.enabled
                     && this.garmentViewMode === 'combination')
                     ? this.getVisualSlotIndexForSavedIndex(currentIndex)
@@ -2978,38 +2774,23 @@ export class CollectionManager extends BaseScriptComponent {
                 } else {
                     print('CollectionManager: [GARMENT-CUTOUT] Closet look builder is closed; generated image saved for future looks');
                 }
-                if (sourceCardObj) {
-                    this.applyCardImage(sourceCardObj, cutoutTexture);
-                    print('CollectionManager: [GARMENT-CUTOUT] Applied generated image to bracelet/card object');
-                }
-                this.saveGarmentCutoutTextureToStorage(data.savedAt, cutoutTexture, (saved: boolean, b64?: string) => {
-                    const stillSavedIndex = this.findSavedVehicleIndexBySerial(data.serial);
-                    if (stillSavedIndex < 0) return;
-                    data.imageGenerated = saved;
-                    this.savedVehicles[stillSavedIndex].imageGenerated = saved;
-                    this.saveCollectionToStorage();
-                    if (saved) {
-                        if (data.serial && b64 && this.onCloudUploadImage) {
-                            this.onCloudUploadImage(data.serial, b64);
-                        }
-                        print('CollectionManager: [GARMENT-CUTOUT] Persisted generated image metadata for card #' + (stillSavedIndex + 1));
-                    } else {
-                        print('CollectionManager: [GARMENT-CUTOUT] Generated image is visible now, but storage did not persist it');
-                    }
-                });
                 if (statusCb) statusCb(tf('garment_cutout_ready', { name: data.brand_model || data.item_name || 'Item' }));
                 if (hideStatus) hideStatus(2.5);
-                print('CollectionManager: [GARMENT-CUTOUT] Applied cutout to saved card #' + (currentIndex + 1)
-                    + ' — ' + (data.brand_model || data.item_name || 'item'));
             })
             .catch((e) => {
+                this.setCardGenerating(data.savedAt, false);
                 print('CollectionManager: [GARMENT-CUTOUT] Failed, keeping original scan image in placeholder: ' + e);
                 if (statusCb) statusCb(t('garment_cutout_failed'));
                 if (hideStatus) hideStatus(3.0);
+                // Surface a retry affordance: show the card's "Retry Image Gen"
+                // button + a banner (mentions WiFi if the failure looks like a
+                // connectivity problem).
+                this.markCardGenerationResult(sourceCardObj, false);
+                if (!this.hasInternet()) this.notifyStatus(t('no_internet'), 'warning');
             });
     }
 
-    private async generateGarmentCutoutTexture(data: SavedVehicleData, capturedBase64: string): Promise<Texture> {
+    private async generateGarmentCutoutTexture(data: SavedVehicleData, capturedBase64: string, isolateSingle: boolean = false): Promise<Texture> {
         let imageBytes: Uint8Array;
         try {
             imageBytes = Base64.decode(capturedBase64);
@@ -3017,19 +2798,41 @@ export class CollectionManager extends BaseScriptComponent {
             throw new Error('Garment cutout base64 decode failed: ' + String(decodeErr).substring(0, 120));
         }
 
-        const itemLabel = data.brand_model || data.item_name || data.type || 'clothing item';
-        const editPrompt = 'Edit this image into a clean clothing inventory image for a virtual closet. '
-            + 'Remove the entire background, room, furniture, mirror, floor, wall, shadows that belong to the room, and any non-clothing objects. '
-            + 'Keep only the garment or outfit named "' + itemLabel + '". '
-            + 'If the clothing is worn by a person, keep all visible clothing together as a complete outfit and remove the person/background only where it is safe; never erase the visible garments. '
-            + 'If isolation is ambiguous, keep the full visible clothing silhouette and simply replace the surrounding scene with gray. '
-            + 'Preserve exact colors, fabric texture, logos, seams, folds, wear, condition, pattern, and silhouette. '
-            + 'Place the isolated garment centered on a flat neutral light gray background. '
-            + 'Use soft product-photography lighting and a subtle natural contact shadow only under the garment. '
-            + 'The final image must visibly contain the garment or outfit; do not return an empty background. '
-            + 'Do not invent a new item, do not restyle it, do not add text, borders, labels, hangers, mannequins, or decorative props.';
+        const itemLabel = data.item_name || data.brand_model || data.type || 'clothing item';
+        let editPrompt: string;
+        if (isolateSingle) {
+            // Single-item isolation — works whether the item is worn by a person,
+            // laid flat on a bed/surface, or hanging. Isolate ONE specific garment
+            // and drop everything else (person, scene, and any other clothes).
+            const desc = [data.color, data.material, data.subcategory || data.category]
+                .filter((p) => !!p && p !== 'unknown').join(' ');
+            editPrompt = 'Edit this photo into a clean single-item inventory image for a virtual closet. '
+                + 'The photo may show the item worn by a person, laid flat on a bed or surface, or hanging. '
+                + 'Keep ONLY this one item: "' + itemLabel + '"'
+                + (desc ? ' (the ' + desc + ')' : '') + '. '
+                + 'Completely remove any person, the background, the room, bed, sheets, mirror, floor, walls, shadows, and EVERY other garment or accessory that is not this exact item. '
+                + 'Preserve the exact colors, fabric texture, logos, seams, folds, wear, condition, pattern and silhouette of this single item only. '
+                + 'Place the isolated item centered on a flat neutral light gray background with soft product-photography lighting and a subtle natural contact shadow. '
+                + 'The final image must show ONLY this one garment; do not include other clothing, do not invent items, do not add text, borders, labels, hangers, mannequins, or props.';
+        } else {
+            editPrompt = 'Edit this image into a clean clothing inventory image for a virtual closet. '
+                + 'Remove the entire background, room, furniture, mirror, floor, wall, shadows that belong to the room, and any non-clothing objects. '
+                + 'Keep only the garment or outfit named "' + itemLabel + '". '
+                + 'If the clothing is worn by a person, keep all visible clothing together as a complete outfit and remove the person/background only where it is safe; never erase the visible garments. '
+                + 'If isolation is ambiguous, keep the full visible clothing silhouette and simply replace the surrounding scene with gray. '
+                + 'Preserve exact colors, fabric texture, logos, seams, folds, wear, condition, pattern, and silhouette. '
+                + 'Place the isolated garment centered on a flat neutral light gray background. '
+                + 'Use soft product-photography lighting and a subtle natural contact shadow only under the garment. '
+                + 'The final image must visibly contain the garment or outfit; do not return an empty background. '
+                + 'Do not invent a new item, do not restyle it, do not add text, borders, labels, hangers, mannequins, or decorative props.';
+        }
 
-        const maxAttempts = Math.max(1, Math.floor(this.garmentCutoutMaxAttempts || 1));
+        // Floor at 3 attempts: gpt-image-1 image-edit is slow and intermittently
+        // returns "Proxy error: internal error" (gateway timeout / transient
+        // server error). The sibling card-image path retries 5x for the same
+        // reason. Retries only fire on failure, so a successful cutout still
+        // returns on the first attempt — this never slows a good save.
+        const maxAttempts = Math.max(3, Math.floor(this.garmentCutoutMaxAttempts || 1));
         const attempts: Array<{ model: string; size: string }> = [];
         for (let i = 0; i < maxAttempts; i++) {
             attempts.push({ model: 'gpt-image-1', size: '1024x1024' });
@@ -3382,9 +3185,26 @@ export class CollectionManager extends BaseScriptComponent {
                 'Combiner Button',
             ]) || this.findButtonByVisibleText(outfitRoot, ['compose', 'componer', 'armar', 'combine', 'combinar', 'combiner'], 0);
 
-            if (composeButton && this.connectButtonFallback(composeButton, () => this.onComposeOutfitPressed(), 'ComposeOutfit')) {
+            if (composeButton && this.connectButtonFallback(composeButton, () => this.onAskOutfitPressed(), 'AnalyzeOutfit')) {
                 this.composeOutfitButtonConnected = true;
-                print('CollectionManager: [OUTFIT] Compose button connected');
+                print('CollectionManager: [OUTFIT] Combine/Analyze button connected');
+            }
+        }
+
+        if (!this.aiPickButtonConnected) {
+            const aiPickButton = this.findFirstSceneObjectByNames(outfitRoot, [
+                'AI Pick',
+                'AI Pick Button',
+                'AIPick',
+                'AIPick Button',
+                'Ai Pick',
+                'AI pick',
+                'ai pick',
+            ]) || this.findButtonByVisibleText(outfitRoot, ['ai pick', 'aipick'], 0);
+
+            if (aiPickButton && this.connectButtonFallback(aiPickButton, () => this.onAIPickPressed(), 'AIPick')) {
+                this.aiPickButtonConnected = true;
+                print('CollectionManager: [OUTFIT] AI Pick button connected');
             }
         }
     }
@@ -3393,6 +3213,7 @@ export class CollectionManager extends BaseScriptComponent {
         const outfitRoot = this.getOutfitTesterContainer(false);
         if (!outfitRoot || !outfitRoot.enabled) return false;
         if (cardIndex < 0 || cardIndex >= this.savedVehicles.length || !cardObj) return false;
+        if (this.shouldConsumeButtonCombineDrop(cardIndex)) return true;
 
         this.resolveOutfitSlotObjects();
         const slotIndex = this.findNearestOutfitSlotIndex(cardObj.getTransform().getWorldPosition());
@@ -3407,7 +3228,20 @@ export class CollectionManager extends BaseScriptComponent {
             return true;
         }
 
-        this.assignSavedItemToOutfitSlot(slotIndex, cardIndex, true);
+        return this.assignSavedItemToOutfitSlot(slotIndex, cardIndex, true);
+    }
+
+    private shouldConsumeButtonCombineDrop(cardIndex: number): boolean {
+        if (cardIndex !== this.combineButtonSuppressDropIndex) return false;
+        if (getTime() > this.combineButtonSuppressDropUntil) {
+            this.combineButtonSuppressDropIndex = -1;
+            this.combineButtonSuppressDropUntil = 0;
+            return false;
+        }
+        this.cardStates[cardIndex] = this.STATE_IN_COLLECTION;
+        this.combineButtonSuppressDropIndex = -1;
+        this.combineButtonSuppressDropUntil = 0;
+        print('CollectionManager: [COMBINE] Consumed card drop caused by Combine button press');
         return true;
     }
 
@@ -3431,14 +3265,14 @@ export class CollectionManager extends BaseScriptComponent {
         return bestSlot;
     }
 
-    private assignSavedItemToOutfitSlot(slotIndex: number, savedIndex: number, announce: boolean): void {
-        if (slotIndex < 0 || slotIndex >= this.getOutfitSlotCount()) return;
-        if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) return;
+    private assignSavedItemToOutfitSlot(slotIndex: number, savedIndex: number, announce: boolean): boolean {
+        if (slotIndex < 0 || slotIndex >= this.getOutfitSlotCount()) return false;
+        if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) return false;
         const validation = this.getOutfitSlotValidation(savedIndex, slotIndex);
         if (!validation.ok) {
             if (announce && this.onShowDescription) this.onShowDescription(validation.message);
             if (announce && this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.2);
-            return;
+            return false;
         }
 
         this.outfitSlotToSavedIndex[slotIndex] = savedIndex;
@@ -3460,6 +3294,7 @@ export class CollectionManager extends BaseScriptComponent {
         print('CollectionManager: [OUTFIT] Assigned saved card #' + (savedIndex + 1)
             + ' to ' + this.getOutfitSlotLabel(slotIndex));
         this.clearOutfitSessionFeedback();
+        return true;
     }
 
     private applyOutfitSlotsToVisuals(): void {
@@ -3481,8 +3316,7 @@ export class CollectionManager extends BaseScriptComponent {
     private restoreOutfitSlotDefault(slotIndex: number): void {
         const slotObj = this.getOutfitSlotObject(slotIndex);
         if (!slotObj) return;
-        const defaultTexture = this.outfitSlotDefaultTextures[slotIndex];
-        if (defaultTexture) this.applyTextureToSceneObject(slotObj, defaultTexture);
+        this.hideOutfitSlotImage(slotObj);
 
         const textObj = this.findSceneObjectByName(slotObj, 'Item Name')
             || this.findSceneObjectByName(slotObj, 'Item Name ' + this.getOutfitSlotLabel(slotIndex))
@@ -3492,6 +3326,12 @@ export class CollectionManager extends BaseScriptComponent {
             const textComp = textObj.getComponent('Component.Text') as Text;
             if (textComp) textComp.text = this.getOutfitSlotLabel(slotIndex);
         } catch (e) { /* optional slot label */ }
+    }
+
+    private hideOutfitSlotImage(slotObj: SceneObject): void {
+        const target = this.findFirstVisualTarget(slotObj);
+        if (!target) return;
+        target.enabled = false;
     }
 
     private applySavedItemImageToOutfitSlot(slotIndex: number, savedIndex: number): void {
@@ -3566,49 +3406,281 @@ export class CollectionManager extends BaseScriptComponent {
 
         if (this.onAskOutfitFeedback) {
             this.onAskOutfitFeedback(items, outfit.slotLabels, outfitText, percentText, matchPercent);
-        } else if (this.onCombineLook) {
-            this.onCombineLook(items[0], items.slice(1));
         }
     }
 
     private onComposeOutfitPressed(): void {
+        this.onAskOutfitPressed();
+    }
+
+    /**
+     * AI Pick: let the stylist AI compose the single best cohesive look from the
+     * user's closet, auto-fill the outfit slots with its picks, then immediately
+     * run Rate Look on the result (match % + AI style note). Falls back to the
+     * local deterministic scorer inside composeOutfitWithAI() if the AI is
+     * unavailable.
+     */
+    private async onAIPickPressed(): Promise<void> {
         if (this.savedVehicles.length < 2) {
-            if (this.onShowDescription) this.onShowDescription(t('combine_need_more_items'));
+            if (this.onShowDescription) this.onShowDescription(t('outfit_need_items'));
             if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
             return;
         }
+        // Fill the slots with the AI's pick, then rate the assembled look.
+        await this.composeOutfitWithAI();
+        this.onAskOutfitPressed();
+    }
 
+    /** Local deterministic outfit composition — best-scoring item per slot. */
+    private composeOutfitDeterministic(preferredIndex: number = -1, cardReviewText: Text | null = null): void {
         this.resetOutfitTesterSlots();
-        const selected = this.buildAutomaticOutfitSlots();
+        const selected = this.buildAutomaticOutfitSlots(preferredIndex);
         let count = 0;
         for (let i = 0; i < selected.length; i++) {
             if (selected[i] >= 0) {
-                this.assignSavedItemToOutfitSlot(i, selected[i], false);
-                count++;
+                if (this.assignSavedItemToOutfitSlot(i, selected[i], false)) count++;
             }
         }
 
         this.showOutfitBuilderContainer();
-        if (this.onShowDescription) this.onShowDescription(tf('outfit_composed', { count: count }));
-        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
+        this.showVerticalCardOutfitSummary(cardReviewText, count);
+        if (!cardReviewText && this.onShowDescription) this.onShowDescription(tf('outfit_composed', { count: count }));
+        if (!cardReviewText && this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
     }
 
-    private buildAutomaticOutfitSlots(): number[] {
+    /**
+     * Builds the styling context — WHEN (weekday, time of day, month), WHERE
+     * (city) and WHAT (wardrobe richness) — so the AI picks and justifies looks
+     * that fit the season, place and moment instead of always suggesting the
+     * same thing, and can react to how rich or thin the closet is. Raw facts are
+     * given (city + month) so the model infers the local season/weather itself
+     * (London in January = cold winter, Hossegor in July = warm summer). Public
+     * so the StyleNarrator (Rate Look TTS) shares the exact same context.
+     */
+    buildStyleContext(): string {
+        const parts: string[] = [];
+        try {
+            const now = new Date();
+            const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const weekday = weekdays[now.getDay()] || '';
+            const month = months[now.getMonth()] || '';
+            const hour = now.getHours();
+            const timeOfDay = hour < 6 ? 'late night' : hour < 12 ? 'morning'
+                : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+            const city = this.cachedCity && this.cachedCity.length > 0 ? this.cachedCity : 'an unknown location';
+            parts.push('Right now it is ' + weekday + ' ' + timeOfDay + ' (about ' + hour + ':00), in '
+                + month + ', in ' + city + '.');
+            parts.push('Infer the local season and likely weather from that city and month, and choose + justify the look for that weather, this day of the week and this time of day.');
+        } catch (e) { /* date unavailable — skip the time/place context */ }
+
+        const counts: { [k: string]: number } = {};
+        let total = 0;
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            const v = this.savedVehicles[i];
+            if (!v || this.isDeletedSerial(v.serial || '')) continue;
+            const cat = (v.category || v.type || 'other').toString().toLowerCase();
+            counts[cat] = (counts[cat] || 0) + 1;
+            total++;
+        }
+        const breakdown = Object.keys(counts).map((k) => counts[k] + ' ' + k).join(', ');
+        parts.push('The whole closet holds ' + total + ' item' + (total === 1 ? '' : 's')
+            + (breakdown ? ' (' + breakdown + ')' : '')
+            + '. If it is thin or wrong for the weather, react with theatrical, witty resignation; if it is rich and full of great pieces, be euphoric.');
+
+        return parts.join(' ');
+    }
+
+    /**
+     * Asks the AI to compose the single best cohesive outfit from the user's closet,
+     * fills the slots with its picks, and shows its one-line reasoning. Falls back to
+     * the local deterministic scorer if the AI is unavailable or returns nothing usable.
+     */
+    private async composeOutfitWithAI(preferredIndex: number = -1, cardReviewText: Text | null = null): Promise<void> {
+        const items = this.savedVehicles;
+        const showStatus = this.onShowAnimatedDescription || this.onShowDescription;
+        if (cardReviewText) {
+            this.setVerticalCardReviewText(cardReviewText, t('composing_outfit_ai'));
+        } else if (showStatus) {
+            showStatus(t('composing_outfit_ai'));
+        }
+
+        // Compact wardrobe catalog (capped to keep the prompt small)
+        const MAX = 40;
+        const lines: string[] = [];
+        for (let i = 0; i < Math.min(items.length, MAX); i++) {
+            const d = items[i];
+            if (!d) continue;
+            const tags = (d.style_tags || []).concat(d.occasion_tags || []).slice(0, 4).join(', ');
+            lines.push(i + ': ' + (d.item_name || d.brand_model || 'Item')
+                + ' — ' + (d.category || d.type || 'unknown')
+                + (d.color ? ', ' + d.color : '')
+                + (tags ? ' [' + tags + ']' : ''));
+        }
+
+        const sys = 'You are Closet Club, a fashion stylist. From the user\'s wardrobe below, compose the single best cohesive outfit. '
+            + 'Pick at most ONE item per role, by its numeric index: top (tops and dresses), layer (outerwear/jacket — optional), bottom, shoes, accessory (optional). '
+            + 'Favor color harmony, matching style and occasion, and a complete look (top plus bottom, or a dress without a bottom, plus shoes when available). '
+            + 'Choose an outfit that suits the current setting (season, weather, city, day and time of day) described under Setting. '
+            + 'Vary your selection across requests — do not always pick the same items; when several looks would work, choose a fresh combination. '
+            + 'Avoid color combinations that visibly clash; prefer neutrals or a coherent palette when the closet has them. '
+            + 'If a requested card index is provided, try to include it only when it still makes a cohesive outfit. '
+            + 'Only use indices that exist in the list, and respect each item\'s category. '
+            + 'Respond ONLY with JSON: {"top": <index or -1>, "layer": <index or -1>, "bottom": <index or -1>, "shoes": <index or -1>, "accessory": <index or -1>, "reasoning": "<one short sentence>"}.';
+        const requested = preferredIndex >= 0 && preferredIndex < items.length
+            ? '\n\nRequested card index: ' + preferredIndex
+            : '';
+        const user = 'Wardrobe:\n' + lines.join('\n') + requested
+            + '\n\nSetting:\n' + this.buildStyleContext();
+
+        try {
+            const response = await OpenAI.chatCompletions({
+                model: 'gpt-4o',
+                messages: [
+                    { role: 'system', content: sys },
+                    { role: 'user', content: user },
+                ],
+                temperature: 0.8,
+                max_tokens: 300,
+            });
+
+            const content = response.choices[0].message.content;
+            const match = content.match(/\{[\s\S]*\}/);
+            if (!match) throw new Error('No JSON in AI compose response');
+            const pick = JSON.parse(match[0]);
+
+            this.resetOutfitTesterSlots();
+            let count = 0;
+            const place = (idx: any, slot: number) => {
+                const n = typeof idx === 'number' ? idx : parseInt(idx, 10);
+                if (!isNaN(n) && n >= 0 && n < items.length) {
+                    if (this.assignSavedItemToOutfitSlot(slot, n, false)) count++;
+                }
+            };
+            place(pick.accessory, 0);
+            place(pick.top, 1);
+            place(pick.bottom, 2);
+            place(pick.shoes, 3);
+            place(pick.layer, 4);
+
+            if (count === 0 || (count < 2 && items.length > 1)) {
+                print('CollectionManager: [OUTFIT-AI] AI returned too few usable picks — using deterministic');
+                this.composeOutfitDeterministic(preferredIndex, cardReviewText);
+                return;
+            }
+
+            this.showOutfitBuilderContainer();
+            const reasoning = pick.reasoning && String(pick.reasoning).length > 0
+                ? String(pick.reasoning)
+                : tf('outfit_composed', { count: count });
+            this.showVerticalCardOutfitSummary(cardReviewText, count, reasoning);
+            if (!cardReviewText) {
+                if (this.onShowAnimatedDescription) this.onShowAnimatedDescription(reasoning);
+                else if (this.onShowDescription) this.onShowDescription(reasoning);
+                if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(6.0);
+            }
+            print('CollectionManager: [OUTFIT-AI] Composed ' + count + ' slots by AI');
+        } catch (e) {
+            print('CollectionManager: [OUTFIT-AI] Compose failed, using deterministic: ' + e);
+            this.composeOutfitDeterministic(preferredIndex, cardReviewText);
+        }
+    }
+
+    private showVerticalCardOutfitSummary(cardReviewText: Text | null, count: number, reasoning: string = ''): void {
+        if (!cardReviewText) return;
+        if (count <= 0) {
+            this.setVerticalCardReviewText(cardReviewText, t('combine_need_more_items'));
+            return;
+        }
+        this.setVerticalCardReviewText(cardReviewText, this.buildVerticalCardOutfitSummary(reasoning));
+    }
+
+    private buildVerticalCardOutfitSummary(reasoning: string = ''): string {
+        const lines: string[] = ['Selected look:'];
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            const savedIndex = this.outfitSlotToSavedIndex[i];
+            if (savedIndex < 0 || savedIndex >= this.savedVehicles.length) continue;
+            const item = this.savedVehicles[savedIndex];
+            if (!item) continue;
+            lines.push(this.getOutfitSlotLabel(i) + ': ' + this.getVerticalCardOutfitItemName(item));
+        }
+
+        if (lines.length === 1) return 'No outfit pieces selected.';
+        if (reasoning && reasoning.length > 0 && lines.length < 5) {
+            lines.push('Why: ' + this.shortenOutfitReviewLine(reasoning, 72));
+        }
+        return lines.join('\n');
+    }
+
+    private getVerticalCardOutfitItemName(data: SavedVehicleData): string {
+        let name = (data.item_name || data.brand_model || data.brand || data.type || 'Item').trim();
+        const color = String(data.color || '').trim();
+        const category = String(data.category || data.type || '').trim();
+        const lowerName = name.toLowerCase();
+
+        if (color.length > 0 && lowerName.indexOf(color.toLowerCase()) < 0) {
+            name = color + ' ' + name;
+        }
+        if (category.length > 0 && lowerName.indexOf(category.toLowerCase()) < 0 && name.length < 34) {
+            name += ' (' + category + ')';
+        }
+        return this.shortenOutfitReviewLine(name, 42);
+    }
+
+    private shortenOutfitReviewLine(value: string, maxLength: number): string {
+        const clean = String(value || '').replace(/\s+/g, ' ').trim();
+        if (clean.length <= maxLength) return clean;
+        return clean.substring(0, Math.max(0, maxLength - 3)) + '...';
+    }
+
+    private setVerticalCardReviewText(cardReviewText: Text, value: string): void {
+        try {
+            const obj = cardReviewText.getSceneObject();
+            if (obj) obj.enabled = true;
+            cardReviewText.text = value;
+            this.forceTextBlack(cardReviewText);
+        } catch (e) {
+            try { cardReviewText.text = value; } catch (_ignored) { /* ignore */ }
+        }
+    }
+
+    private buildAutomaticOutfitSlots(preferredIndex: number = -1): number[] {
         const selected = this.createEmptyOutfitSlots();
         const scores: number[] = [];
         for (let i = 0; i < this.getOutfitSlotCount(); i++) {
             scores.push(-9999);
         }
 
+        const preferred = preferredIndex >= 0 && preferredIndex < this.savedVehicles.length
+            ? this.savedVehicles[preferredIndex]
+            : null;
+        const preferredSlot = preferred ? this.getPreferredOutfitSlotForItem(preferred) : -1;
+        if (preferred && preferredSlot >= 0 && preferredSlot < selected.length) {
+            selected[preferredSlot] = preferredIndex;
+            scores[preferredSlot] = 9999;
+        }
+
         for (let i = 0; i < this.savedVehicles.length; i++) {
             const data = this.savedVehicles[i];
             if (!data) continue;
+            if (i === preferredIndex) continue;
             const slotIndex = this.getPreferredOutfitSlotForItem(data);
             if (slotIndex < 0 || slotIndex >= selected.length) continue;
-            const score = this.getOutfitCandidateScore(data, slotIndex);
+            const score = this.getOutfitCandidateScore(data, slotIndex)
+                + (preferred ? this.scoreLookCombination(preferred, data) : 0);
             if (score > scores[slotIndex]) {
                 scores[slotIndex] = score;
                 selected[slotIndex] = i;
+            }
+        }
+
+        const topIndex = selected[1];
+        const topItem = topIndex >= 0 && topIndex < this.savedVehicles.length ? this.savedVehicles[topIndex] : null;
+        if (topItem) {
+            const topFamily = this.getLookFamily(this.getLookCategoryText(topItem));
+            if (topFamily === 'dress' || topFamily === 'full') {
+                selected[2] = -1;
             }
         }
 
@@ -3703,8 +3775,46 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.hasSharedOutfitTags(items, 'occasion_tags')) score += 3;
         if (this.hasSharedOutfitTags(items, 'season_tags')) score += 2;
 
-        const maxScore = ((hasTop && hasBottom) || hasDress) ? 98 : 78;
-        return Math.max(35, Math.min(maxScore, Math.round(score)));
+        const colorPenalty = this.getOutfitColorConflictPenalty(items);
+        score -= colorPenalty.penalty;
+
+        let maxScore = ((hasTop && hasBottom) || hasDress) ? 98 : 78;
+        if (colorPenalty.conflictCount > 0) {
+            maxScore = Math.min(maxScore, colorPenalty.harmonyCount > 0 ? 68 : 58);
+        }
+        const minScore = colorPenalty.conflictCount > 0 ? 18 : 35;
+        return Math.max(minScore, Math.min(maxScore, Math.round(score)));
+    }
+
+    private getOutfitColorConflictPenalty(items: SavedVehicleData[]): { penalty: number; conflictCount: number; harmonyCount: number } {
+        let conflictCount = 0;
+        let harmonyCount = 0;
+        let colorPairCount = 0;
+
+        for (let a = 0; a < items.length; a++) {
+            for (let b = a + 1; b < items.length; b++) {
+                const aColors = this.getLookColorKeywords(items[a].color || '');
+                const bColors = this.getLookColorKeywords(items[b].color || '');
+                if (aColors.length === 0 || bColors.length === 0) continue;
+                colorPairCount++;
+                const colorScore = this.getLookColorHarmonyScore(items[a].color || '', items[b].color || '');
+                if (colorScore < 0) conflictCount++;
+                else if (colorScore > 0) harmonyCount++;
+            }
+        }
+
+        if (colorPairCount === 0 || conflictCount === 0) {
+            return { penalty: 0, conflictCount: 0, harmonyCount: harmonyCount };
+        }
+
+        let penalty = conflictCount * 9;
+        if (harmonyCount === 0) penalty += 10;
+        if (conflictCount >= 2) penalty += 8;
+        return {
+            penalty: Math.min(34, penalty),
+            conflictCount: conflictCount,
+            harmonyCount: harmonyCount,
+        };
     }
 
     private hasSharedOutfitTags(items: SavedVehicleData[], key: string): boolean {
@@ -3863,7 +3973,10 @@ export class CollectionManager extends BaseScriptComponent {
         if (this.isLookAccessoryLike(text) || this.hasLookWord(text, ['glasses', 'sunglasses', 'bag', 'belt', 'scarf', 'jewelry', 'accessories', 'accesorio', 'accesorios'])) return 0;
         if (this.isLookShoeLike(text)) return 3;
         if (this.isLookBottomLike(text)) return 2;
-        if (this.isLookTopLike(text) || this.isLookOuterwearLike(text) || this.isLookDressLike(text) || this.isLookFullOutfit(text)) return 1;
+        // Outerwear (jacket/coat/blazer/cardigan) gets its own layer slot so a top + a
+        // jacket can be worn together, instead of competing for the single Top slot.
+        if (this.isLookOuterwearLike(text)) return 4;
+        if (this.isLookTopLike(text) || this.isLookDressLike(text) || this.isLookFullOutfit(text)) return 1;
         return -1;
     }
 
@@ -3929,7 +4042,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private getOutfitSlotCount(): number {
-        return 4;
+        return 5;
     }
 
     private getOutfitSlotLabel(slotIndex: number): string {
@@ -3937,14 +4050,16 @@ export class CollectionManager extends BaseScriptComponent {
         if (slotIndex === 1) return 'Top';
         if (slotIndex === 2) return 'Bottom';
         if (slotIndex === 3) return 'Shoes';
+        if (slotIndex === 4) return 'Layer';
         return 'Slot';
     }
 
     private getOutfitSlotAliases(slotIndex: number): string[] {
         if (slotIndex === 0) return ['photocard ACCESSORIES', 'photocard ACCESSORY', 'PhotoCard ACCESSORIES', 'PhotoCard ACCESSORY', 'Accessories', 'ACCESSORIES', 'Accessory', 'ACCESSORY', 'photocard HAT', 'PhotoCard HAT', 'Photocard HAT', 'Photo Card HAT', 'photocard HEAD', 'Garment HAT', 'HAT', 'Head'];
-        if (slotIndex === 1) return ['photocard TOP', 'PhotoCard TOP', 'Photocard TOP', 'Photo Card TOP', 'photocard TORSO', 'Garment TOP', 'TOP', 'Torso'];
+        if (slotIndex === 1) return ['photocard TOP', 'PhotoCard TOP', 'Photocard TOP', 'Photo Card TOP', 'photocard TORSO', 'photocard DRESS', 'PhotoCard DRESS', 'Photocard DRESS', 'Photo Card DRESS', 'Garment TOP', 'Garment DRESS', 'TOP', 'Torso', 'Dress', 'DRESS', 'Vestido', 'VESTIDO'];
         if (slotIndex === 2) return ['photocard BOTTOM', 'PhotoCard BOTTOM', 'Photocard BOTTOM', 'Photo Card BOTTOM', 'photocard LEGS', 'Garment BOTTOM', 'BOTTOM', 'Legs'];
         if (slotIndex === 3) return ['photocard SHOES', 'PhotoCard SHOES', 'Photocard SHOES', 'Photo Card SHOES', 'Garment SHOES', 'SHOES', 'Shoes'];
+        if (slotIndex === 4) return ['photocard TOP 1', 'PhotoCard TOP 1', 'Photocard TOP 1', 'Photo Card TOP 1', 'photocard TOP1', 'photocard TOP 2', 'PhotoCard TOP 2', 'Photocard TOP 2', 'Photo Card TOP 2', 'photocard TOP2', 'photocard LAYER', 'photocard OUTERWEAR', 'Garment LAYER', 'TOP 1', 'TOP1', 'TOP 2', 'TOP2', 'Layer', 'Outerwear', 'Jacket'];
         return [];
     }
 
@@ -4118,6 +4233,7 @@ export class CollectionManager extends BaseScriptComponent {
             }
             card.enabled = true;
             enableAllDescendants(card);
+            this.refreshCardRetryVisibility(card, i);
             if (!this.cardImageReady[i]) {
                 const cardImageObj = findChildByName(card, 'Card Image');
                 if (cardImageObj) cardImageObj.enabled = false;
@@ -4156,6 +4272,7 @@ export class CollectionManager extends BaseScriptComponent {
         const card = this.collectionCardObjects[cardIndex];
         card.enabled = true;
         enableAllDescendants(card);
+        this.refreshCardRetryVisibility(card, cardIndex);
         this.layoutCircularCards();
         this.startCollectionUpdateLoop();
     }
@@ -5079,6 +5196,14 @@ export class CollectionManager extends BaseScriptComponent {
             print('CollectionManager: Loaded ' + this.collectionCardObjects.length + ' cards from storage');
             this.updateCollectionButtonLabel();
 
+            // Retry image generation for any card whose cut-out never completed
+            // (scanned offline, or gateway failed). Delayed so it doesn't compete
+            // with scene setup / cloud sync, then funneled through the serialized
+            // background queue so it stays non-blocking and gateway-friendly.
+            const retryEvent = this.createEvent('DelayedCallbackEvent') as any;
+            retryEvent.bind(() => this.retryPendingGarmentGenerations());
+            retryEvent.reset(6.0);
+
             // Cloud sync full collection (fire-and-forget, delayed to let auth complete)
             if (this.onCloudSyncFullCollection && this.savedVehicles.length > 0) {
                 const vehiclesToSync = this.savedVehicles.slice();
@@ -5276,5 +5401,510 @@ export class CollectionManager extends BaseScriptComponent {
                 onComplete();
             }
         });
+    }
+
+    // =====================================================================
+    // FULL-LOOK (MIRROR OUTFIT) — one collector card per worn garment
+    // =====================================================================
+
+    // Background cut-out queue for outfit cards (processes one at a time, non-blocking)
+    private _outfitCutoutQueue: Array<{ data: SavedVehicleData; cardObj: SceneObject; b64: string }> = [];
+    private _outfitCutoutProcessing: boolean = false;
+
+    /**
+     * After the collection loads, retry AI image generation for any card whose
+     * cut-out never completed — e.g. the original scan happened offline, or the
+     * gateway failed at save time. The original scan photo persisted under
+     * IMAGE_KEY_PREFIX is the retry source, so this recovers even days later in a
+     * brand-new session. Work is funneled through the existing background cut-out
+     * queue (one at a time, non-blocking). Cards that already have a generated
+     * image are skipped; cards without a stored original cannot be retried.
+     */
+    private retryPendingGarmentGenerations(): void {
+        if (!this.generateGarmentCutoutOnSave) return;
+        const store = global.persistentStorageSystem.store;
+        let queued = 0;
+        for (let i = 0; i < this.savedVehicles.length; i++) {
+            const data = this.savedVehicles[i];
+            if (!data || !data.savedAt) continue;
+            if (data.imageGenerated) continue;
+            if (this.isDeletedSerial(data.serial || '')) continue;
+
+            // Already have a persisted cut-out? Treat as generated and skip.
+            const cutoutKey = this.GARMENT_CUTOUT_KEY_PREFIX + data.savedAt.toString();
+            const existingCutout = store.getString(cutoutKey);
+            if (existingCutout && existingCutout.length > 0) {
+                data.imageGenerated = true;
+                continue;
+            }
+
+            // Need the original scan photo to regenerate from.
+            const originalKey = this.IMAGE_KEY_PREFIX + data.savedAt.toString();
+            const originalB64 = store.getString(originalKey);
+            if (!originalB64 || originalB64.length === 0) continue;
+
+            const cardObj = this.collectionCardObjects[i] || null;
+            if (!cardObj) continue;
+
+            this.enqueueOutfitCutout(data, cardObj, originalB64);
+            queued++;
+        }
+        if (queued > 0) {
+            print('CollectionManager: [GARMENT-RETRY] Re-queued ' + queued
+                + ' pending image generation(s) from persisted scans');
+        }
+    }
+
+    // =====================================================================
+    // STATUS BANNER + PER-CARD "RETRY IMAGE GEN" BUTTON
+    // =====================================================================
+
+    private retryButtonHookedCards: SceneObject[] = [];
+    private generatingCardSavedAts: number[] = [];
+
+    /** Surfaces a status message to the user (no-op if no banner is wired). */
+    private notifyStatus(message: string, kind: string): void {
+        if (this.onStatusBanner) this.onStatusBanner(message, kind);
+    }
+
+    /** Marks a card's image generation as in-progress (so Retry stays hidden until it settles). */
+    private setCardGenerating(savedAt: number, generating: boolean): void {
+        if (!savedAt) return;
+        const idx = this.generatingCardSavedAts.indexOf(savedAt);
+        if (generating && idx < 0) this.generatingCardSavedAts.push(savedAt);
+        else if (!generating && idx >= 0) this.generatingCardSavedAts.splice(idx, 1);
+    }
+
+    private isCardGenerating(savedAt: number): boolean {
+        return !!savedAt && this.generatingCardSavedAts.indexOf(savedAt) >= 0;
+    }
+
+    /** True when the device reports an active internet connection. */
+    private hasInternet(): boolean {
+        try {
+            return !!global.deviceInfoSystem && global.deviceInfoSystem.isInternetAvailable();
+        } catch (e) {
+            return true; // if we can't tell, assume online and let the request decide
+        }
+    }
+
+    /**
+     * Finds the "Retry Image Gen Button" object on a card — the button parent
+     * that owns the visible pill (background + label child). Toggling it hides
+     * the whole control. ("Retry Image Gen" is the Text child, not the pill.)
+     */
+    private findCardRetryContainer(cardObj: SceneObject): SceneObject | null {
+        if (!cardObj) return null;
+        return findChildByName(cardObj, 'Retry Image Gen Button')
+            || findChildByName(cardObj, 'Retry Image Gen');
+    }
+
+    /** Shows or hides the per-card "Retry Image Gen" button (hidden unless generation failed). */
+    private setCardRetryVisible(cardObj: SceneObject, visible: boolean): void {
+        const container = this.findCardRetryContainer(cardObj);
+        if (!container) return;
+        container.enabled = visible;
+        if (visible) enableAllDescendants(container);
+    }
+
+    /**
+     * Re-applies the correct Retry-button visibility for a card from its real
+     * state: shown ONLY when image generation never succeeded (no generated
+     * cutout in storage AND imageGenerated is false). Must be called after any
+     * enableAllDescendants(card), which would otherwise force the button on.
+     */
+    private refreshCardRetryVisibility(cardObj: SceneObject, savedIndex: number): void {
+        if (!cardObj) return;
+        const data = savedIndex >= 0 && savedIndex < this.savedVehicles.length ? this.savedVehicles[savedIndex] : null;
+        let needsRetry = false;
+        if (data && data.imageGenerated === false && data.savedAt && !this.isCardGenerating(data.savedAt)) {
+            const cutout = global.persistentStorageSystem.store.getString(this.GARMENT_CUTOUT_KEY_PREFIX + data.savedAt.toString());
+            needsRetry = !cutout || cutout.length === 0;
+        }
+        this.setCardRetryVisible(cardObj, needsRetry);
+        if (needsRetry) this.hookCardRetryButton(cardObj);
+    }
+
+    /** Connects the card's "Retry Image Gen" button to re-run generation (once per card). */
+    private hookCardRetryButton(cardObj: SceneObject): void {
+        if (!cardObj || this.retryButtonHookedCards.indexOf(cardObj) >= 0) return;
+        const button = findChildByName(cardObj, 'Retry Image Gen Button') || this.findCardRetryContainer(cardObj);
+        if (!button) return;
+        const connected = this.connectButtonFallbackRecursive(button, () => {
+            this.onRetryImageGenPressed(cardObj);
+        }, 'RetryImageGen', 0);
+        if (connected) {
+            this.retryButtonHookedCards.push(cardObj);
+            print('CollectionManager: [GARMENT-RETRY] Retry button hooked on card');
+        }
+    }
+
+    /** Records the outcome of a card's image generation: toggle the Retry button + notify. */
+    private markCardGenerationResult(cardObj: SceneObject | null | undefined, success: boolean): void {
+        if (!cardObj) return;
+        const failedIdx = this.retryButtonHookedCards.indexOf(cardObj);
+        const wasFailed = failedIdx >= 0;
+        this.setCardRetryVisible(cardObj, !success);
+        if (success) {
+            // Only celebrate a recovery (a card that previously failed). First-time
+            // successes are silent — the image just appears.
+            if (wasFailed) {
+                this.retryButtonHookedCards.splice(failedIdx, 1);
+                this.notifyStatus(t('image_ready'), 'success');
+            }
+        } else {
+            this.hookCardRetryButton(cardObj);
+            this.notifyStatus(t('garment_cutout_failed'), 'error');
+        }
+    }
+
+    /** User pressed "Retry Image Gen" on a card — regenerate from the persisted scan photo. */
+    private onRetryImageGenPressed(cardObj: SceneObject): void {
+        const index = this.collectionCardObjects.indexOf(cardObj);
+        if (index < 0 || index >= this.savedVehicles.length) return;
+        const data = this.savedVehicles[index];
+        if (!data || !data.savedAt) return;
+
+        if (!this.hasInternet()) {
+            this.notifyStatus(t('no_internet'), 'warning');
+            return;
+        }
+
+        const originalB64 = global.persistentStorageSystem.store.getString(this.IMAGE_KEY_PREFIX + data.savedAt.toString());
+        if (!originalB64 || originalB64.length === 0) {
+            this.notifyStatus(t('garment_cutout_no_source'), 'error');
+            return;
+        }
+
+        this.setCardRetryVisible(cardObj, false);
+        this.notifyStatus(t('garment_cutout_retrying'), 'info');
+        print('CollectionManager: [GARMENT-RETRY] Manual retry for ' + (data.brand_model || data.item_name || 'item'));
+        this.enqueueOutfitCutout(data, cardObj, originalB64);
+    }
+
+    /** Queues a single-garment cut-out to generate in the background (one at a time). */
+    private enqueueOutfitCutout(data: SavedVehicleData, cardObj: SceneObject, b64: string): void {
+        if (!b64 || b64.length === 0) return;
+        this._outfitCutoutQueue.push({ data: data, cardObj: cardObj, b64: b64 });
+        this.processOutfitCutoutQueue();
+    }
+
+    /** Drains the outfit cut-out queue one job at a time, updating each card's image when ready. */
+    private async processOutfitCutoutQueue(): Promise<void> {
+        if (this._outfitCutoutProcessing) return;
+        this._outfitCutoutProcessing = true;
+        while (this._outfitCutoutQueue.length > 0) {
+            const job = this._outfitCutoutQueue.shift();
+            if (!job) continue;
+            const name = job.data.item_name || job.data.brand_model || 'item';
+            this.setCardGenerating(job.data.savedAt, true);
+            try {
+                const tex = await this.generateGarmentCutoutTexture(job.data, job.b64, true);
+                this.setCardGenerating(job.data.savedAt, false);
+                this.applyCardImage(job.cardObj, tex);
+                this.saveGarmentCutoutTextureToStorage(job.data.savedAt, tex, (saved: boolean, b64?: string) => {
+                    const idx = this.findSavedVehicleIndexBySerial(job.data.serial);
+                    if (idx >= 0) {
+                        this.savedVehicles[idx].imageGenerated = saved;
+                        this.saveCollectionToStorage();
+                    }
+                    if (saved && b64 && this.onCloudUploadImage) this.onCloudUploadImage(job.data.serial, b64);
+                });
+                this.markCardGenerationResult(job.cardObj, true);
+                print('CollectionManager: [OUTFIT] Background cut-out ready — ' + name);
+            } catch (e) {
+                this.setCardGenerating(job.data.savedAt, false);
+                print('CollectionManager: [OUTFIT] Background cut-out failed for ' + name + ': ' + e);
+                this.markCardGenerationResult(job.cardObj, false);
+                if (!this.hasInternet()) this.notifyStatus(t('no_internet'), 'warning');
+            }
+        }
+        this._outfitCutoutProcessing = false;
+    }
+
+    /**
+     * Saves a worn outfit (mirror selfie, mode 'full_look') as one collector card
+     * per garment. Each garment gets its own isolated AI cut-out; the cards appear
+     * one by one in a grid in front of the user, then fly together into the
+     * collection. Assumes the caller set isSavingCard = true and validated inputs.
+     */
+    private async saveFullLookAsCards(): Promise<void> {
+        const look = this.lastVehicleData;
+        if (!look || !this.verticalCardPrefab) { this.isSavingCard = false; return; }
+
+        const allItems = (look.items || []).filter((it) => !!it && (!!it.item_name || !!it.category));
+        if (allItems.length < 2) { this.isSavingCard = false; return; }
+
+        const maxSize = this.maxCollectionSize || 100;
+        const room = Math.max(0, maxSize - this.savedVehicles.length);
+        const items = room > 0 ? allItems.slice(0, room) : [];
+        if (items.length === 0) {
+            if (this.onShowDescription) this.onShowDescription(tf('max_cards', { max: maxSize }));
+            this.isSavingCard = false;
+            return;
+        }
+
+        const capturedPhotoBase64 = this.lastCapturedBase64 || '';
+        const headData = this.getUserHeadTransform();
+        const revealRoot = this.getOrCreateRevealParent();
+        const showStatus = this.onShowCardStatus || this.onShowAnimatedDescription || this.onShowDescription;
+        const hideStatus = this.onHideCardStatus || null;
+
+        if (this.onCardGenerationStarted) this.onCardGenerationStarted();
+
+        // Outfit judgement text while the cards generate
+        const lookFeedback = look.look_summary || look.feedback || '';
+        if (lookFeedback.length > 0 && this.onShowAnimatedDescription) {
+            this.onShowAnimatedDescription(lookFeedback);
+        }
+
+        const cardObjs: SceneObject[] = [];
+        const savedList: SavedVehicleData[] = [];
+        const baseTs = Date.now();
+
+        // Decode the scan photo once — used as the instant placeholder on every card
+        const scanTex = capturedPhotoBase64.length > 0 ? await this.decodeBase64Texture(capturedPhotoBase64) : null;
+
+        // 1) Build every card up front and pop them into the grid quickly (staggered reveal)
+        for (let i = 0; i < items.length; i++) {
+            const savedData = this.buildSavedDataFromLookItem(items[i], look, baseTs + i);
+            this.savedVehicles.push(savedData);
+            savedList.push(savedData);
+            if (scanTex) {
+                this.saveCardImageToStorage(savedData.item_name || savedData.brand_model, savedData.savedAt, scanTex, savedData.serial);
+            }
+            const cardObj = this.verticalCardPrefab.instantiate(revealRoot);
+            if (!cardObj) continue;
+            this.populateCollectorCard(cardObj, savedData);
+            if (scanTex) this.applyCardImage(cardObj, scanTex);
+            const slot = this.computeOutfitGridSlot(i, items.length, headData);
+            const ct = cardObj.getTransform();
+            ct.setWorldPosition(slot.pos);
+            ct.setWorldRotation(slot.rot);
+            ct.setWorldScale(new vec3(0.001, 0.001, 0.001));
+            cardObj.enabled = false;
+            cardObjs.push(cardObj);
+            if (this.onCloudSyncVehicle) this.onCloudSyncVehicle(savedData);
+
+            // Reveal this card into its grid slot shortly after, staggered for a quick cascade
+            const idx = cardObjs.length - 1;
+            const revealDelay = this.createEvent('DelayedCallbackEvent') as any;
+            revealDelay.bind(() => this.revealOutfitCard(cardObjs[idx], this.computeOutfitGridSlot(idx, cardObjs.length, headData)));
+            revealDelay.reset(idx * 0.2);
+        }
+        this.saveCollectionToStorage();
+
+        // 2) Generate the isolated cut-outs in the BACKGROUND (one at a time) so the cards
+        //    appear instantly. Each card's image updates when ready, even once it is in the
+        //    collection — just like an individual garment scan.
+        for (let i = 0; i < cardObjs.length; i++) {
+            this.enqueueOutfitCutout(savedList[i], cardObjs[i], capturedPhotoBase64);
+        }
+
+        if (showStatus) showStatus(tf('outfit_ready', { count: cardObjs.length }));
+
+        // 3) Once the grid has popped in, stop the waiting SFX and fly the cards into the collection
+        const revealsDone = cardObjs.length * 0.2 + 0.6;
+        const successEvent = this.createEvent('DelayedCallbackEvent') as any;
+        successEvent.bind(() => { if (this.onCardGenerationSuccess) this.onCardGenerationSuccess(); });
+        successEvent.reset(revealsDone);
+
+        const holdEvent = this.createEvent('DelayedCallbackEvent') as any;
+        holdEvent.bind(() => this.flyOutfitCardsToCollection(cardObjs, savedList, hideStatus));
+        holdEvent.reset(revealsDone + 1.0);
+    }
+
+    /** Builds a SavedVehicleData for a single worn garment from a LookItem + the shared look context. */
+    private buildSavedDataFromLookItem(item: any, look: VehicleData, savedAt: number): SavedVehicleData {
+        const rawName = item.item_name || item.subcategory || item.category || 'Garment';
+        const name = this.buildUniqueSavedItemName(rawName);
+        const asVehicle: VehicleData = {
+            vehicle_found: true,
+            clothing_found: true,
+            mode: 'single_item',
+            scan_context: look.scan_context || 'worn',
+            brand: item.brand || '',
+            brand_model: name,
+            item_name: name,
+            type: item.category || 'unknown',
+            category: item.category || 'unknown',
+            subcategory: item.subcategory || '',
+            year: look.year || '',
+            collection: look.collection || '',
+            collection_year: look.collection_year || '',
+            quality: item.condition || look.quality || '',
+            color: item.color || '',
+            material: item.material || '',
+            pattern: item.pattern || '',
+            fit: item.fit || '',
+            condition: item.condition || '',
+            confidence: typeof item.confidence === 'number' ? item.confidence : (look.confidence || 0),
+            style_tags: item.style_tags || [],
+            occasion_tags: item.occasion_tags || [],
+            season_tags: item.season_tags || [],
+            items: [],
+            look_summary: '',
+            suggested_pairings: item.suggested_pairings || [],
+            feedback: item.feedback || '',
+            top_speed: clampStat(item.top_speed),
+            acceleration: clampStat(item.acceleration),
+            braking: clampStat(item.braking),
+            traction: clampStat(item.traction),
+            comfort: clampStat(item.comfort),
+            rarity: clampStat(item.rarity || 2),
+            rarity_label: item.rarity_label || getRarityLabel(clampStat(item.rarity || 2)),
+            scene: look.scene || '',
+        };
+        const pairingNote = this.buildPairingNote(asVehicle);
+        const aiNote = this.buildDisplayNote(asVehicle, pairingNote);
+        return {
+            ...asVehicle,
+            pairing_note: pairingNote,
+            ai_note: aiNote,
+            user_note: '',
+            savedAt: savedAt,
+            imageGenerated: false,
+            serial: generateSerial(),
+            dateScanned: formatScanDate(savedAt),
+            cityScanned: this.cachedCity,
+        } as SavedVehicleData;
+    }
+
+    /** Computes the world position + rotation of card `index` in a grid of `total` cards in front of the user. */
+    private computeOutfitGridSlot(
+        index: number,
+        total: number,
+        headData: { position: vec3; forward: vec3; rotation: quat } | null
+    ): { pos: vec3; rot: quat } {
+        const DISTANCE = 75;
+        const SPACING_X = 14;
+        const SPACING_Y = 18;
+        const MAX_COLS = 3;
+
+        const cols = Math.min(total, MAX_COLS);
+        const rows = Math.ceil(total / cols);
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        const itemsInRow = (row === rows - 1) ? (total - row * cols) : cols;
+        const colCenter = (itemsInRow - 1) / 2;
+        const rowCenter = (rows - 1) / 2;
+        const xOff = (col - colCenter) * SPACING_X;
+        const yOff = (rowCenter - row) * SPACING_Y;
+
+        if (!headData) {
+            return { pos: new vec3(xOff, yOff, -DISTANCE), rot: quat.fromEulerAngles(0, Math.PI, 0) };
+        }
+        const fwd = headData.forward.normalize();
+        const right = fwd.cross(vec3.up()).normalize();
+        const up = right.cross(fwd).normalize();
+        const center = headData.position.add(fwd.uniformScale(DISTANCE));
+        const pos = center.add(right.uniformScale(xOff)).add(up.uniformScale(yOff));
+        return { pos: pos, rot: headData.rotation };
+    }
+
+    /** Scale-in reveal of one outfit card into its grid slot (own UpdateEvent). */
+    private revealOutfitCard(cardObj: SceneObject, slot: { pos: vec3; rot: quat }): void {
+        const GRID_SCALE = 0.33;
+        const DUR = 0.45;
+        const ct = cardObj.getTransform();
+        ct.setWorldPosition(slot.pos);
+        ct.setWorldRotation(slot.rot);
+        ct.setWorldScale(new vec3(0.001, 0.001, 0.001));
+        cardObj.enabled = true;
+        const start = getTime();
+        const ev = this.createEvent('UpdateEvent');
+        ev.bind(() => {
+            const t = Math.min((getTime() - start) / DUR, 1.0);
+            const eased = 1.0 - Math.pow(1.0 - t, 3.0);
+            const s = eased * GRID_SCALE;
+            ct.setWorldScale(new vec3(s, s, s));
+            ct.setWorldPosition(slot.pos);
+            ct.setWorldRotation(slot.rot);
+            if (t >= 1.0) { try { ev.enabled = false; } catch (e) { /* ignore */ } }
+        });
+    }
+
+    /** Flies all outfit cards from their grid into the collection, staggered, then finalizes each. */
+    private flyOutfitCardsToCollection(
+        cardObjs: SceneObject[],
+        savedList: SavedVehicleData[],
+        hideStatus: ((seconds: number) => void) | null
+    ): void {
+        if (cardObjs.length === 0) { this.isSavingCard = false; return; }
+
+        this.ensureCollectionRoot();
+        this.positionVirtualClosetRoot();
+        let targetPos = vec3.zero();
+        let targetRot = quat.quatIdentity();
+        if (this.collectionRoot) {
+            targetPos = this.collectionRoot.getTransform().getWorldPosition();
+            targetRot = this.collectionRoot.getTransform().getWorldRotation();
+        } else if (this.cardCollectionContainer) {
+            targetPos = this.cardCollectionContainer.getTransform().getWorldPosition();
+            targetRot = this.cardCollectionContainer.getTransform().getWorldRotation();
+        }
+        if (this.onCardFlyToInventory) this.onCardFlyToInventory();
+
+        const endScale = this.cardInteraction ? this.cardInteraction.collectionCardScale : 0.18;
+        let remaining = cardObjs.length;
+
+        for (let i = 0; i < cardObjs.length; i++) {
+            const cardObj = cardObjs[i];
+            const savedData = savedList[i];
+            const delayEv = this.createEvent('DelayedCallbackEvent') as any;
+            delayEv.bind(() => {
+                const ct = cardObj.getTransform();
+                const startPos = ct.getWorldPosition();
+                const startRot = ct.getWorldRotation();
+                const startScale = ct.getWorldScale().x;
+                const FLY = 0.7;
+                const t0 = getTime();
+                const flyEv = this.createEvent('UpdateEvent');
+                flyEv.bind(() => {
+                    const t = Math.min((getTime() - t0) / FLY, 1.0);
+                    const eased = 1.0 - Math.pow(1.0 - t, 3.0);
+                    ct.setWorldPosition(vec3.lerp(startPos, targetPos, eased));
+                    ct.setWorldRotation(quat.slerp(startRot, targetRot, eased));
+                    const s = startScale + (endScale - startScale) * eased;
+                    ct.setWorldScale(new vec3(s, s, s));
+                    if (t >= 1.0) {
+                        try { flyEv.enabled = false; } catch (e) { /* ignore */ }
+                        this.finalizeOutfitCard(cardObj, savedData, endScale);
+                        remaining--;
+                        if (remaining <= 0) {
+                            this.isSavingCard = false;
+                            this.updateCollectionButtonLabel();
+                            if (hideStatus) hideStatus(2.5);
+                        }
+                    }
+                });
+            });
+            delayEv.reset(i * 0.18);
+        }
+    }
+
+    /** Reparents a flown outfit card into the collection and registers it in the parallel arrays. */
+    private finalizeOutfitCard(cardObj: SceneObject, savedData: SavedVehicleData, scale: number): void {
+        this.ensureCollectionRoot();
+        if (this.collectionRoot) {
+            cardObj.setParent(this.collectionRoot);
+            const t = cardObj.getTransform();
+            t.setLocalPosition(vec3.zero());
+            t.setLocalRotation(quat.fromEulerAngles(0, 0, 0));
+            t.setLocalScale(new vec3(scale, scale, scale));
+        }
+        cardObj.enabled = false;
+        if (this.collectionCardObjects.indexOf(cardObj) < 0) {
+            this.collectionCardObjects.push(cardObj);
+            this.cardStates.push(this.STATE_IN_COLLECTION);
+            this.cardImageReady.push(true);
+            this.cardFrameHooked.push(false);
+            this.reviewButtonHooked.push(false);
+        }
+        this.syncInteractionState();
+        if (this.cardInteraction) {
+            this.cardInteraction.hookCardFrameEvents(cardObj, this.collectionCardObjects.length - 1);
+        }
+        if (this.onCardSaved) this.onCardSaved(savedData);
     }
 }

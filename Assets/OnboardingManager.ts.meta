@@ -1,0 +1,122 @@
+- !<AssetImportMetadata/cedfd308-79d3-4a5e-9d22-2764caf1590b>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 25da936f-f4f4-44bb-a1dd-94a2165b3285
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 25da936f-f4f4-44bb-a1dd-94a2165b3285
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 0539c7fa-4a0a-4f2a-9d01-293be82f85f4
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/0539c7fa-4a0a-4f2a-9d01-293be82f85f4>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 47fd45d6-af9d-4fa9-a25e-c674ea5746b4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    alwaysShowTutorial: false
+    cardInteraction: false
+    carouselHintOffset: false
+    carouselRotationThreshold: false
+    closetHintOffset: false
+    debugStartCarousel: false
+    debugStartCloset: false
+    debugStartGrid: false
+    debugStartLanguage: false
+    debugStartSave: false
+    debugStartScan: false
+    gestureAnchor: false
+    gridHintOffset: false
+    handHintSize: false
+    handHints: false
+    headCamera: false
+    languageAnchor: false
+    languageHintOffset: false
+    narrator: false
+    pinchAnchor: false
+    saveHintOffset: false
+    scanHintOffset: false
+    skipButton: false
+    skipButtonText: false
+    tutorialPanel: false
+    tutorialText: false
+    voiceMLModule: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - narrator: !<MappingBased.AssignableType> 00000000-0000-0000-0000-000000000000
+      cardInteraction: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      tutorialPanel: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      tutorialText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      skipButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      skipButtonText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      handHints: !<MappingBased.AssignableType_2> 00000000-0000-0000-0000-000000000000
+      pinchAnchor: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      gestureAnchor: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      languageAnchor: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      headCamera: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      languageHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      scanHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      saveHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      closetHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      carouselHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      gridHintOffset: !<Vec3> {x: 0.000000, y: 0.000000, z: -40.000000}
+      handHintSize: 0.500000
+      alwaysShowTutorial: false
+      debugStartLanguage: false
+      debugStartScan: false
+      debugStartSave: false
+      debugStartCloset: false
+      debugStartCarousel: false
+      debugStartGrid: false
+      voiceMLModule: !<reference.Asset> 00000000-0000-0000-0000-000000000000
+      carouselRotationThreshold: 0.350000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input AssignableType narrator {"hint":"StyleNarrator script — used for the tutorial TTS voice"}'
+    - '// @input AssignableType_1 cardInteraction {"hint":"CardInteraction script — polled to detect carousel rotation + grid gesture"}'
+    - '// @input SceneObject tutorialPanel {"hint":"Optional root SceneObject for the tutorial text panel (shown during onboarding, hidden after)"}'
+    - '// @input Component.Text tutorialText {"hint":"Text component that displays the current tutorial instruction (mirrors the spoken line)"}'
+    - '// @input SceneObject skipButton {"hint":"\"Skip Tutorial\" button SceneObject"}'
+    - '// @input Component.Text skipButtonText {"hint":"Text component of the Skip button label"}'
+    - '// @input AssignableType_2 handHints {"hint":"Spectacles 3D Hand Hints — drag the object that has the InteractionHintController component. The tutorial plays the correct hand animation per step."}'
+    - '// @input SceneObject pinchAnchor {"hint":"Anchor SceneObject for the Pinch hint — place it at/near the Scan button. Shown during the SCAN step."}'
+    - '// @input SceneObject gestureAnchor {"hint":"Anchor SceneObject for gesture hints (the LEFT-wrist closet button, carousel, grid). Place an empty object where you want the hint to appear."}'
+    - '// @input SceneObject languageAnchor {"hint":"Anchor SceneObject for the language step — place it near the flags / Accept button at the bottom of the Language Container. The pinch hint points here at launch."}'
+    - '// @input SceneObject headCamera {"hint":"Head-tracked Camera SceneObject. Hints parent to this so they always appear in front of the user (at the per-step offset) no matter where the user stands. Used whenever a step has no specific anchor."}'
+    - '// @input vec3 languageHintOffset = {0,0,-60} {"hint":"LANGUAGE step — hand-hint offset (cm) from the language anchor (toward the flags)."}'
+    - '// @input vec3 scanHintOffset = {0,0,-60} {"hint":"SCAN step — hand-hint offset (cm) from the pinch anchor (Scan button)."}'
+    - '// @input vec3 saveHintOffset = {0,0,-60} {"hint":"SAVE step — hand-hint offset (cm) from the pinch anchor (Save the look)."}'
+    - '// @input vec3 closetHintOffset = {0,0,-60} {"hint":"CLOSET step — hand-hint offset (cm) from the gesture anchor (open the left-wrist closet)."}'
+    - '// @input vec3 carouselHintOffset = {0,0,-60} {"hint":"CAROUSEL step — hand-hint offset (cm) from the gesture anchor."}'
+    - '// @input vec3 gridHintOffset = {0,0,-60} {"hint":"GRID step — hand-hint offset (cm) from the gesture anchor."}'
+    - '// @input float handHintSize = 0.5 {"hint":"Overall scale of the 3D hand hints. Lower = smaller. Applied every time a hint is shown.", "widget":"slider", "min":0.1, "max":2, "step":0.05}'
+    - '// @input bool alwaysShowTutorial {"hint":"DEBUG: always run the tutorial on launch, ignoring the saved \"completed\" flag."}'
+    - '// @input bool debugStartLanguage {"hint":"DEBUG: on launch, jump straight to the LANGUAGE step."}'
+    - '// @input bool debugStartScan {"hint":"DEBUG: on launch, jump straight to the SCAN step."}'
+    - '// @input bool debugStartSave {"hint":"DEBUG: on launch, jump straight to the SAVE step."}'
+    - '// @input bool debugStartCloset {"hint":"DEBUG: on launch, jump straight to the CLOSET step."}'
+    - '// @input bool debugStartCarousel {"hint":"DEBUG: on launch, jump straight to the CAROUSEL step."}'
+    - '// @input bool debugStartGrid {"hint":"DEBUG: on launch, jump straight to the GRID step."}'
+    - '// @input Asset.Asset voiceMLModule {"hint":"VoiceML Module asset — enables the spoken \"Skip Tutorial\" command. Optional: the Skip button always works without it."}'
+    - '// @input float carouselRotationThreshold = 0.35 {"hint":"Carousel rotation (radians) the user must reach to clear the CAROUSEL step"}'

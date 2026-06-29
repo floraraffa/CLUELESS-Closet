@@ -1,0 +1,53 @@
+- !<AssetImportMetadata/2db9a6a6-013d-460e-963a-1eeaa532ee14>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 60e50726-baf0-4354-a4a0-59a8718c75e7
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 60e50726-baf0-4354-a4a0-59a8718c75e7
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 3085b247-a189-420b-8d23-24ac1dc072b3
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/3085b247-a189-420b-8d23-24ac1dc072b3>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 7a2a39b4-c06e-401d-be73-55499e46f2df
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    loopVideo: false
+    targetImage: false
+    videoUrl: false
+    watchContainer: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - videoUrl: ""
+      targetImage: !<reference.Image> 00000000-0000-0000-0000-000000000000
+      watchContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      loopVideo: true
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input string videoUrl {"hint":"Direct URL to a .mp4 video (HTTPS, no login page). e.g. https://files.catbox.moe/xxxx.mp4"}'
+    - '// @input Component.Image targetImage {"hint":"The Image to play the video on (the coat photo Image inside the Language Container)."}'
+    - '// @input SceneObject watchContainer {"hint":"Container whose visibility drives the video (the Language Container). When it is disabled, the video unloads. Defaults to this object if unset."}'
+    - '// @input bool loopVideo = true {"hint":"Loop the video while the container is visible."}'

@@ -27,11 +27,24 @@
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
     cardCollectionContainer: false
+    carouselBackScale: false
     carouselHideThreshold: false
     carouselRadius: false
     carouselSwipeSensitivity: false
     collectionCardScale: false
+    enableGridGesture: false
     enablePinchGrabAssist: false
+    gridCardScale: false
+    gridColumns: false
+    gridCurveDepth: false
+    gridForwardOffset: false
+    gridGestureEnterAngle: false
+    gridGestureExitAngle: false
+    gridOffsetX: false
+    gridOffsetY: false
+    gridOffsetZ: false
+    gridSpacingX: false
+    gridSpacingY: false
     invertCarouselSwipeDirection: false
     leftPalmAnchor: false
     pickedCardScale: false
@@ -65,6 +78,19 @@
       pinchReleaseDistanceCm: !<float> 4.000000
       pinchGrabRadiusCm: !<float> 16.000000
       carouselHideThreshold: 0.750000
+      carouselBackScale: 0.600000
+      enableGridGesture: true
+      gridGestureEnterAngle: !<float> 60.000000
+      gridGestureExitAngle: !<float> 40.000000
+      gridColumns: !<float> 5.000000
+      gridSpacingX: !<float> 9.000000
+      gridSpacingY: !<float> 11.000000
+      gridCardScale: 0.220000
+      gridForwardOffset: !<float> 25.000000
+      gridOffsetX: !<float> 0.000000
+      gridOffsetY: !<float> 0.000000
+      gridOffsetZ: !<float> 0.000000
+      gridCurveDepth: !<float> 6.000000
   ScriptTypes:
     -
       {}
@@ -84,3 +110,16 @@
     - '// @input float pinchReleaseDistanceCm = 4 {"hint":"Pinch release distance (cm) between index and thumb"}'
     - '// @input float pinchGrabRadiusCm = 16 {"hint":"Max distance (cm) from pinch center to card to start assist grab"}'
     - '// @input float carouselHideThreshold = 0.75 {"hint":"Hide when sin(angle) < -this (0 = only fade, no hide). Higher = pop/depop further behind wrist. Default 0.5 ≈ ~20° extra hidden each side."}'
+    - '// @input float carouselBackScale = 0.6 {"hint":"Depth emphasis: back/side cards shrink to this fraction of the front card (1 = no depth, 0.6 = back cards 60% size). Front/focused card stays full size for readability."}'
+    - '// @input bool enableGridGesture = true {"hint":"Open the LEFT palm outward (away from you) while the collection is open to fan all cards into a grid that follows your hand. 0 = feature off."}'
+    - '// @input float gridGestureEnterAngle = 60 {"hint":"Palm-facing angle (deg) above which the open-palm-outward gesture activates. >30 = palm faces away from you. Default 60."}'
+    - '// @input float gridGestureExitAngle = 40 {"hint":"Palm-facing angle (deg) below which grid mode releases (hysteresis, < enter). Default 40."}'
+    - '// @input float gridColumns = 5 {"hint":"Number of columns in the grid array. Default 5."}'
+    - '// @input float gridSpacingX = 13 {"hint":"Horizontal spacing (cm) between grid cards. Default 13."}'
+    - '// @input float gridSpacingY = 16 {"hint":"Vertical spacing (cm) between grid cards. Default 16."}'
+    - '// @input float gridCardScale = 0.4 {"hint":"Card scale in grid mode. Default 0.4"}'
+    - '// @input float gridForwardOffset = 25 {"hint":"How far (cm) to push the grid wall away from your eyes, beyond the palm. Higher = further. Default 25."}'
+    - '// @input float gridOffsetX {"hint":"Grid offset X (cm) — shifts the whole array right (+) / left (-) relative to the hand."}'
+    - '// @input float gridOffsetY {"hint":"Grid offset Y (cm) — shifts the whole array up (+) / down (-) relative to the hand."}'
+    - '// @input float gridOffsetZ {"hint":"Grid offset Z (cm) — shifts the whole array further (+) / closer (-) on top of gridForwardOffset."}'
+    - '// @input float gridCurveDepth = 8 {"hint":"Concave curve depth (cm): how far the grid edges wrap toward you. 0 = flat. Default 8."}'

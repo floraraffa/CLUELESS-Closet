@@ -4,14 +4,15 @@
  * Flow:
  *   1. Language Container shows first (EN / FR / ES flags + Accept button)
  *   2. Clicking a flag sets the language and updates Accept button text live
- *   3. Clicking Accept hides Language Container, shows Welcome Container in selected language
- *   4. Solo mode starts the closet scanner. Shared Closet is hidden for this MVP.
+ *   3. Clicking Accept hides the Language Container and starts the closet
+ *      scanner directly (the Welcome Container step was removed as redundant —
+ *      the Language Container already carries the intro description).
  *
  * @author Closet Club
  * @license MIT
  */
 
-import { setLanguage, t, getLanguage, Lang } from './Localization';
+import { setLanguage, t, getLanguage, Lang, translateStaticTextForObject } from './Localization';
 
 @component
 export class WelcomeManager extends BaseScriptComponent {
@@ -74,24 +75,13 @@ export class WelcomeManager extends BaseScriptComponent {
 
     @input
     @allowUndefined
-    @hint('Text component inside secondary mode CapsuleButton')
-    connectedLensButtonText: Text;
-
-    @input
-    @allowUndefined
     @hint('"Solo CapsuleButton" SceneObject — starts solo mode')
     soloButton: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Connected Lens CapsuleButton" SceneObject — hidden/deprioritized for Closet Club MVP')
-    connectedLensButton: SceneObject;
 
     // =====================================================================
     // CALLBACKS — Set by orchestrator
     // =====================================================================
     onSoloModeSelected: (() => void) | null = null;
-    onConnectedLensModeSelected: (() => void) | null = null;
     onShowMessage: ((text: string) => void) | null = null;
     onConnectButton: ((obj: SceneObject, cb: () => void, name: string) => boolean) | null = null;
     onLanguageSelected: ((lang: Lang) => void) | null = null;
@@ -108,7 +98,6 @@ export class WelcomeManager extends BaseScriptComponent {
         setLanguage('en');
         if (this.languageContainer) this.languageContainer.enabled = true;
         if (this.welcomeContainer) this.welcomeContainer.enabled = false;
-        if (this.connectedLensButton) this.connectedLensButton.enabled = false;
 
         this.createEvent('OnStartEvent').bind(() => {
             this.setupButtons();
@@ -123,7 +112,6 @@ export class WelcomeManager extends BaseScriptComponent {
     show(): void {
         if (this.languageContainer) this.languageContainer.enabled = true;
         if (this.welcomeContainer) this.welcomeContainer.enabled = false;
-        if (this.connectedLensButton) this.connectedLensButton.enabled = false;
         print('WelcomeManager: Language selection shown');
     }
 
@@ -139,6 +127,7 @@ export class WelcomeManager extends BaseScriptComponent {
 
     private selectLanguage(lang: Lang): void {
         setLanguage(lang);
+        this.applyLanguageTranslationsToScene();
         if (this.acceptButtonText) {
             this.acceptButtonText.text = t('accept_button');
         }
@@ -148,20 +137,46 @@ export class WelcomeManager extends BaseScriptComponent {
     private onAcceptPressed(): void {
         print('WelcomeManager: Accept pressed — language=' + getLanguage());
 
+        // Welcome Container removed: the Language Container already carries the
+        // intro description, so accepting a language now goes straight into the
+        // solo scan experience instead of showing a redundant welcome screen.
         if (this.languageContainer) this.languageContainer.enabled = false;
+        if (this.welcomeContainer) this.welcomeContainer.enabled = false;
 
-        this.applyWelcomeTranslations();
-
-        if (this.welcomeContainer) this.welcomeContainer.enabled = true;
+        this.applyLanguageTranslationsToScene();
 
         if (this.onLanguageSelected) this.onLanguageSelected(getLanguage());
+        if (this.onSoloModeSelected) this.onSoloModeSelected();
     }
 
-    private applyWelcomeTranslations(): void {
-        if (this.welcomeTitleText) this.welcomeTitleText.text = t('welcome_title');
-        if (this.welcomeDescriptionText) this.welcomeDescriptionText.text = t('welcome_description');
-        if (this.soloButtonText) this.soloButtonText.text = t('solo');
-        if (this.connectedLensButtonText) this.connectedLensButtonText.text = t('connected_lens');
+    private applyLanguageTranslationsToScene(): void {
+        try {
+            const rootCount = global.scene.getRootObjectsCount();
+            for (let i = 0; i < rootCount; i++) {
+                const root = global.scene.getRootObject(i);
+                if (root) this.applyLanguageTranslationsRecursive(root, 0);
+            }
+        } catch (e) {
+            print('WelcomeManager: Static text translation sweep skipped: ' + e);
+        }
+    }
+
+    private applyLanguageTranslationsRecursive(obj: SceneObject, depth: number): void {
+        if (!obj || depth > 80) return;
+
+        const textComp = obj.getComponent('Component.Text') as Text;
+        if (textComp) {
+            const translated = translateStaticTextForObject(obj.name, textComp.text);
+            if (translated !== textComp.text) {
+                textComp.text = translated;
+            }
+        }
+
+        const childCount = obj.getChildrenCount();
+        for (let i = 0; i < childCount; i++) {
+            const child = obj.getChild(i);
+            if (child) this.applyLanguageTranslationsRecursive(child, depth + 1);
+        }
     }
 
     // =====================================================================
@@ -184,24 +199,13 @@ export class WelcomeManager extends BaseScriptComponent {
             this.selectLanguage('es');
         }, 'LangES');
 
-        // Accept button
+        // Accept button — confirms the language and starts the experience
         this.connectButtonWithPolling(this.acceptButton, () => {
             this.onAcceptPressed();
         }, 'AcceptButton');
 
-        // Solo button
-        this.connectButtonWithPolling(this.soloButton, () => {
-            print('WelcomeManager: Solo mode selected');
-            this.hide();
-            if (this.onSoloModeSelected) this.onSoloModeSelected();
-        }, 'SoloButton');
-
-        // Shared Closet button (hidden for this MVP)
-        this.connectButtonWithPolling(this.connectedLensButton, () => {
-            print('WelcomeManager: Shared Closet mode selected');
-            this.hide();
-            if (this.onConnectedLensModeSelected) this.onConnectedLensModeSelected();
-        }, 'SharedClosetButton');
+        // Welcome Container removed: its Solo button is no longer wired. The
+        // soloButton @input is kept so existing scene references stay valid.
 
         this.buttonsConnected = true;
     }

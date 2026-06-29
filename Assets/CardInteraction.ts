@@ -16,7 +16,8 @@
  * @license MIT
  */
 
-import { SavedVehicleData } from './VehicleTypes';
+import { SavedVehicleData } from './ClosetTypes';
+import { HandInputData } from 'SpectaclesInteractionKit.lspkg/Providers/HandInputData/HandInputData';
 
 @component
 export class CardInteraction extends BaseScriptComponent {
@@ -91,6 +92,61 @@ export class CardInteraction extends BaseScriptComponent {
     @hint('Hide when sin(angle) < -this (0 = only fade, no hide). Higher = pop/depop further behind wrist. Default 0.5 ≈ ~20° extra hidden each side.')
     carouselHideThreshold: number = 0.75;
 
+    @input
+    @hint('Depth emphasis: back/side cards shrink to this fraction of the front card (1 = no depth, 0.6 = back cards 60% size). Front/focused card stays full size for readability.')
+    carouselBackScale: number = 0.6;
+
+    // =====================================================================
+    // INPUTS — Grid (open-palm) mode
+    // =====================================================================
+    @input
+    @hint('Open the LEFT palm outward (away from you) while the collection is open to fan all cards into a grid that follows your hand. 0 = feature off.')
+    enableGridGesture: boolean = true;
+
+    @input
+    @hint('Palm-facing angle (deg) above which the open-palm-outward gesture activates. >30 = palm faces away from you. Default 60.')
+    gridGestureEnterAngle: number = 60;
+
+    @input
+    @hint('Palm-facing angle (deg) below which grid mode releases (hysteresis, < enter). Default 40.')
+    gridGestureExitAngle: number = 40;
+
+    @input
+    @hint('Number of columns in the grid array. Default 5.')
+    gridColumns: number = 5;
+
+    @input
+    @hint('Horizontal spacing (cm) between grid cards. Default 13.')
+    gridSpacingX: number = 13.0;
+
+    @input
+    @hint('Vertical spacing (cm) between grid cards. Default 16.')
+    gridSpacingY: number = 16.0;
+
+    @input
+    @hint('Card scale in grid mode. Default 0.4')
+    gridCardScale: number = 0.4;
+
+    @input
+    @hint('How far (cm) to push the grid wall away from your eyes, beyond the palm. Higher = further. Default 25.')
+    gridForwardOffset: number = 25.0;
+
+    @input
+    @hint('Grid offset X (cm) — shifts the whole array right (+) / left (-) relative to the hand.')
+    gridOffsetX: number = 0.0;
+
+    @input
+    @hint('Grid offset Y (cm) — shifts the whole array up (+) / down (-) relative to the hand.')
+    gridOffsetY: number = 0.0;
+
+    @input
+    @hint('Grid offset Z (cm) — shifts the whole array further (+) / closer (-) on top of gridForwardOffset.')
+    gridOffsetZ: number = 0.0;
+
+    @input
+    @hint('Concave curve depth (cm): how far the grid edges wrap toward you. 0 = flat. Default 8.')
+    gridCurveDepth: number = 8.0;
+
     // =====================================================================
     // CONSTANTS
     // =====================================================================
@@ -108,6 +164,7 @@ export class CardInteraction extends BaseScriptComponent {
     private savedVehicles: SavedVehicleData[] = [];
     private cardStates: number[] = [];
     private cardFrameHooked: boolean[] = [];
+    private reviewButtonHooked: boolean[] = [];
     private collectionRoot: SceneObject | null = null;
 
     // =====================================================================
@@ -117,12 +174,8 @@ export class CardInteraction extends BaseScriptComponent {
     onHideDescriptionAfterDelay: ((seconds: number) => void) | null = null;
     onUpdateDeleteButtonVisibility: (() => void) | null = null;
     onGetUserHeadTransform: (() => { position: vec3; forward: vec3; rotation: quat } | null) | null = null;
-    onCardPlacedInWorld: ((serial: string, pos: vec3, rot: quat, scale: number) => void) | null = null;
+    /** Fires when a card is returned to the carousel (clears the description subtitle). */
     onCardReturnedToCollection: ((serial: string) => void) | null = null;
-    /** Fires when a card is grabbed from the carousel (start of drag). */
-    onCardGrabbed: ((serial: string, pos: vec3, rot: quat, scale: number) => void) | null = null;
-    /** Fires every few frames while a card is being held/moved (real-time position broadcast). */
-    onCardMoving: ((serial: string, pos: vec3, rot: quat, scale: number) => void) | null = null;
     /** Lets CollectionManager consume a dropped card as an outfit-slot assignment. */
     onCardDroppedOnOutfitSlot: ((cardIndex: number, cardObj: SceneObject) => boolean) | null = null;
 
@@ -131,14 +184,27 @@ export class CardInteraction extends BaseScriptComponent {
     // =====================================================================
     private grabbedCardIndex: number = -1;
     private grabbedPreviousState: number = 0;
-    private _moveFrameCounter: number = 0;
-    private readonly MOVE_BROADCAST_INTERVAL: number = 3; // send position every N frames while dragging
     private assistDragging: boolean = false;
+    private pinchGrabAssistSuppressedUntil: number = 0;
 
     // Carousel angle (driven only by right-hand swipe, no auto-rotation)
     carouselAngleOffset: number = 0;
     private lastFrameTime: number = 0;
     private lastRightHandAngle: number | null = null;
+
+    // Depth-sorted render order: each visible card's visual components are offset
+    // by its depth rank so a back card's (transparent, depthTest-off) text can't
+    // draw over a nearer card. Front/focused card keeps its original orders (0
+    // offset) so nothing changes relative to other scene UI; cards behind it step
+    // DOWN. Step must exceed a card's internal renderOrder spread (~15).
+    private readonly RENDER_DEPTH_STEP: number = 24;
+    private cardRenderCache: Array<{ card: SceneObject; comps: Array<{ comp: any; order: number }> }> = [];
+
+    // Grid (open-palm) mode
+    private handProvider: any = null;
+    private leftHand: any = null;
+    private gridMode: boolean = false;
+    private gridLostTrackingFrames: number = 0;
 
     // =====================================================================
     // PUBLIC API
@@ -150,13 +216,77 @@ export class CardInteraction extends BaseScriptComponent {
         cardStates: number[],
         cardFrameHooked: boolean[],
         collectionRoot: SceneObject | null,
+        reviewButtonHooked?: boolean[],
     ): void {
         this.collectionCardObjects = collectionCardObjects;
         this.savedVehicles = savedVehicles;
         this.cardStates = cardStates;
         this.cardFrameHooked = cardFrameHooked;
+        this.reviewButtonHooked = reviewButtonHooked || [];
         this.collectionRoot = collectionRoot;
         this.lastFrameTime = getTime();
+        this.ensureCardRenderCache();
+    }
+
+    // =====================================================================
+    // DEPTH-SORTED RENDER ORDER
+    // =====================================================================
+
+    /**
+     * (Re)captures each card's visual components and their ORIGINAL renderOrder.
+     * Rebuilds only when the card set changes — freshly instantiated cards carry
+     * clean prefab orders, while persisting cards keep their captured originals,
+     * so applied offsets never compound across collection open/close.
+     */
+    private ensureCardRenderCache(): void {
+        let sameSet = this.cardRenderCache.length === this.collectionCardObjects.length;
+        if (sameSet) {
+            for (let i = 0; i < this.collectionCardObjects.length; i++) {
+                if (this.cardRenderCache[i].card !== this.collectionCardObjects[i]) { sameSet = false; break; }
+            }
+        }
+        if (sameSet) return;
+
+        this.cardRenderCache = [];
+        for (let i = 0; i < this.collectionCardObjects.length; i++) {
+            const card = this.collectionCardObjects[i];
+            const comps: Array<{ comp: any; order: number }> = [];
+            if (card) this.collectRenderComps(card, comps);
+            this.cardRenderCache.push({ card: card, comps: comps });
+        }
+    }
+
+    private collectRenderComps(obj: SceneObject, out: Array<{ comp: any; order: number }>): void {
+        // getComponents needs literal type names (not a string variable), so list them out.
+        const groups: any[][] = [
+            obj.getComponents('Component.RenderMeshVisual') as any[],
+            obj.getComponents('Component.Image') as any[],
+            obj.getComponents('Component.Text') as any[],
+        ];
+        for (let g = 0; g < groups.length; g++) {
+            const comps = groups[g];
+            for (let c = 0; c < comps.length; c++) {
+                const comp = comps[c];
+                if (comp && typeof comp.renderOrder === 'number') {
+                    out.push({ comp: comp, order: comp.renderOrder });
+                }
+            }
+        }
+        const n = obj.getChildrenCount();
+        for (let i = 0; i < n; i++) {
+            const child = obj.getChild(i);
+            if (child) this.collectRenderComps(child, out);
+        }
+    }
+
+    /** Offsets every visual component of card `index` by `offset` from its original renderOrder. */
+    private applyCardRenderOffset(index: number, offset: number): void {
+        if (index < 0 || index >= this.cardRenderCache.length) return;
+        const entry = this.cardRenderCache[index];
+        if (!entry || entry.card !== this.collectionCardObjects[index]) return;
+        for (let i = 0; i < entry.comps.length; i++) {
+            try { entry.comps[i].comp.renderOrder = entry.comps[i].order + offset; } catch (e) { /* ignore */ }
+        }
     }
 
     setCollectionRoot(root: SceneObject | null): void {
@@ -171,14 +301,95 @@ export class CardInteraction extends BaseScriptComponent {
         this.grabbedCardIndex = idx;
     }
 
+    getRightPinchInfo(): { center: vec3; distance: number; isPinching: boolean } | null {
+        if (!this.rightIndexTip || !this.rightThumbTip) return null;
+
+        const idxPos = this.rightIndexTip.getTransform().getWorldPosition();
+        const thbPos = this.rightThumbTip.getTransform().getWorldPosition();
+        const distance = idxPos.sub(thbPos).length;
+        const center = new vec3(
+            (idxPos.x + thbPos.x) * 0.5,
+            (idxPos.y + thbPos.y) * 0.5,
+            (idxPos.z + thbPos.z) * 0.5
+        );
+
+        return {
+            center: center,
+            distance: distance,
+            isPinching: distance <= this.pinchStartDistanceCm,
+        };
+    }
+
+    suppressPinchGrabAssist(seconds: number = 0.5): void {
+        this.pinchGrabAssistSuppressedUntil = Math.max(this.pinchGrabAssistSuppressedUntil, getTime() + seconds);
+        if (this.assistDragging) {
+            this.assistDragging = false;
+            this.grabbedCardIndex = -1;
+        }
+    }
+
     /**
      * Per-frame update — called by CollectionManager's update loop.
      * Updates carousel from right-hand swipe and lerps card transforms.
      */
     updateFrame(): void {
+        this.updateGridGesture();
         this.updatePinchGrabAssist();
         this.updateAutoRotation();
         this.lerpCardTransforms();
+    }
+
+    // =====================================================================
+    // GRID (OPEN-PALM) MODE — fan all cards into a hand-anchored grid
+    // =====================================================================
+
+    private ensureHandProvider(): void {
+        if (this.handProvider) return;
+        try {
+            this.handProvider = HandInputData.getInstance();
+            this.leftHand = this.handProvider.getHand('left');
+        } catch (e) {
+            this.handProvider = null;
+            this.leftHand = null;
+        }
+    }
+
+    /**
+     * Detects the LEFT open-palm-outward gesture (palm facing away from the user)
+     * and toggles grid mode with angle hysteresis + a short grace period so brief
+     * tracking dropouts don't collapse the grid. Pinching never counts (so grabbing
+     * a card out of the grid doesn't end grid mode).
+     */
+    private updateGridGesture(): void {
+        if (!this.enableGridGesture) { this.gridMode = false; return; }
+        this.ensureHandProvider();
+
+        const hand = this.leftHand;
+        const tracked = !!hand && typeof hand.isTracked === 'function' && hand.isTracked();
+        if (!tracked) {
+            // Keep grid up across brief tracking gaps, then release.
+            this.gridLostTrackingFrames++;
+            if (this.gridLostTrackingFrames > 12) this.gridMode = false;
+            return;
+        }
+        this.gridLostTrackingFrames = 0;
+
+        const angle = typeof hand.getFacingCameraAngle === 'function' ? hand.getFacingCameraAngle() : null;
+        const pinching = typeof hand.isPinching === 'function' ? hand.isPinching() : false;
+        if (angle === null) return;
+
+        if (this.gridMode) {
+            // Stay in grid while palm remains roughly outward.
+            this.gridMode = angle > this.gridGestureExitAngle;
+        } else {
+            // Enter grid on a clear outward palm that isn't pinching.
+            this.gridMode = angle > this.gridGestureEnterAngle && !pinching;
+        }
+    }
+
+    /** True while the open-palm grid is active (read by CollectionManager if needed). */
+    isGridMode(): boolean {
+        return this.gridMode;
     }
 
     hookCardFrameEvents(cardObj: SceneObject, cardIndex: number): void {
@@ -261,16 +472,6 @@ export class CardInteraction extends BaseScriptComponent {
         print('CardInteraction: Grab card #' + cardIndex + ' (' + name + ')');
         if (this.onShowDescription) this.onShowDescription(name);
         if (this.onUpdateDeleteButtonVisibility) this.onUpdateDeleteButtonVisibility();
-
-        // Notify network that card was grabbed (so remote player sees it leave the carousel)
-        const serial = this.savedVehicles[cardIndex]?.serial || '';
-        if (serial && this.onCardGrabbed) {
-            const card = this.collectionCardObjects[cardIndex];
-            if (card) {
-                const t = card.getTransform();
-                this.onCardGrabbed(serial, t.getWorldPosition(), t.getWorldRotation(), t.getWorldScale().x);
-            }
-        }
     }
 
     private onCardTranslationEnd(cardIndex: number): void {
@@ -347,14 +548,6 @@ export class CardInteraction extends BaseScriptComponent {
             this.setCardOpacity(card, 1.0);
             if (this.onShowDescription) this.onShowDescription(name + ' placed');
             if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.0);
-
-            // Notify network that this card is now in world space
-            if (serial) {
-                const wPos = card.getTransform().getWorldPosition();
-                const wRot = card.getTransform().getWorldRotation();
-                const wScale = card.getTransform().getWorldScale().x;
-                if (this.onCardPlacedInWorld) this.onCardPlacedInWorld(serial, wPos, wRot, wScale);
-            }
         }
 
         this.grabbedCardIndex = -1;
@@ -427,6 +620,109 @@ export class CardInteraction extends BaseScriptComponent {
         const angleStep = inCollectionCount > 0 ? (2 * Math.PI) / inCollectionCount : 0;
         let circleIdx = 0;
 
+        // Depth-rank the visible cards (back → front) so render order matches depth:
+        // the backmost card keeps its original orders (offset 0), each nearer card
+        // steps UP by RENDER_DEPTH_STEP so it covers the cards behind it. Built once
+        // per frame. A grabbed/placed card sits above the whole collection.
+        const topOffset = (inCollectionCount + 1) * this.RENDER_DEPTH_STEP;
+        const renderOffsetByIndex: number[] = [];
+        {
+            const vis: Array<{ idx: number; front: number }> = [];
+            let ci = 0;
+            for (let i = 0; i < n; i++) {
+                if ((this.cardStates[i] || this.STATE_IN_COLLECTION) !== this.STATE_IN_COLLECTION) continue;
+                const ang = ci * angleStep + this.carouselAngleOffset;
+                ci++;
+                vis.push({ idx: i, front: Math.sin(ang) });
+            }
+            vis.sort((a, b) => a.front - b.front); // back (lowest sin) first
+            for (let r = 0; r < vis.length; r++) {
+                // Backmost card keeps its original orders (offset 0 — same as before,
+                // so it never drops behind the grey UI backplate); each nearer card
+                // steps UP so its background covers the card behind it.
+                renderOffsetByIndex[vis[r].idx] = r * this.RENDER_DEPTH_STEP;
+            }
+        }
+
+        // Out-of-collection cards (grabbed / placed in the world) also need depth-sorted
+        // render order, or two overlapping loose cards bleed each other's text through.
+        // Sort them by distance to the user (nearest highest) and stack them ABOVE the
+        // whole carousel (≥ topOffset).
+        const outRenderOffsetByIndex: number[] = [];
+        {
+            const head = this.onGetUserHeadTransform ? this.onGetUserHeadTransform() : null;
+            const outs: Array<{ idx: number; dist: number }> = [];
+            for (let i = 0; i < n; i++) {
+                const st = this.cardStates[i] || this.STATE_IN_COLLECTION;
+                if (st !== this.STATE_PICKED && st !== this.STATE_PLACED_IN_WORLD) continue;
+                const card = this.collectionCardObjects[i];
+                if (!card) continue;
+                const dist = head ? card.getTransform().getWorldPosition().sub(head.position).length : 0;
+                outs.push({ idx: i, dist: dist });
+            }
+            outs.sort((a, b) => b.dist - a.dist); // farthest first → lowest offset
+            for (let r = 0; r < outs.length; r++) {
+                outRenderOffsetByIndex[outs[r].idx] = topOffset + r * this.RENDER_DEPTH_STEP;
+            }
+        }
+
+        // Grid (open-palm) frame: a plane anchored at the LEFT palm, facing the user,
+        // so the fanned-out grid follows the hand and you can walk / move it by moving
+        // your arm. Computed once per frame; falls back to the carousel if unavailable.
+        let gridReady = false;
+        let gridOrigin: vec3 | null = null;
+        let gridRight: vec3 | null = null;
+        let gridUp: vec3 | null = null;
+        let gridToUser: vec3 | null = null;
+        const gridRows = Math.max(1, Math.ceil(inCollectionCount / Math.max(1, this.gridColumns)));
+        if (this.gridMode) {
+            const palm = this.leftHand && typeof this.leftHand.getPalmCenter === 'function'
+                ? this.leftHand.getPalmCenter() : null;
+            const head = this.onGetUserHeadTransform ? this.onGetUserHeadTransform() : null;
+            if (palm && head) {
+                // Use the HORIZONTAL palm→user direction so the grid is an upright
+                // vertical wall (world-up rows), not a flat slab that tilts when you
+                // look down at your hand. Cards still billboard to face your eyes.
+                const toUser = head.position.sub(palm);
+                const flat = new vec3(toUser.x, 0, toUser.z);
+                if (flat.length > 0.001) {
+                    const tuFlat = flat.normalize();          // horizontal, palm → you
+                    const up = vec3.up();
+                    const right = up.cross(tuFlat).normalize();
+                    gridToUser = tuFlat;
+                    gridRight = right;
+                    gridUp = up;
+                    // Push the wall away from your eyes (beyond the palm) + tunable X/Y/Z offset.
+                    gridOrigin = palm
+                        .add(tuFlat.uniformScale(-this.gridForwardOffset - this.gridOffsetZ))
+                        .add(right.uniformScale(this.gridOffsetX))
+                        .add(up.uniformScale(this.gridOffsetY));
+                    gridReady = true;
+                }
+            }
+        }
+
+        // In grid mode, ALL shown cards (in-array + grabbed + placed) share ONE
+        // depth-sorted render order by distance to the user, so an out-of-array card
+        // sitting BEHIND an array card doesn't draw its text over it.
+        const gridDepthOffsetByIndex: number[] = [];
+        if (this.gridMode) {
+            const head = this.onGetUserHeadTransform ? this.onGetUserHeadTransform() : null;
+            const all: Array<{ idx: number; dist: number }> = [];
+            for (let i = 0; i < n; i++) {
+                const st = this.cardStates[i] || this.STATE_IN_COLLECTION;
+                if (st !== this.STATE_IN_COLLECTION && st !== this.STATE_PICKED && st !== this.STATE_PLACED_IN_WORLD) continue;
+                const c = this.collectionCardObjects[i];
+                if (!c) continue;
+                const dist = head ? c.getTransform().getWorldPosition().sub(head.position).length : 0;
+                all.push({ idx: i, dist: dist });
+            }
+            all.sort((a, b) => b.dist - a.dist); // farthest first → lowest offset
+            for (let r = 0; r < all.length; r++) {
+                gridDepthOffsetByIndex[all[r].idx] = r * this.RENDER_DEPTH_STEP;
+            }
+        }
+
         for (let i = 0; i < n; i++) {
             const card = this.collectionCardObjects[i];
             if (!card) continue;
@@ -439,15 +735,7 @@ export class CardInteraction extends BaseScriptComponent {
                 const curLS = transform.getLocalScale();
                 const newS = curLS.x + (this.pickedCardScale - curLS.x) * grabLerpSpeed;
                 transform.setLocalScale(new vec3(newS, newS, newS));
-
-                // Broadcast card position to remote player every N frames
-                this._moveFrameCounter++;
-                if (this.onCardMoving && this._moveFrameCounter % this.MOVE_BROADCAST_INTERVAL === 0) {
-                    const serial = this.savedVehicles[i]?.serial || '';
-                    if (serial) {
-                        this.onCardMoving(serial, transform.getWorldPosition(), transform.getWorldRotation(), newS);
-                    }
-                }
+                this.applyCardRenderOffset(i, this.gridMode ? (gridDepthOffsetByIndex[i] || 0) : (outRenderOffsetByIndex[i] !== undefined ? outRenderOffsetByIndex[i] : topOffset));
 
             } else if (cardState === this.STATE_PLACED_IN_WORLD) {
                 // Stay in place, billboard + PICKED_SCALE
@@ -457,6 +745,39 @@ export class CardInteraction extends BaseScriptComponent {
                 const curLS = transform.getLocalScale();
                 const newS = curLS.x + (this.pickedCardScale - curLS.x) * lerpSpeed;
                 transform.setLocalScale(new vec3(newS, newS, newS));
+                this.applyCardRenderOffset(i, this.gridMode ? (gridDepthOffsetByIndex[i] || 0) : (outRenderOffsetByIndex[i] !== undefined ? outRenderOffsetByIndex[i] : topOffset));
+
+            } else if (this.gridMode && gridReady) {
+                // GRID (open-palm) mode — fan into a hand-anchored curved grid facing the user.
+                const displayIndex = circleIdx;
+                circleIdx++;
+
+                const col = displayIndex % this.gridColumns;
+                const row = Math.floor(displayIndex / this.gridColumns);
+                const x = (col - (this.gridColumns - 1) / 2) * this.gridSpacingX;
+                const y = ((gridRows - 1) / 2 - row) * this.gridSpacingY;
+                // Concave wall: edges wrap toward the user.
+                const normX = this.gridColumns > 1
+                    ? (col - (this.gridColumns - 1) / 2) / ((this.gridColumns - 1) / 2) : 0;
+                const curve = normX * normX * this.gridCurveDepth;
+                const targetPos = (gridOrigin as vec3)
+                    .add((gridRight as vec3).uniformScale(x))
+                    .add((gridUp as vec3).uniformScale(y))
+                    .add((gridToUser as vec3).uniformScale(curve));
+
+                const curW = transform.getWorldPosition();
+                transform.setWorldPosition(vec3.lerp(curW, targetPos, lerpSpeed));
+
+                const curScaleG = transform.getLocalScale();
+                const newSG = curScaleG.x + (this.gridCardScale - curScaleG.x) * lerpSpeed;
+                transform.setLocalScale(new vec3(newSG, newSG, newSG));
+
+                const billboardRotG = this.getCardBillboardRotation(transform.getWorldPosition());
+                transform.setWorldRotation(quat.slerp(transform.getWorldRotation(), billboardRotG, lerpSpeed));
+
+                // Unified depth-sorted render order across array + out cards.
+                card.enabled = true;
+                this.applyCardRenderOffset(i, gridDepthOffsetByIndex[i] || 0);
 
             } else {
                 // IN_COLLECTION — circle position + billboard + scale + fade
@@ -473,8 +794,19 @@ export class CardInteraction extends BaseScriptComponent {
                     curPos.z + (targetZ - curPos.z) * lerpSpeed
                 ));
 
+                // Depth emphasis (readability): the front/centre card (sin≈1) stays
+                // full size; cards toward the sides and back recede toward
+                // carouselBackScale so they stop cluttering / overlapping the focused
+                // card. Scale-based, not alpha — the card visuals share materials, so a
+                // per-card alpha fade flickers (that's why the old fade was removed).
+                const sinVal = Math.sin(angle);            // 1 = front centre, -1 = behind
+                let frontness = (sinVal + 1) * 0.5;         // 0 (back) .. 1 (front)
+                frontness = Math.max(0, Math.min(1, frontness));
+                const depthFactor = this.carouselBackScale + (1 - this.carouselBackScale) * (frontness * frontness);
+                const targetScale = this.collectionCardScale * depthFactor;
+
                 const curScale = transform.getLocalScale();
-                const newS = curScale.x + (this.collectionCardScale - curScale.x) * lerpSpeed;
+                const newS = curScale.x + (targetScale - curScale.x) * lerpSpeed;
                 transform.setLocalScale(new vec3(newS, newS, newS));
 
                 // Billboard facing user + slight tilt
@@ -485,13 +817,18 @@ export class CardInteraction extends BaseScriptComponent {
                 const finalRot = billboardRot.multiply(tiltQuat);
                 transform.setWorldRotation(quat.slerp(transform.getWorldRotation(), finalRot, lerpSpeed));
 
-                // FPS optimization: fully hide cards behind carousel (no render), show when they come back
-                const sinVal = Math.sin(angle);
-                if (this.carouselHideThreshold > 0 && sinVal < -this.carouselHideThreshold) {
+                // FPS optimization: fully hide cards behind carousel (no render), show when they come back.
+                // BUT never hide a card whose per-card delete button hasn't been hooked yet —
+                // a disabled card is skipped by the deferred button hooker, so a card that
+                // starts in the depop zone would never get its delete button connected.
+                const hooked = this.reviewButtonHooked.length === 0 || this.reviewButtonHooked[i];
+                if (this.carouselHideThreshold > 0 && sinVal < -this.carouselHideThreshold && hooked) {
                     card.enabled = false;
                 } else {
                     card.enabled = true;
-                    this.applyCarouselFade(card, angle);
+                    // Depth-sorted render order: front card at its original orders,
+                    // cards behind it stepped down so their text can't bleed over.
+                    this.applyCardRenderOffset(i, renderOffsetByIndex[i] || 0);
                 }
             }
         }
@@ -502,6 +839,7 @@ export class CardInteraction extends BaseScriptComponent {
     // =====================================================================
     private updatePinchGrabAssist(): void {
         if (!this.enablePinchGrabAssist) return;
+        if (getTime() < this.pinchGrabAssistSuppressedUntil) return;
         if (!this.rightIndexTip || !this.rightThumbTip) return;
 
         const idxPos = this.rightIndexTip.getTransform().getWorldPosition();
@@ -581,26 +919,14 @@ export class CardInteraction extends BaseScriptComponent {
     // =====================================================================
 
     /**
-     * Fades cards based on their angular position in the carousel.
-     * Front-facing cards (toward user) are fully opaque.
-     * Back-facing cards smoothly fade to near-transparent.
+     * Keeps visible cards fully opaque.
      *
-     * Uses the user head direction to determine "front" vs "back".
-     * Fallback: uses the carousel's local Z axis (sin of angle).
+     * The old carousel alpha fade made Polaroids flicker and look washed out
+     * while images were loading. Cards can still be hidden behind the wrist by
+     * carouselHideThreshold, but any enabled card stays visually stable.
      */
     private applyCarouselFade(card: SceneObject, angle: number): void {
-        // Normalize angle to determine front/back position
-        // sin(angle) > 0 = "front" side, sin(angle) < 0 = "back" side
-        // We want: front = 1.0 opacity, back = 0.0 opacity, sides = partial
-        const sinVal = Math.sin(angle);
-        // Map [-1, 1] to [0, 1]: front=1, back=0
-        const rawOpacity = (sinVal + 1.0) * 0.5;
-        // Apply a curve for smoother transition: ease in/out
-        const opacity = rawOpacity * rawOpacity * (3 - 2 * rawOpacity);
-        // Clamp to a minimum so cards don't fully vanish (keeps a hint of presence)
-        const finalOpacity = Math.max(0.0, Math.min(1.0, opacity));
-
-        this.setCardOpacity(card, finalOpacity);
+        this.setCardOpacity(card, 1.0);
     }
 
     /**

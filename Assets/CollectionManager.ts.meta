@@ -37,9 +37,6 @@
     confirmResetCancelButton: false
     confirmResetProfileContainer: false
     confirmResetYesButton: false
-    confirmShareCancelButton: false
-    confirmShareContainer: false
-    confirmShareYesButton: false
     deleteCardButton: false
     garmentCutoutMaxAttempts: false
     garmentCutoutTimeoutSeconds: false
@@ -55,8 +52,6 @@
     outfitSlotDropRadiusCm: false
     resetCollectionButton: false
     saveButton: false
-    shareCollectionButton: false
-    shareConfirmationText: false
     useWorldClosetView: false
     verticalCardPrefab: false
   ScriptTypesHidden:
@@ -85,11 +80,6 @@
       garmentPlaceholderColumns: !<float> 3.000000
       garmentPlaceholderSpacing: !<float> 6.000000
       outfitSlotDropRadiusCm: !<float> 24.000000
-      shareCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      confirmShareContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      confirmShareYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      confirmShareCancelButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
-      shareConfirmationText: !<reference.Text> 00000000-0000-0000-0000-000000000000
       resetCollectionButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmResetProfileContainer: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       confirmResetYesButton: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
@@ -122,11 +112,6 @@
     - '// @input float garmentPlaceholderColumns = 3 {"hint":"How many garment cards to place per row inside the closet list"}'
     - '// @input float garmentPlaceholderSpacing = 6 {"hint":"Spacing in cm between runtime garment placeholders"}'
     - '// @input float outfitSlotDropRadiusCm = 24 {"hint":"Drop radius in cm for dragging a bracelet card onto an outfit slot"}'
-    - '// @input SceneObject shareCollectionButton {"hint":"\"Share Collection\" button on left hand (inside User Card Info)"}'
-    - '// @input SceneObject confirmShareContainer {"hint":"\"Confirm Share Container\" with confirmation text, URL text, Yes/Cancel buttons"}'
-    - '// @input SceneObject confirmShareYesButton {"hint":"\"Yes CapsuleButton\" inside Confirm Share Container"}'
-    - '// @input SceneObject confirmShareCancelButton {"hint":"\"Cancel CapsuleButton\" inside Confirm Share Container"}'
-    - '// @input Component.Text shareConfirmationText {"hint":"\"Collection Shared Confirmation\" Text — displays the URL after sharing"}'
     - '// @input SceneObject resetCollectionButton {"hint":"\"Reset Profile\" button inside User Card Info"}'
     - '// @input SceneObject confirmResetProfileContainer {"hint":"\"Confirm Reset Profile\" container with Yes/Cancel buttons"}'
     - '// @input SceneObject confirmResetYesButton {"hint":"\"Yes\" button inside Confirm Reset Profile Container"}'

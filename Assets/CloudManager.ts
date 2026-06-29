@@ -6,10 +6,6 @@
  *   - User profile sync (XP, level, prestige, streak) to cloud
  *   - Vehicle collection backup/restore to cloud database
  *   - Card images upload/download via Supabase Storage
- *   - Global leaderboard queries
- *   - Async trade requests (propose / accept / reject)
- *   - Realtime notifications for incoming trades
- *   - Global statistics
  *
  * Requires a SnapCloudRequirements component with a configured SupabaseProject.
  * All cloud operations are fire-and-forget with local-first fallback.
@@ -21,9 +17,8 @@
 import { createClient } from 'SupabaseClient.lspkg/supabase-snapcloud';
 import { SnapCloudRequirements } from 'SnapCloudExamples.lspkg/SnapCloudRequirements';
 import {
-    SavedVehicleData, UserProfile, SimplifiedCard, TradeHistoryEntry,
-    createDefaultProfile, getLevelForXP, normalizeScanContext,
-} from './VehicleTypes';
+    SavedVehicleData, UserProfile, normalizeScanContext,
+} from './ClosetTypes';
 import { t, tf } from './Localization';
 
 // =====================================================================
@@ -96,36 +91,6 @@ export interface CloudVehicle {
     created_at?: string;
 }
 
-export interface CloudTradeRequest {
-    id?: number;
-    from_user: string;
-    to_user: string;
-    offered_serial: string;
-    offered_brand_model: string;
-    offered_rarity: number;
-    status: 'pending' | 'accepted' | 'rejected' | 'expired';
-    message: string;
-    created_at?: string;
-}
-
-export interface LeaderboardEntry {
-    user_id: string;
-    display_name: string;
-    level: number;
-    total_xp: number;
-    prestige: number;
-    total_scans: number;
-    rank?: number;
-}
-
-export interface GlobalStats {
-    total_scans: number;
-    total_users: number;
-    most_scanned_brand: string;
-    rarest_found: string;
-    total_trades: number;
-}
-
 // =====================================================================
 // COMPONENT
 // =====================================================================
@@ -148,21 +113,9 @@ export class CloudManager extends BaseScriptComponent {
     onAuthFailed: ((error: string) => void) | null = null;
     onProfileSynced: ((profile: CloudUserProfile) => void) | null = null;
     onCollectionSynced: ((count: number) => void) | null = null;
-    onLeaderboardReady: ((entries: LeaderboardEntry[], myRank: number) => void) | null = null;
-    onTradeReceived: ((trade: CloudTradeRequest) => void) | null = null;
-    onTradeStatusChanged: ((tradeId: number, status: string) => void) | null = null;
-    /** Called when an async trade is fully completed — card data for the receiver to add locally. */
-    onAsyncTradeCompleted: ((card: CloudVehicle) => void) | null = null;
     onShowMessage: ((text: string) => void) | null = null;
-
-    onGetProfile: (() => UserProfile) | null = null;
-    onGetCollection: (() => SavedVehicleData[]) | null = null;
+    /** Returns the local display name to store on the user's own cloud profile. */
     onGetUsername: (() => string) | null = null;
-    onGetAvatarUrl: (() => string) | null = null;
-    onShareComplete: ((url: string) => void) | null = null;
-    onShareSucceeded: (() => void) | null = null;
-    onShareFailed: (() => void) | null = null;
-    onGetLocalImage: ((savedAt: number) => string) | null = null;
 
     // =====================================================================
     // CONSTANTS
@@ -170,10 +123,6 @@ export class CloudManager extends BaseScriptComponent {
     private readonly STORAGE_BUCKET = 'closet-images';
     private readonly TABLE_PROFILES = 'user_profiles';
     private readonly TABLE_VEHICLES = 'closet_items';
-    private readonly TABLE_TRADES = 'trade_requests';
-    private readonly TABLE_TRADE_HISTORY = 'trade_history';
-    private readonly TABLE_GALLERIES = 'shared_galleries';
-    private readonly GALLERY_BASE_URL = 'https://clueless-gallery-web.vercel.app/g/';
 
     // =====================================================================
     // INTERNAL STATE
@@ -182,7 +131,6 @@ export class CloudManager extends BaseScriptComponent {
     private userId: string = '';
     private isAuthenticated: boolean = false;
     private isInitializing: boolean = false;
-    private tradeChannel: any = null;
     private internetModule: InternetModule = require('LensStudio:InternetModule');
     private remoteMediaModule: RemoteMediaModule = require('LensStudio:RemoteMediaModule');
     private bitmojiModule: BitmojiModule = require('LensStudio:BitmojiModule');
@@ -286,7 +234,6 @@ export class CloudManager extends BaseScriptComponent {
 
     private onAuthSuccess(): void {
         if (this.onAuthenticated) this.onAuthenticated(this.userId);
-        this.subscribeToTradeNotifications();
         this.fetchAndUploadBitmoji().catch(() => {});
     }
 
@@ -333,7 +280,7 @@ export class CloudManager extends BaseScriptComponent {
             const username = this.onGetUsername ? this.onGetUsername() : '';
             const profileData: any = {
                 user_id: this.userId,
-                display_name: username.length > 0 ? username : 'Driver_' + this.userId.substring(0, 6),
+                display_name: username.length > 0 ? username : 'Stylist_' + this.userId.substring(0, 6),
                 level: localProfile.level,
                 total_xp: localProfile.totalXP,
                 prestige: localProfile.prestige,
@@ -360,7 +307,7 @@ export class CloudManager extends BaseScriptComponent {
             }
 
             const result = data && data.length > 0 ? data[0] as CloudUserProfile : null;
-            print('CloudManager: Profile synced — LVL ' + localProfile.level
+            print('CloudManager: Profile synced — Style ' + localProfile.level
                 + ' | XP ' + localProfile.totalXP
                 + ' | Prestige ' + localProfile.prestige);
             if (this.onProfileSynced && result) this.onProfileSynced(result);
@@ -666,19 +613,7 @@ export class CloudManager extends BaseScriptComponent {
         if (!this.isReady()) return;
 
         try {
-            // 1. Delete shared gallery FIRST so the website stops showing old data
-            const { error: galleryError } = await this.client
-                .from(this.TABLE_GALLERIES)
-                .delete()
-                .eq('user_id', this.userId);
-
-            if (galleryError) {
-                print('CloudManager: [RESET] Gallery delete FAILED: ' + JSON.stringify(galleryError));
-            } else {
-                print('CloudManager: [RESET] Gallery deleted — website will show "not found"');
-            }
-
-            // 2. Delete all vehicles
+            // 1. Delete all vehicles
             const { error: vehicleError } = await this.client
                 .from(this.TABLE_VEHICLES)
                 .delete()
@@ -690,7 +625,7 @@ export class CloudManager extends BaseScriptComponent {
                 print('CloudManager: [RESET] All vehicles deleted from cloud');
             }
 
-            // 3. Delete user profile (AFTER vehicles due to FK constraint)
+            // 2. Delete user profile (AFTER vehicles due to FK constraint)
             const { error: profileError } = await this.client
                 .from(this.TABLE_PROFILES)
                 .delete()
@@ -702,7 +637,7 @@ export class CloudManager extends BaseScriptComponent {
                 print('CloudManager: [RESET] User profile deleted from cloud');
             }
 
-            // 4. Clean up card images from storage bucket (best-effort)
+            // 3. Clean up card images from storage bucket (best-effort)
             try {
                 const { data: files } = await this.client.storage
                     .from(this.STORAGE_BUCKET)
@@ -724,7 +659,7 @@ export class CloudManager extends BaseScriptComponent {
                 print('CloudManager: [RESET] Storage cleanup skipped: ' + storageErr);
             }
 
-            print('CloudManager: [RESET] Full cloud reset complete (gallery + vehicles + profile + images)');
+            print('CloudManager: [RESET] Full cloud reset complete (vehicles + profile + images)');
             if (this.onShowMessage) this.onShowMessage(t('profile_collection_reset'));
         } catch (e) {
             print('CloudManager: [RESET] Exception: ' + e);
@@ -931,681 +866,6 @@ export class CloudManager extends BaseScriptComponent {
                 resolve(null);
             }
         });
-    }
-
-    // =====================================================================
-    // LEADERBOARD
-    // =====================================================================
-
-    async fetchLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
-        if (!this.isReady()) return [];
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_PROFILES)
-                .select('user_id, display_name, level, total_xp, prestige, total_scans')
-                .order('prestige', { ascending: false })
-                .order('total_xp', { ascending: false })
-                .limit(limit);
-
-            if (error) {
-                print('CloudManager: Leaderboard error: ' + JSON.stringify(error));
-                return [];
-            }
-
-            const entries: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => ({
-                user_id: row.user_id,
-                display_name: row.display_name || 'Driver',
-                level: row.level || 1,
-                total_xp: row.total_xp || 0,
-                prestige: row.prestige || 0,
-                total_scans: row.total_scans || 0,
-                rank: idx + 1,
-            }));
-
-            let myRank = -1;
-            for (let i = 0; i < entries.length; i++) {
-                if (entries[i].user_id === this.userId) {
-                    myRank = i + 1;
-                    break;
-                }
-            }
-
-            print('CloudManager: Leaderboard fetched — ' + entries.length + ' entries, my rank=' + myRank);
-            if (this.onLeaderboardReady) this.onLeaderboardReady(entries, myRank);
-            return entries;
-        } catch (e) {
-            print('CloudManager: Leaderboard exception: ' + e);
-            return [];
-        }
-    }
-
-    async fetchMyRank(): Promise<number> {
-        if (!this.isReady()) return -1;
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_PROFILES)
-                .select('user_id')
-                .order('prestige', { ascending: false })
-                .order('total_xp', { ascending: false });
-
-            if (error || !data) return -1;
-
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].user_id === this.userId) return i + 1;
-            }
-            return -1;
-        } catch (e) {
-            return -1;
-        }
-    }
-
-    // =====================================================================
-    // ASYNC TRADING
-    // =====================================================================
-
-    async proposeTrade(toUserId: string, offeredSerial: string, offeredBrandModel: string,
-                       offeredRarity: number, message: string = ''): Promise<boolean> {
-        if (!this.isReady()) return false;
-
-        try {
-            const tradeData: any = {
-                from_user: this.userId,
-                to_user: toUserId,
-                offered_serial: offeredSerial,
-                offered_brand_model: offeredBrandModel,
-                offered_rarity: offeredRarity,
-                status: 'pending',
-                message: message || 'Trade request from ' + this.userId.substring(0, 6),
-            };
-
-            const { error } = await this.client
-                .from(this.TABLE_TRADES)
-                .insert(tradeData);
-
-            if (error) {
-                print('CloudManager: Trade propose error: ' + JSON.stringify(error));
-                return false;
-            }
-
-            print('CloudManager: Trade proposed — ' + offeredBrandModel + ' to ' + toUserId.substring(0, 8));
-            return true;
-        } catch (e) {
-            print('CloudManager: Trade propose exception: ' + e);
-            return false;
-        }
-    }
-
-    async respondToTrade(tradeId: number, accept: boolean): Promise<boolean> {
-        if (!this.isReady()) return false;
-
-        try {
-            const newStatus = accept ? 'accepted' : 'rejected';
-            const { error } = await this.client
-                .from(this.TABLE_TRADES)
-                .update({ status: newStatus })
-                .eq('id', tradeId)
-                .eq('to_user', this.userId);
-
-            if (error) {
-                print('CloudManager: Trade respond error: ' + JSON.stringify(error));
-                return false;
-            }
-
-            print('CloudManager: Trade ' + tradeId + ' ' + newStatus);
-            if (this.onTradeStatusChanged) this.onTradeStatusChanged(tradeId, newStatus);
-
-            if (accept) {
-                await this.executeAsyncTradeTransfer(tradeId);
-            }
-
-            return true;
-        } catch (e) {
-            print('CloudManager: Trade respond exception: ' + e);
-            return false;
-        }
-    }
-
-    /**
-     * Executes the full card transfer for an accepted async trade:
-     * 1. Fetch the trade request to get from_user and serial
-     * 2. Copy the vehicle row from from_user to this user
-     * 3. Copy the card image in Storage
-     * 4. Delete the vehicle from from_user
-     * 5. Notify locally via onAsyncTradeCompleted
-     */
-    private async executeAsyncTradeTransfer(tradeId: number): Promise<void> {
-        try {
-            // 1. Fetch the trade details
-            const { data: tradeData, error: tradeErr } = await this.client
-                .from(this.TABLE_TRADES)
-                .select('*')
-                .eq('id', tradeId)
-                .single();
-
-            if (tradeErr || !tradeData) {
-                print('CloudManager: Trade transfer — could not fetch trade: ' + JSON.stringify(tradeErr));
-                return;
-            }
-
-            const fromUser: string = tradeData.from_user;
-            const serial: string = tradeData.offered_serial;
-            if (!fromUser || !serial) {
-                print('CloudManager: Trade transfer — missing from_user or serial');
-                return;
-            }
-
-            // 2. Fetch the vehicle from the giver's collection
-            const { data: vehicleData, error: vErr } = await this.client
-                .from(this.TABLE_VEHICLES)
-                .select('*')
-                .eq('user_id', fromUser)
-                .eq('serial', serial)
-                .single();
-
-            if (vErr || !vehicleData) {
-                print('CloudManager: Trade transfer — vehicle not found in giver collection: ' + JSON.stringify(vErr));
-                if (this.onShowMessage) this.onShowMessage(t('trade_failed_card'));
-                return;
-            }
-
-            // 3. Insert the vehicle into receiver's collection (with new user_id)
-            const receiverVehicle = { ...vehicleData };
-            delete receiverVehicle.id;
-            receiverVehicle.user_id = this.userId;
-            receiverVehicle.created_at = undefined;
-
-            const { error: insertErr } = await this.client
-                .from(this.TABLE_VEHICLES)
-                .upsert(receiverVehicle, { onConflict: 'serial' })
-                .select();
-
-            if (insertErr) {
-                print('CloudManager: Trade transfer — insert error: ' + JSON.stringify(insertErr));
-                return;
-            }
-
-            // 4. Copy image in Storage (fire-and-forget)
-            try {
-                const srcPath = fromUser + '/' + serial + '.jpg';
-                const dstPath = this.userId + '/' + serial + '.jpg';
-                const { data: imgData } = await this.client.storage
-                    .from(this.STORAGE_BUCKET)
-                    .download(srcPath);
-                if (imgData) {
-                    await this.client.storage
-                        .from(this.STORAGE_BUCKET)
-                        .upload(dstPath, imgData, { upsert: true });
-                    print('CloudManager: Trade transfer — image copied');
-                }
-            } catch (imgErr) {
-                print('CloudManager: Trade transfer — image copy skipped: ' + imgErr);
-            }
-
-            // 5. Delete from giver's collection
-            await this.client
-                .from(this.TABLE_VEHICLES)
-                .delete()
-                .eq('user_id', fromUser)
-                .eq('serial', serial);
-
-            print('CloudManager: Trade transfer complete — ' + serial + ' from ' + fromUser.substring(0, 8));
-            if (this.onShowMessage) this.onShowMessage(t('trade_complete'));
-
-            // 6. Notify locally
-            if (this.onAsyncTradeCompleted) {
-                this.onAsyncTradeCompleted(vehicleData as CloudVehicle);
-            }
-        } catch (e) {
-            print('CloudManager: Trade transfer exception: ' + e);
-            if (this.onShowMessage) this.onShowMessage(t('trade_transfer_failed'));
-        }
-    }
-
-    async fetchPendingTrades(): Promise<CloudTradeRequest[]> {
-        if (!this.isReady()) return [];
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_TRADES)
-                .select('*')
-                .eq('to_user', this.userId)
-                .eq('status', 'pending')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                print('CloudManager: Fetch trades error: ' + JSON.stringify(error));
-                return [];
-            }
-
-            print('CloudManager: ' + (data?.length || 0) + ' pending trades');
-            return (data || []) as CloudTradeRequest[];
-        } catch (e) {
-            print('CloudManager: Fetch trades exception: ' + e);
-            return [];
-        }
-    }
-
-    async fetchMyOutgoingTrades(): Promise<CloudTradeRequest[]> {
-        if (!this.isReady()) return [];
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_TRADES)
-                .select('*')
-                .eq('from_user', this.userId)
-                .order('created_at', { ascending: false })
-                .limit(20);
-
-            if (error) return [];
-            return (data || []) as CloudTradeRequest[];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    // =====================================================================
-    // TRADE HISTORY — Cloud sync
-    // =====================================================================
-
-    /** Syncs a single trade history entry to the cloud. */
-    async syncTradeHistoryEntry(entry: TradeHistoryEntry): Promise<boolean> {
-        if (!this.isReady()) return false;
-
-        try {
-            const row = {
-                user_id: this.userId,
-                timestamp: entry.timestamp,
-                type: entry.type,
-                serial: entry.serial,
-                brand_model: entry.brand_model,
-                rarity: entry.rarity,
-                partner_name: entry.partnerName || '',
-                method: entry.method || 'colocated',
-            };
-            const { error } = await this.client
-                .from(this.TABLE_TRADE_HISTORY)
-                .insert(row);
-
-            if (error) {
-                print('CloudManager: Trade history sync error: ' + JSON.stringify(error));
-                return false;
-            }
-            print('CloudManager: Trade history synced — ' + entry.type + ' ' + entry.brand_model);
-            return true;
-        } catch (e) {
-            print('CloudManager: Trade history sync exception: ' + e);
-            return false;
-        }
-    }
-
-    // =====================================================================
-    // REALTIME — Trade notifications
-    // =====================================================================
-
-    private subscribeToTradeNotifications(): void {
-        if (!this.client || !this.userId) return;
-
-        try {
-            this.tradeChannel = this.client.channel('trades-' + this.userId.substring(0, 12));
-
-            this.tradeChannel.on('postgres_changes', {
-                event: 'INSERT',
-                schema: 'public',
-                table: this.TABLE_TRADES,
-                filter: 'to_user=eq.' + this.userId
-            }, (payload: any) => {
-                print('CloudManager: [REALTIME] New trade request received!');
-                if (payload?.new && this.onTradeReceived) {
-                    this.onTradeReceived(payload.new as CloudTradeRequest);
-                }
-                if (this.onShowMessage) {
-                    const trade = payload?.new;
-                    this.onShowMessage(tf('trade_request', { name: trade?.offered_brand_model || '?' }));
-                }
-            });
-
-            this.tradeChannel.on('postgres_changes', {
-                event: 'UPDATE',
-                schema: 'public',
-                table: this.TABLE_TRADES,
-                filter: 'from_user=eq.' + this.userId
-            }, (payload: any) => {
-                if (payload?.new) {
-                    const trade = payload.new;
-                    print('CloudManager: [REALTIME] Trade ' + trade.id + ' updated — ' + trade.status);
-                    if (this.onTradeStatusChanged) {
-                        this.onTradeStatusChanged(trade.id, trade.status);
-                    }
-                    if (this.onShowMessage && trade.status === 'accepted') {
-                        this.onShowMessage(tf('trade_accepted', { name: trade.offered_brand_model || '' }));
-                    }
-                }
-            });
-
-            this.tradeChannel.subscribe((status: string) => {
-                if (status === 'SUBSCRIBED') {
-                    print('CloudManager: [REALTIME] Trade notifications active');
-                }
-            });
-
-        } catch (e) {
-            print('CloudManager: Realtime subscribe error: ' + e);
-        }
-    }
-
-    // =====================================================================
-    // GLOBAL STATS
-    // =====================================================================
-
-    async fetchGlobalStats(): Promise<GlobalStats | null> {
-        if (!this.isReady()) return null;
-
-        try {
-            // Aggregate counts with limited queries instead of loading all rows
-            const { count: totalUsers } = await this.client
-                .from(this.TABLE_PROFILES)
-                .select('*', { count: 'exact', head: true });
-
-            const { data: profileData } = await this.client
-                .from(this.TABLE_PROFILES)
-                .select('total_scans, total_trades')
-                .limit(1000);
-
-            const { data: vehicleData } = await this.client
-                .from(this.TABLE_VEHICLES)
-                .select('brand, rarity')
-                .limit(1000);
-
-            let totalScans = 0;
-            let totalTrades = 0;
-
-            if (profileData) {
-                for (let i = 0; i < profileData.length; i++) {
-                    totalScans += profileData[i].total_scans || 0;
-                    totalTrades += profileData[i].total_trades || 0;
-                }
-            }
-
-            let mostScanned = 'N/A';
-            let rarestFound = 'N/A';
-
-            if (vehicleData && vehicleData.length > 0) {
-                const brandCounts: { [key: string]: number } = {};
-                let maxRarity = 0;
-                for (let i = 0; i < vehicleData.length; i++) {
-                    const brand = vehicleData[i].brand || 'Unknown';
-                    brandCounts[brand] = (brandCounts[brand] || 0) + 1;
-                    if (vehicleData[i].rarity > maxRarity) {
-                        maxRarity = vehicleData[i].rarity;
-                        rarestFound = brand;
-                    }
-                }
-                let maxCount = 0;
-                for (const brand in brandCounts) {
-                    if (brandCounts[brand] > maxCount) {
-                        maxCount = brandCounts[brand];
-                        mostScanned = brand;
-                    }
-                }
-            }
-
-            const stats: GlobalStats = {
-                total_scans: totalScans,
-                total_users: totalUsers || 0,
-                most_scanned_brand: mostScanned,
-                rarest_found: rarestFound,
-                total_trades: totalTrades,
-            };
-
-            print('CloudManager: Global stats — ' + (totalUsers || 0) + ' users, '
-                + totalScans + ' scans, ' + totalTrades + ' trades');
-            return stats;
-        } catch (e) {
-            print('CloudManager: Global stats exception: ' + e);
-            return null;
-        }
-    }
-
-    // =====================================================================
-    // PLAYER SEARCH (for async trading)
-    // =====================================================================
-
-    async searchPlayers(query: string, limit: number = 10): Promise<CloudUserProfile[]> {
-        if (!this.isReady() || !query || query.length < 2) return [];
-
-        const sanitized = query.replace(/[^a-zA-Z0-9_ -]/g, '').substring(0, 30);
-        if (sanitized.length < 2) return [];
-
-        const escaped = sanitized.replace(/[%_\\]/g, (ch: string) => '\\' + ch);
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_PROFILES)
-                .select('*')
-                .ilike('display_name', '%' + escaped + '%')
-                .neq('user_id', this.userId)
-                .limit(limit);
-
-            if (error) return [];
-            return (data || []) as CloudUserProfile[];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    async fetchPlayerCollection(targetUserId: string): Promise<CloudVehicle[]> {
-        if (!this.isReady()) return [];
-
-        try {
-            const { data, error } = await this.client
-                .from(this.TABLE_VEHICLES)
-                .select('serial, brand, brand_model, type, year, rarity, rarity_label, city_scanned, date_scanned')
-                .eq('user_id', targetUserId)
-                .order('rarity', { ascending: false });
-
-            if (error) return [];
-            return (data || []) as CloudVehicle[];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    // =====================================================================
-    // SHARE GALLERY
-    // =====================================================================
-
-    async shareCollection(): Promise<string> {
-        if (!this.isReady()) {
-            print('CloudManager: Cannot share — not authenticated');
-            if (this.onShowMessage) this.onShowMessage(t('not_connected'));
-            if (this.onShareFailed) this.onShareFailed();
-            return '';
-        }
-
-        try {
-            const profile = this.onGetProfile ? this.onGetProfile() : null;
-            const vehicles = this.onGetCollection ? this.onGetCollection() : [];
-
-            if (!profile) {
-                print('CloudManager: Cannot share — no profile data');
-                if (this.onShareFailed) this.onShareFailed();
-                return '';
-            }
-
-            if (vehicles.length === 0) {
-                print('CloudManager: Cannot share — empty collection');
-                if (this.onShowMessage) this.onShowMessage(t('scan_vehicles_first'));
-                if (this.onShareFailed) this.onShareFailed();
-                return '';
-            }
-
-            const levelDef = getLevelForXP(profile.totalXP);
-
-            // Fetch and upload Bitmoji avatar (on-device only, cached after first call)
-            await this.fetchAndUploadBitmoji();
-            const avatarUrl = this.onGetAvatarUrl ? this.onGetAvatarUrl() : '';
-
-            const profileSnapshot = {
-                level: profile.level,
-                level_name: levelDef.name,
-                total_xp: profile.totalXP,
-                prestige: profile.prestige,
-                streak_days: profile.streakDays,
-                total_scans: profile.totalScans || 0,
-                total_trades: profile.totalTrades || 0,
-                trust_score: typeof profile.trustScore === 'number' ? profile.trustScore : 80,
-                avatar_url: avatarUrl,
-                total_cheats: profile.totalCheats || 0,
-                consecutive_cheats: profile.consecutiveCheats || 0,
-                cards_given: profile.cardsGiven || 0,
-                cards_received: profile.cardsReceived || 0,
-                last_login: profile.lastLoginDate || '',
-            };
-
-            const vehiclesSnapshot = vehicles.map((v: SavedVehicleData) => ({
-                serial: v.serial,
-                brand: v.brand || '',
-                brand_model: v.brand_model,
-                type: v.type,
-                year: v.year || '',
-                rarity: v.rarity || 2,
-                rarity_label: v.rarity_label || 'Common',
-                top_speed: v.top_speed,
-                acceleration: v.acceleration,
-                braking: v.braking,
-                traction: v.traction,
-                comfort: v.comfort,
-                scene: v.scene || '',
-                ai_note: v.ai_note || '',
-                user_note: v.user_note || '',
-                feedback: v.feedback || '',
-                pairing_note: v.pairing_note || '',
-                suggested_pairings: v.suggested_pairings || [],
-                city_scanned: v.cityScanned || '',
-                date_scanned: v.dateScanned || '',
-                saved_at: v.savedAt,
-                image_url: '',
-            }));
-
-            const cloudVehicles = await this.fetchCloudCollection();
-            let imagesFromCloud = 0;
-            let imagesFromStorage = 0;
-            let imagesFromLocal = 0;
-
-            // Pre-fetch all storage file names for this user (single API call)
-            const storageFileSet = new Set<string>();
-            try {
-                const { data: allFiles } = await this.client.storage
-                    .from(this.STORAGE_BUCKET)
-                    .list(this.userId + '/');
-                if (allFiles) {
-                    for (const f of allFiles) storageFileSet.add(f.name);
-                }
-                print('CloudManager: [SHARE] Storage bucket has ' + storageFileSet.size + ' files for user');
-            } catch (e) {
-                print('CloudManager: [SHARE] Storage list failed: ' + e);
-            }
-
-            for (let i = 0; i < vehiclesSnapshot.length; i++) {
-                const serial = vehiclesSnapshot[i].serial;
-
-                // Source 1: cloud vehicles table image_url
-                const match = cloudVehicles.find((cv: CloudVehicle) => cv.serial === serial);
-                if (match && match.image_url && match.image_url.length > 10) {
-                    vehiclesSnapshot[i].image_url = match.image_url;
-                    imagesFromCloud++;
-                    continue;
-                }
-
-                // Source 2: construct URL from storage bucket (file uploaded during save)
-                const fileName = serial + '.jpg';
-                if (storageFileSet.has(fileName)) {
-                    const storagePath = this.userId + '/' + fileName;
-                    const { data: urlData } = this.client.storage
-                        .from(this.STORAGE_BUCKET)
-                        .getPublicUrl(storagePath);
-                    if (urlData?.publicUrl) {
-                        vehiclesSnapshot[i].image_url = urlData.publicUrl;
-                        imagesFromStorage++;
-                        print('CloudManager: [SHARE] ' + serial + ' → storage file');
-                        this.client
-                            .from(this.TABLE_VEHICLES)
-                            .update({ image_url: urlData.publicUrl })
-                            .eq('user_id', this.userId)
-                            .eq('serial', serial)
-                            .then(() => {});
-                        continue;
-                    }
-                }
-
-                // Source 3: upload from local device persistent storage
-                if (this.onGetLocalImage) {
-                    const localB64 = this.onGetLocalImage(vehiclesSnapshot[i].saved_at);
-                    if (localB64 && localB64.length > 0) {
-                        print('CloudManager: [SHARE] ' + serial + ' → uploading from local (' + localB64.length + ' chars)');
-                        const url = await this.uploadCardImage(serial, localB64);
-                        if (url) {
-                            vehiclesSnapshot[i].image_url = url;
-                            imagesFromLocal++;
-                            continue;
-                        }
-                    }
-                }
-
-                print('CloudManager: [SHARE] ' + serial + ' → NO IMAGE (cloud/storage/local all empty)');
-            }
-
-            const totalImages = imagesFromCloud + imagesFromStorage + imagesFromLocal;
-            print('CloudManager: [SHARE] Image resolution: ' + totalImages + '/' + vehiclesSnapshot.length
-                + ' (cloud=' + imagesFromCloud + ', storage=' + imagesFromStorage + ', local=' + imagesFromLocal + ')');
-
-            const username = this.onGetUsername ? this.onGetUsername() : '';
-            const displayName = username.length > 0 ? username : 'Driver_' + this.userId.substring(0, 6);
-
-            const galleryData: any = {
-                user_id: this.userId,
-                display_name: displayName,
-                profile_snapshot: profileSnapshot,
-                vehicles_snapshot: vehiclesSnapshot,
-                shared_at: new Date().toISOString(),
-                is_public: true,
-            };
-
-            const { error } = await this.client
-                .from(this.TABLE_GALLERIES)
-                .upsert(galleryData, { onConflict: 'user_id' });
-
-            if (error) {
-                print('CloudManager: Share gallery error: ' + JSON.stringify(error));
-                if (this.onShowMessage) this.onShowMessage(t('share_failed'));
-                if (this.onShareFailed) this.onShareFailed();
-                return '';
-            }
-
-            const galleryUrl = this.GALLERY_BASE_URL + this.userId;
-            print('CloudManager: Gallery shared — ' + galleryUrl
-                + ' (' + vehiclesSnapshot.length + ' vehicles)');
-
-            if (this.onShowMessage) {
-                this.onShowMessage(tf('collection_shared_n', { count: vehiclesSnapshot.length }));
-            }
-            if (this.onShareComplete) {
-                this.onShareComplete(galleryUrl);
-            }
-            if (this.onShareSucceeded) {
-                this.onShareSucceeded();
-            }
-
-            return galleryUrl;
-
-        } catch (e) {
-            print('CloudManager: Share gallery exception: ' + e);
-            if (this.onShowMessage) this.onShowMessage(t('share_failed'));
-            if (this.onShareFailed) this.onShareFailed();
-            return '';
-        }
     }
 
     // =====================================================================

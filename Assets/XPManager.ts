@@ -6,7 +6,7 @@
  *   - XP calculation and attribution based on vehicle rarity
  *   - Level-up detection and notification
  *   - "+XP" popup animation on the camera-attached XP Display
- *   - User Card toggle (XP Container above head: level badge, XP bar, prestige)
+ *   - User Card toggle (XP Container above head: level number, XP bar, prestige)
  *   - Prestige reset (level 10 → level 1 + prestige star)
  *   - Daily login streak tracking with XP multiplier
  *
@@ -21,7 +21,7 @@ import {
     createDefaultProfile, formatPrestigeStars,
     TRUST_DEFAULT, getTrustRank, getTrustPenalty, TRUST_SCAN_REWARD,
     getTrustColor, formatTrustText,
-} from './VehicleTypes';
+} from './ClosetTypes';
 import { t, tf } from './Localization';
 
 @component
@@ -32,7 +32,7 @@ export class XPManager extends BaseScriptComponent {
     // =====================================================================
     @input
     @allowUndefined
-    @hint('XP Container SceneObject (above head — contains Level Badge, Level Number, XP counter, XP Bar)')
+    @hint('XP Container SceneObject (above head — contains Level Number, XP counter, XP Bar)')
     xpContainer: SceneObject;
 
     @input
@@ -49,24 +49,6 @@ export class XPManager extends BaseScriptComponent {
     @allowUndefined
     @hint('"XP Bar" parent SceneObject inside XP Container (contains 5 Plane children)')
     xpBarParent: SceneObject;
-
-    @input
-    @allowUndefined
-    @hint('"Level Badge" SceneObject inside XP Container')
-    levelBadge: SceneObject;
-
-    @input
-    @hint('Public URL template for level badge PNG. Use {level}. Example: https://.../level-badges/lvl-{level}.png')
-    levelBadgeUrlTemplate: string = '';
-
-    @input
-    @hint('Pad digits for {level} in badge URL template. Example: 2 => 01, 50')
-    levelBadgePadDigits: number = 2;
-
-    @input
-    @allowUndefined
-    @hint('Optional reveal badge object shown in front of camera on level-up (Image or RenderMeshVisual).')
-    levelUpBadgeReveal: SceneObject;
 
     @input
     @allowUndefined
@@ -95,7 +77,7 @@ export class XPManager extends BaseScriptComponent {
     // =====================================================================
     @input
     @allowUndefined
-    @hint('"User Card Info" SceneObject on the hand (contains Level Badge, Level Number, XP counter, XP Bar)')
+    @hint('"User Card Info" SceneObject on the hand (contains Level Number, XP counter, XP Bar)')
     userCardInfo: SceneObject;
 
     @input
@@ -128,13 +110,13 @@ export class XPManager extends BaseScriptComponent {
     onXPGained: ((amount: number, newTotal: number) => void) | null = null;
     /** Called when the player levels up. Params: (newLevel, levelName). */
     onLevelUp: ((newLevel: number, levelName: string) => void) | null = null;
-    /** Called to connect a button (utility from VehicleCardUI). */
+    /** Called to connect a button (utility from ClosetCardUI). */
     onConnectButton: ((obj: SceneObject, cb: () => void, name: string) => boolean) | null = null;
     /** Called to sync profile to cloud after XP changes. */
     onCloudSyncProfile: ((profile: UserProfile) => void) | null = null;
-    /** Called when a positive XP/Trust popup is queued. */
+    /** Called when a positive style progress popup is queued. */
     onPositiveProgress: (() => void) | null = null;
-    /** Called when a negative Trust popup is queued. */
+    /** Called when a negative style score popup is queued. */
     onNegativeProgress: (() => void) | null = null;
     /** Called when the User Card is opened (so other UI can react). */
     onUserCardOpened: (() => void) | null = null;
@@ -173,15 +155,7 @@ export class XPManager extends BaseScriptComponent {
     private bonusInfoText: Text | null = null;
     private usernameInfoText: Text | null = null;
     private trustInfoText: Text | null = null;
-    private userCardLevelBadge: SceneObject | null = null;
 
-    private remoteMediaModule: RemoteMediaModule = require('LensStudio:RemoteMediaModule');
-    private internetModule: InternetModule = require('LensStudio:InternetModule');
-    private badgeTextureCache: Map<number, Texture> = new Map();
-    private badgeLoadingLevels: Set<number> = new Set();
-    private badgePendingCallbacks: Map<number, Array<(tex: Texture) => void>> = new Map();
-    private lastAppliedBadgeLevel: number = -1;
-    private lastAppliedUserCardBadgeLevel: number = -1;
     private levelUpRevealQueue: Array<{ from: number; to: number; toName: string }> = [];
     private isShowingLevelUpReveal: boolean = false;
     private levelUpRevealAnimEvent: SceneEvent | null = null;
@@ -195,6 +169,8 @@ export class XPManager extends BaseScriptComponent {
 
     // Welcome bonus popup state
     private welcomeBonusAnimEvent: SceneEvent | null = null;
+    private manropeExtraBoldFont: Font | null = null;
+    private manropeExtraBoldResolved: boolean = false;
 
     // =====================================================================
     // LIFECYCLE
@@ -206,7 +182,6 @@ export class XPManager extends BaseScriptComponent {
             if (displayObj) displayObj.enabled = false;
         }
         if (this.xpContainer) this.xpContainer.enabled = false;
-        if (this.levelUpBadgeReveal) this.levelUpBadgeReveal.enabled = false;
         if (this.levelUpTitleText) {
             const obj = this.levelUpTitleText.getSceneObject();
             if (obj) obj.enabled = false;
@@ -233,11 +208,11 @@ export class XPManager extends BaseScriptComponent {
             this.hookFrameCloseButton();
             this.showWelcomeBonusPopup();
 
-            print('XPManager: Profile loaded — LVL ' + this.profile.level
+            print('XPManager: Profile loaded — Style ' + this.profile.level
                 + ' | XP ' + this.profile.totalXP
                 + ' | Prestige ' + this.profile.prestige
                 + ' | Streak ' + this.profile.streakDays + 'd'
-                + ' | Trust ' + this.profile.trustScore + '%');
+                + ' | Fashion Trust ' + this.profile.trustScore + '%');
         });
     }
 
@@ -264,92 +239,6 @@ export class XPManager extends BaseScriptComponent {
         this.addXP(finalXP);
     }
 
-    // =====================================================================
-    // TRADE XP — Anti-farming safeguards
-    // =====================================================================
-    private tradedSerials: Set<string> = new Set();
-    private tradeXPCount: number = 0;
-    private lastTradeTime: number = 0;
-    private readonly TRADE_XP_AMOUNT = 15;
-    private readonly GIVE_XP_AMOUNT = 25;
-    private readonly TRADE_COOLDOWN_MS = 60000; // 60 seconds between trade XP
-    private readonly MAX_TRADE_XP_PER_SESSION = 10;
-
-    /**
-     * Awards XP for a card trade, with anti-farming safeguards:
-     * - Fixed 15 XP (not affected by rarity or streak multiplier)
-     * - 60 second cooldown between XP-eligible trades
-     * - No XP for a card serial already received by trade
-     * - Max 10 trade XP awards per session
-     * @returns true if XP was awarded, false if blocked by safeguard
-     */
-    awardTradeXP(cardSerial?: string): boolean {
-        const now = Date.now();
-
-        // Check: serial already traded?
-        if (cardSerial && this.tradedSerials.has(cardSerial)) {
-            print('XPManager: Trade XP blocked — serial "' + cardSerial + '" already traded');
-            return false;
-        }
-
-        // Check: session limit
-        if (this.tradeXPCount >= this.MAX_TRADE_XP_PER_SESSION) {
-            print('XPManager: Trade XP blocked — session limit reached (' + this.MAX_TRADE_XP_PER_SESSION + ')');
-            return false;
-        }
-
-        // Check: cooldown
-        if (now - this.lastTradeTime < this.TRADE_COOLDOWN_MS) {
-            const remaining = Math.ceil((this.TRADE_COOLDOWN_MS - (now - this.lastTradeTime)) / 1000);
-            print('XPManager: Trade XP blocked — cooldown (' + remaining + 's remaining)');
-            return false;
-        }
-
-        // All checks passed — award XP
-        if (cardSerial) this.tradedSerials.add(cardSerial);
-        this.tradeXPCount++;
-        this.lastTradeTime = now;
-        this.profile.totalTrades = (this.profile.totalTrades || 0) + 1;
-        this.profile.cardsReceived = (this.profile.cardsReceived || 0) + 1;
-
-        print('XPManager: Trade XP awarded — +' + this.TRADE_XP_AMOUNT
-            + ' (trade ' + this.tradeXPCount + '/' + this.MAX_TRADE_XP_PER_SESSION
-            + ', totalTrades=' + this.profile.totalTrades + ')');
-        this.addXP(this.TRADE_XP_AMOUNT);
-        return true;
-    }
-
-    /**
-     * Awards XP for GIVING a card (more generous than receiving).
-     * Uses the same anti-farming safeguards as awardTradeXP.
-     */
-    awardGiveXP(cardSerial?: string): boolean {
-        const now = Date.now();
-
-        if (cardSerial && this.tradedSerials.has(cardSerial)) {
-            print('XPManager: Give XP blocked — serial "' + cardSerial + '" already traded');
-            return false;
-        }
-        if (this.tradeXPCount >= this.MAX_TRADE_XP_PER_SESSION) {
-            print('XPManager: Give XP blocked — session limit reached');
-            return false;
-        }
-        if (now - this.lastTradeTime < this.TRADE_COOLDOWN_MS) {
-            return false;
-        }
-
-        if (cardSerial) this.tradedSerials.add(cardSerial);
-        this.tradeXPCount++;
-        this.lastTradeTime = now;
-        this.profile.totalTrades = (this.profile.totalTrades || 0) + 1;
-        this.profile.cardsGiven = (this.profile.cardsGiven || 0) + 1;
-
-        print('XPManager: Give XP awarded — +' + this.GIVE_XP_AMOUNT
-            + ' (trade ' + this.tradeXPCount + '/' + this.MAX_TRADE_XP_PER_SESSION + ')');
-        this.addXP(this.GIVE_XP_AMOUNT);
-        return true;
-    }
-
     /** Returns the current user profile (read-only copy). */
     getProfile(): UserProfile {
         return {
@@ -371,104 +260,6 @@ export class XPManager extends BaseScriptComponent {
     /** Returns the current level definition. */
     getCurrentLevelDef(): LevelDef {
         return getLevelForXP(this.profile.totalXP);
-    }
-
-    getLevelBadgeUrl(level: number): string {
-        if (!this.levelBadgeUrlTemplate || this.levelBadgeUrlTemplate.length < 8) return '';
-        const clamped = Math.max(1, Math.min(this.MAX_LEVEL, Math.round(level)));
-        let lvl = String(clamped);
-        if (this.levelBadgePadDigits > 1) {
-            lvl = lvl.padStart(this.levelBadgePadDigits, '0');
-        }
-        return this.levelBadgeUrlTemplate.replace('{level}', lvl);
-    }
-
-    private loadBadgeTexture(level: number, onReady: (tex: Texture) => void): void {
-        const clamped = Math.max(1, Math.min(this.MAX_LEVEL, Math.round(level)));
-        const cached = this.badgeTextureCache.get(clamped);
-        if (cached) {
-            onReady(cached);
-            return;
-        }
-
-        const url = this.getLevelBadgeUrl(clamped);
-        if (!url || !this.remoteMediaModule || !this.internetModule) return;
-
-        if (!this.badgePendingCallbacks.has(clamped)) {
-            this.badgePendingCallbacks.set(clamped, []);
-        }
-        this.badgePendingCallbacks.get(clamped)!.push(onReady);
-
-        if (this.badgeLoadingLevels.has(clamped)) return;
-        this.badgeLoadingLevels.add(clamped);
-
-        try {
-            const req = RemoteServiceHttpRequest.create();
-            req.url = url;
-            req.setHeader('User-Agent', 'LensStudio/5.15 DGNS/LevelBadge');
-            this.internetModule.performHttpRequest(req, (res: RemoteServiceHttpResponse) => {
-                if (res.statusCode < 200 || res.statusCode >= 400) {
-                    this.badgeLoadingLevels.delete(clamped);
-                    return;
-                }
-                try {
-                    const resource = res.asResource();
-                    this.remoteMediaModule.loadResourceAsImageTexture(
-                        resource,
-                        (texture: Texture) => {
-                            this.badgeTextureCache.set(clamped, texture);
-                            this.badgeLoadingLevels.delete(clamped);
-                            const callbacks = this.badgePendingCallbacks.get(clamped) || [];
-                            this.badgePendingCallbacks.delete(clamped);
-                            for (let i = 0; i < callbacks.length; i++) {
-                                callbacks[i](texture);
-                            }
-                        },
-                        (_err: string) => {
-                            this.badgeLoadingLevels.delete(clamped);
-                            this.badgePendingCallbacks.delete(clamped);
-                        }
-                    );
-                } catch (e) {
-                    this.badgeLoadingLevels.delete(clamped);
-                    this.badgePendingCallbacks.delete(clamped);
-                }
-            });
-        } catch (e) {
-            this.badgeLoadingLevels.delete(clamped);
-            this.badgePendingCallbacks.delete(clamped);
-        }
-    }
-
-    private applyBadgeTextureToObject(target: SceneObject | null, tex: Texture): void {
-        if (!target) return;
-        try {
-            const imgComp = target.getComponent('Component.Image') as Image;
-            if (imgComp && imgComp.mainMaterial && imgComp.mainPass) {
-                imgComp.mainMaterial = imgComp.mainMaterial.clone();
-                imgComp.mainPass.baseTex = tex;
-                target.enabled = true;
-                return;
-            }
-            const meshComp = target.getComponent('Component.RenderMeshVisual') as RenderMeshVisual;
-            if (meshComp && meshComp.mainMaterial && meshComp.mainPass) {
-                meshComp.mainMaterial = meshComp.mainMaterial.clone();
-                meshComp.mainPass.baseTex = tex;
-                target.enabled = true;
-                return;
-            }
-        } catch (e) { /* ignore */ }
-    }
-
-    private updateLocalLevelBadges(level: number): void {
-        if (level !== this.lastAppliedBadgeLevel) {
-            this.lastAppliedBadgeLevel = level;
-            this.loadBadgeTexture(level, (tex: Texture) => this.applyBadgeTextureToObject(this.levelBadge, tex));
-        }
-        if (this.userCardLevelBadge && level !== this.lastAppliedUserCardBadgeLevel) {
-            this.lastAppliedUserCardBadgeLevel = level;
-            this.loadBadgeTexture(level, (tex: Texture) => this.applyBadgeTextureToObject(this.userCardLevelBadge, tex));
-        }
     }
 
     /**
@@ -624,8 +415,8 @@ export class XPManager extends BaseScriptComponent {
         const item = this.levelUpRevealQueue.shift()!;
         this.resolveLevelUpRevealInputs();
 
-        // Fallback text popup if reveal UI is not wired
-        if (!this.levelUpBadgeReveal || !this.levelUpTitleText || !this.levelUpBodyText) {
+        // Fallback text popup if the reveal text UI is not wired
+        if (!this.levelUpTitleText || !this.levelUpBodyText) {
             this.enqueueCustomPopup(
                 tf('level_up_reveal_body', { from: item.from, to: item.to, name: item.toName }),
                 1, 1, 1, 2.5, 1
@@ -636,25 +427,12 @@ export class XPManager extends BaseScriptComponent {
 
         this.levelUpTitleText.text = t('level_up_reveal_title');
         this.levelUpBodyText.text = tf('level_up_reveal_body', { from: item.from, to: item.to, name: item.toName });
-        this.levelUpBadgeReveal.enabled = true;
         const titleObj = this.levelUpTitleText.getSceneObject();
         const bodyObj = this.levelUpBodyText.getSceneObject();
         titleObj.enabled = true;
         bodyObj.enabled = true;
-        // Use Inspector-authored transform values for position/scale on all reveal elements.
-        const baseBadgeScale = this.levelUpBadgeReveal.getTransform().getLocalScale();
-        this.setObjectOpacity(this.levelUpBadgeReveal, 0);
         this.setTextOpacity(this.levelUpTitleText, 0);
         this.setTextOpacity(this.levelUpBodyText, 0);
-        this.levelUpBadgeReveal.getTransform().setLocalScale(new vec3(
-            baseBadgeScale.x * 0.01,
-            baseBadgeScale.y * 0.01,
-            baseBadgeScale.z * 0.01
-        ));
-
-        this.loadBadgeTexture(item.to, (tex: Texture) => {
-            this.applyBadgeTextureToObject(this.levelUpBadgeReveal, tex);
-        });
 
         if (this.levelUpRevealAnimEvent) {
             try { this.levelUpRevealAnimEvent.enabled = false; } catch (e) { /* ignore */ }
@@ -672,39 +450,17 @@ export class XPManager extends BaseScriptComponent {
             if (e < IN) {
                 const tt = e / IN;
                 const eased = 1.0 - Math.pow(1.0 - tt, 3.0);
-                const mult = 1.12 * eased;
-                this.levelUpBadgeReveal.getTransform().setLocalScale(new vec3(
-                    baseBadgeScale.x * mult,
-                    baseBadgeScale.y * mult,
-                    baseBadgeScale.z * mult
-                ));
-                this.setObjectOpacity(this.levelUpBadgeReveal, eased);
                 this.setTextOpacity(this.levelUpTitleText, eased);
                 this.setTextOpacity(this.levelUpBodyText, eased);
-            } else if (e < IN + 0.12) {
-                const tt = (e - IN) / 0.12;
-                const mult = 1.12 - 0.12 * tt;
-                this.levelUpBadgeReveal.getTransform().setLocalScale(new vec3(
-                    baseBadgeScale.x * mult,
-                    baseBadgeScale.y * mult,
-                    baseBadgeScale.z * mult
-                ));
-                this.setObjectOpacity(this.levelUpBadgeReveal, 1);
-                this.setTextOpacity(this.levelUpTitleText, 1);
-                this.setTextOpacity(this.levelUpBodyText, 1);
             } else if (e < IN + HOLD) {
-                this.levelUpBadgeReveal.getTransform().setLocalScale(baseBadgeScale);
-                this.setObjectOpacity(this.levelUpBadgeReveal, 1);
                 this.setTextOpacity(this.levelUpTitleText, 1);
                 this.setTextOpacity(this.levelUpBodyText, 1);
             } else if (e < TOTAL) {
                 const tt = (e - IN - HOLD) / OUT;
                 const fade = 1.0 - (tt * tt);
-                this.setObjectOpacity(this.levelUpBadgeReveal, fade);
                 this.setTextOpacity(this.levelUpTitleText, fade);
                 this.setTextOpacity(this.levelUpBodyText, fade);
             } else {
-                this.levelUpBadgeReveal.enabled = false;
                 this.levelUpTitleText.getSceneObject().enabled = false;
                 this.levelUpBodyText.getSceneObject().enabled = false;
                 if (this.levelUpRevealAnimEvent) {
@@ -717,13 +473,6 @@ export class XPManager extends BaseScriptComponent {
     }
 
     private resolveLevelUpRevealInputs(): void {
-        if (!this.levelUpBadgeReveal) {
-            this.levelUpBadgeReveal = this.findSceneObjectByName('Badge Reveal');
-            if (this.levelUpBadgeReveal) {
-                print('XPManager: Auto-resolved levelUpBadgeReveal');
-                this.levelUpBadgeReveal.enabled = false;
-            }
-        }
         if (!this.levelUpTitleText) {
             const titleObj = this.findSceneObjectByName('Level Up Title');
             if (titleObj) {
@@ -789,7 +538,7 @@ export class XPManager extends BaseScriptComponent {
                     if (name && typeof name === 'string' && name.trim().length > 0) {
                         this.cachedUsername = name.trim();
                         print('XPManager: Username = "' + this.cachedUsername + '"');
-                        this.updateUsernameDisplay();
+                        this.refreshUserCardUI();
                     } else {
                         print('XPManager: requestDisplayName returned empty');
                     }
@@ -808,6 +557,11 @@ export class XPManager extends BaseScriptComponent {
         return this.cachedUsername;
     }
 
+    refreshLanguageTexts(): void {
+        this.refreshUserCardUI();
+        this.updateTrustDisplays();
+    }
+
     // =====================================================================
     // TRUST SCORE — Anti-cheat reputation
     // =====================================================================
@@ -821,7 +575,7 @@ export class XPManager extends BaseScriptComponent {
         this.profile.consecutiveCheats++;
         this.profile.totalCheats = (this.profile.totalCheats || 0) + 1;
         this.profile.trustScore = Math.max(0, this.profile.trustScore - penalty);
-        print('XPManager: Trust penalty -' + penalty
+        print('XPManager: Fashion Trust penalty -' + penalty
             + ' → ' + this.profile.trustScore + '% (streak ' + this.profile.consecutiveCheats + ')');
         this.enqueueTrustPenaltyPopup(penalty);
         this.saveProfile();
@@ -833,7 +587,7 @@ export class XPManager extends BaseScriptComponent {
         this.profile.consecutiveCheats = 0;
         if (this.profile.trustScore < 100) {
             this.profile.trustScore = Math.min(100, this.profile.trustScore + TRUST_SCAN_REWARD);
-            print('XPManager: Trust reward +' + TRUST_SCAN_REWARD + ' → ' + this.profile.trustScore + '%');
+            print('XPManager: Fashion Trust reward +' + TRUST_SCAN_REWARD + ' → ' + this.profile.trustScore + '%');
             this.enqueueTrustPopup();
         }
         this.saveProfile();
@@ -843,14 +597,49 @@ export class XPManager extends BaseScriptComponent {
     /** Returns formatted trust info for display on cards. */
     getTrustDisplayString(): string {
         const rank = getTrustRank(this.profile.trustScore);
-        const name = this.cachedUsername.length > 0 ? this.cachedUsername : 'Driver';
-        return name + '\n' + rank.name + ' | ' + formatTrustText(this.profile.trustScore);
+        const name = this.getDisplayName();
+        return name + '\n' + this.getLocalizedTrustRankName(rank.name) + ' | ' + this.getFashionTrustText();
     }
 
     /** Returns a compact trust string for the User Card Info. */
     getTrustCardString(): string {
         const rank = getTrustRank(this.profile.trustScore);
-        return rank.name + '\n' + formatTrustText(this.profile.trustScore);
+        return this.getLocalizedTrustRankName(rank.name) + '\n' + this.getFashionTrustText();
+    }
+
+    private getFashionTrustText(): string {
+        return tf('fashion_trust_score', { score: Math.round(Math.max(0, Math.min(100, this.profile.trustScore))) });
+    }
+
+    private getLocalizedTrustRankName(rankName: string): string {
+        switch (rankName) {
+            case 'Style Icon': return t('rank_style_icon');
+            case 'Trusted Stylist': return t('rank_trusted_stylist');
+            case 'Closet Lover': return t('rank_closet_lover');
+            case 'Style Explorer': return t('rank_style_explorer');
+            case 'Needs Review': return t('rank_needs_review');
+            case 'Scan Rookie': return t('rank_scan_rookie');
+            case 'Closet Newcomer': return t('rank_closet_newcomer');
+            case 'Unverified Stylist': return t('rank_unverified');
+        }
+        return rankName;
+    }
+
+    private getDisplayName(): string {
+        return this.cachedUsername.length > 0 ? this.cachedUsername : 'Stylist';
+    }
+
+    private getDailyBonusText(): string {
+        const days = Math.max(1, this.profile.streakDays || 1);
+        const mult = getStreakMultiplier(days);
+        if (days >= 2) {
+            return tf('daily_bonus', { days: days, mult: mult.toFixed(1) });
+        }
+        return t('daily_bonus_none');
+    }
+
+    private buildWelcomeGreetingMessage(): string {
+        return tf('welcome_back_user', { name: this.getDisplayName() });
     }
 
     private migrateOldTrust(): void {
@@ -877,9 +666,11 @@ export class XPManager extends BaseScriptComponent {
     private updateUsernameDisplay(): void {
         if (this.usernameText && this.cachedUsername.length > 0) {
             this.usernameText.text = this.cachedUsername;
+            this.forceTextBlack(this.usernameText);
         }
         if (this.usernameInfoText && this.cachedUsername.length > 0) {
             this.usernameInfoText.text = this.cachedUsername;
+            this.forceTextBlack(this.usernameInfoText);
         }
         if (this.trustInfoText) {
             this.trustInfoText.text = this.getTrustCardString();
@@ -888,13 +679,14 @@ export class XPManager extends BaseScriptComponent {
     }
 
     private applyTrustColor(textComp: Text): void {
+        this.forceTextBlack(textComp);
+    }
+
+    private forceTextBlack(textComp: Text | null): void {
+        if (!textComp) return;
         try {
-            const hex = getTrustColor(this.profile.trustScore);
-            const r = parseInt(hex.substring(0, 2), 16) / 255;
-            const g = parseInt(hex.substring(2, 4), 16) / 255;
-            const b = parseInt(hex.substring(4, 6), 16) / 255;
-            textComp.textFill.color = new vec4(r, g, b, 1);
-        } catch (e) { /* ignore — some platforms don't support textFill */ }
+            textComp.textFill.color = new vec4(1, 1, 1, 1);
+        } catch (e) { /* ignore - some platforms don't support textFill */ }
     }
 
     /**
@@ -930,10 +722,6 @@ export class XPManager extends BaseScriptComponent {
             if (name.indexOf('xp bar') >= 0 || name.indexOf('xpbar') >= 0) {
                 this.xpBarParent = child;
                 print('XPManager: Auto-resolved xpBarParent from "' + child.name + '"');
-            }
-            if (name.indexOf('level badge') >= 0 || name.indexOf('levelbadge') >= 0) {
-                this.userCardLevelBadge = child;
-                print('XPManager: Auto-resolved userCardLevelBadge from "' + child.name + '"');
             }
             if (name.indexOf('bonus info') >= 0 || name.indexOf('bonusinfo') >= 0 || name.indexOf('bonus_info') >= 0) {
                 const textComp = child.getComponent('Component.Text') as Text;
@@ -971,63 +759,40 @@ export class XPManager extends BaseScriptComponent {
         this.resolveUserCardChildren();
 
         const levelDef = getLevelForXP(this.profile.totalXP);
-        const prestigeStr = formatPrestigeStars(this.profile.prestige);
 
-        print('XPManager: refreshUI — LVL ' + levelDef.level + ' (' + levelDef.name + ')'
+        print('XPManager: refreshUI — Style ' + levelDef.level + ' (' + levelDef.name + ')'
             + ' | XP ' + this.profile.totalXP
             + ' | inputs: levelText=' + !!this.levelNumberText
             + ' xpText=' + !!this.xpCounterText
-            + ' xpBar=' + !!this.xpBarParent
-            + ' badge=' + !!this.levelBadge);
+            + ' xpBar=' + !!this.xpBarParent);
 
-        // Level Number: "LVL 5: Track Day Hero"
+        // Level Number: welcome greeting
         if (this.levelNumberText) {
-            let label = t('lvl_prefix') + levelDef.level + ': ' + levelDef.name;
-            if (prestigeStr.length > 0) label = prestigeStr + ' ' + label;
-            this.levelNumberText.text = label;
+            this.levelNumberText.text = tf('welcome_back_user', { name: this.getDisplayName() });
+            this.applyWelcomeGreetingStyle(this.levelNumberText);
             const textObj = this.levelNumberText.getSceneObject();
             if (textObj) textObj.enabled = true;
         }
 
-        // XP Counter: "XP 0/50"
+        // XP Counter slot: hidden on the welcome profile; the greeting lives in Level Number.
         if (this.xpCounterText) {
-            const nextThreshold = getXPForNextLevel(levelDef.level);
-            if (nextThreshold < 0) {
-                this.xpCounterText.text = tf('xp_max', { xp: this.profile.totalXP });
-            } else {
-                this.xpCounterText.text = tf('xp_progress', { xp: this.profile.totalXP, next: nextThreshold });
-            }
+            this.xpCounterText.text = '';
+            this.forceTextBlack(this.xpCounterText);
             const textObj = this.xpCounterText.getSceneObject();
-            if (textObj) textObj.enabled = true;
+            if (textObj) textObj.enabled = false;
         }
 
         // XP Bar: fill 5 segments proportionally to progress within current level
         this.updateXPBar();
 
-        // Level Badge: make sure it's visible
-        if (this.levelBadge) {
-            this.levelBadge.enabled = true;
-        }
-        if (this.userCardLevelBadge) {
-            this.userCardLevelBadge.enabled = true;
-        }
-        this.updateLocalLevelBadges(levelDef.level);
-
-        // Bonus Info: streak, multiplier
+        // Bonus Info: style level context
         if (this.bonusInfoText) {
-            const mult = getStreakMultiplier(this.profile.streakDays);
-            let bonusText = '';
-            if (this.profile.streakDays >= 3) {
-                bonusText = tf('streak_long', { days: this.profile.streakDays, mult: mult.toFixed(1) });
-            } else if (this.profile.streakDays === 2) {
-                bonusText = tf('streak_short', { mult: mult.toFixed(1) });
-            } else {
-                bonusText = t('no_streak');
-            }
+            let bonusText = tf('style_level_line', { level: levelDef.level, name: levelDef.name });
             if (this.profile.prestige > 0) {
                 bonusText += '\n' + formatPrestigeStars(this.profile.prestige) + ' ' + t('prestige_label') + ' ' + this.profile.prestige;
             }
             this.bonusInfoText.text = bonusText;
+            this.forceTextBlack(this.bonusInfoText);
             const textObj = this.bonusInfoText.getSceneObject();
             if (textObj) textObj.enabled = true;
         }
@@ -1040,7 +805,8 @@ export class XPManager extends BaseScriptComponent {
 
         // User Card text on the hand button
         if (this.userCardText) {
-            this.userCardText.text = t('lvl_prefix') + levelDef.level;
+            this.userCardText.text = tf('style_level_short', { level: levelDef.level });
+            this.forceTextBlack(this.userCardText);
         }
     }
 
@@ -1076,35 +842,19 @@ export class XPManager extends BaseScriptComponent {
     // =====================================================================
 
     private showWelcomeBonusPopup(): void {
-        const mult = getStreakMultiplier(this.profile.streakDays);
-
-        // No bonus to show on day 1
-        if (this.profile.streakDays <= 1) {
-            print('XPManager: No streak bonus to show (day ' + this.profile.streakDays + ')');
-            return;
-        }
-
         if (!this.xpDisplay) {
-            print('XPManager: No xpDisplay — cannot show welcome bonus');
+            print('XPManager: No xpDisplay — cannot show welcome greeting');
             return;
         }
 
         const displayObj = this.xpDisplay.getSceneObject();
         if (!displayObj) return;
 
-        // Build the bonus message
-        let message = '';
-        if (this.profile.streakDays >= 3) {
-            message = tf('streak_bonus_long', { days: this.profile.streakDays, mult: mult.toFixed(1) });
-        } else {
-            message = tf('streak_bonus_short', { mult: mult.toFixed(1) });
-        }
-
-        print('XPManager: Showing welcome bonus — "' + message + '"');
-
         // Delay 2 seconds after launch so the user sees the welcome screen first
         const delayEvent = this.createEvent('DelayedCallbackEvent');
         (delayEvent as any).bind(() => {
+            const message = this.buildWelcomeGreetingMessage();
+            print('XPManager: Showing welcome greeting — "' + message + '"');
             this.showWelcomePopupAnimation(message);
         });
         (delayEvent as any).reset(2.0);
@@ -1117,6 +867,7 @@ export class XPManager extends BaseScriptComponent {
 
         // Setup text
         this.xpDisplay.text = message;
+        this.applyWelcomeGreetingStyle(this.xpDisplay);
         displayObj.enabled = true;
 
         const transform = displayObj.getTransform();
@@ -1179,6 +930,40 @@ export class XPManager extends BaseScriptComponent {
                 print('XPManager: Welcome bonus popup finished');
             }
         });
+    }
+
+    private applyWelcomeGreetingStyle(textComp: Text | null): void {
+        if (!textComp) return;
+        this.forceTextBlack(textComp);
+        const font = this.getManropeExtraBoldFont();
+        if (font) {
+            try {
+                textComp.font = font;
+            } catch (e) {
+                print('XPManager: Could not apply Manrope ExtraBold: ' + e);
+            }
+        }
+    }
+
+    private getManropeExtraBoldFont(): Font | null {
+        if (this.manropeExtraBoldResolved) return this.manropeExtraBoldFont;
+        this.manropeExtraBoldResolved = true;
+
+        const paths = [
+            './Cormorant_Garamond,Manrope/Manrope/static/Manrope-ExtraBold.ttf',
+            'Cormorant_Garamond,Manrope/Manrope/static/Manrope-ExtraBold.ttf',
+        ];
+        for (let i = 0; i < paths.length; i++) {
+            try {
+                this.manropeExtraBoldFont = requireAsset(paths[i]) as Font;
+                if (this.manropeExtraBoldFont) {
+                    print('XPManager: Manrope ExtraBold font loaded');
+                    return this.manropeExtraBoldFont;
+                }
+            } catch (e) { /* try next path */ }
+        }
+        print('XPManager: Manrope ExtraBold font not found by script');
+        return null;
     }
 
     // =====================================================================
