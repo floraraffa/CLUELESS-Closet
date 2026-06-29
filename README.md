@@ -10,7 +10,8 @@
   </em>
 </p>
 <p align="center">
-  <!-- Replace the src below with your Closet Club banner / demo GIF -->
+<img width="853" height="480" alt="ezgif-41d2b7787fde8ca0" src="https://github.com/user-attachments/assets/921a52b2-c15d-41eb-a493-aa096eb91e52" />
+
   <img width="800" height="450" alt="Closet Club preview" src="https://github.com/user-attachments/assets/REPLACE_WITH_YOUR_IMAGE" />
 </p>
 
