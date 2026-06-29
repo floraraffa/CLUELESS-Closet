@@ -6,7 +6,7 @@
 <p align="center">
   <em>
     An open-source AR wardrobe scanner Lens for Snap Spectacles, allowing users to scan real clothing,
-    generate collectible style cards, level up, and sync their closet in the cloud.
+    generate collectible style cards, level up, and build a persistent AR closet.
   </em>
 </p>
 <p align="center">
@@ -26,17 +26,17 @@ The project is intended as:
 - a **creative playground**
 - and a **starting point** for custom Spectacles collectible/gameified experiences
 
-Users are responsible for respectful and lawful use of scanned content and cloud features.
+Users are responsible for respectful and lawful use of scanned content and AI features.
 
 ---
 
 ## Features
 
 - **AI Clothing Scanning**  
-  Capture and identify real garments and outfits, then generate a rich style card.
+  Capture and identify real garments and outfits with the Spectacles camera, then generate a rich style card.
 
 - **Collectible Closet System**  
-  Save scanned items, manage rarity, browse your wardrobe in a carousel and grid, and visualize cards in AR.
+  Save scanned items, manage rarity, and browse your wardrobe in a rotating carousel or a spread-out grid, in AR.
 
 - **AI Collector Cards**  
   Generate stylized collector card artwork for your saved pieces (gpt-image-1).
@@ -44,11 +44,11 @@ Users are responsible for respectful and lawful use of scanned content and cloud
 - **XP / Progression**  
   Earn XP, level up, prestige, and track daily streak and trust/reputation metrics.
 
-- **Cloud Sync (Supabase + Snap Cloud)**  
-  Sync profiles, collection data, leaderboard stats, and card images.
-
 - **Style Narration + UI Feedback**  
   Includes a GPT stylist note, text-to-speech narration, scrolling subtitles, and immersive status feedback.
+
+- **In-Lens Music Player**  
+  Built-in playlist with play/pause and previous/next track controls.
 
 - **Guided Onboarding**  
   A first-launch tutorial walks new users through scanning, saving, and browsing their closet.
@@ -67,17 +67,16 @@ Users are responsible for respectful and lawful use of scanned content and cloud
 | **ClosetCardUI.ts** | Displays the item info card on screen (name, stats, rarity) and manages its loading/error states. |
 | **StyleNarrator.ts** | Reads out a fun stylist note about the scanned item using text-to-speech and scrolling subtitles. |
 | **ClosetTypes.ts** | Defines the shared data structures (what an "item" looks like in code) used by all other scripts. |
-| **CollectionManager.ts** | Saves your scanned items, manages the rotating card carousel, and generates AI collector card images. |
+| **CollectionManager.ts** | Saves your scanned items, manages the rotating card carousel/grid, and generates AI collector card images. |
 | **CardInteraction.ts** | Lets you grab, move, and swipe through your collection cards using your hands. |
 | **XPManager.ts** | Tracks your XP, level, daily streak, prestige, and trust, and shows the animated +XP popup when you earn points. |
-| **CloudManager.ts** | Syncs your closet, profile, and leaderboard score to the cloud (Supabase + Snap Cloud). |
 | **WelcomeManager.ts** | Shows the welcome screen at launch and lets you pick your language (FR/EN/ES) before starting. |
 | **OnboardingManager.ts** | Plays the first-launch guided tutorial (scan → save → open closet → carousel → grid → outfit). |
 | **BrandLogoLoader.ts** | Downloads and displays the correct brand logo on each item card. |
 | **MusicPlayer.ts** | Plays the in-Lens music playlist with play/pause and previous/next track controls. |
-| **LanguageVideoPlayer.ts** | Plays a remote intro video on the welcome screen and releases it when the screen closes. |
-| **AnalyticsManager.ts** | Tracks session metrics, timing, and error logs locally without blocking the main flow. |
 | **Localization.ts** | Manages all the text translations so the app can display content in English, French, or Spanish. |
+| **AnalyticsManager.ts** | *(Optional)* Lightweight local session metrics, timing, and error logging. Inactive unless attached. |
+| **CloudManager.ts** | *(Optional)* Cloud-sync scaffolding (Supabase). **Disconnected in this project** — no backend is configured, so sync is inactive by default. |
 
 ---
 
@@ -85,8 +84,7 @@ Users are responsible for respectful and lawful use of scanned content and cloud
 
 - **Lens Studio** (5.15 recommended)
 - **Snap Spectacles** device for deployment/testing
-- Internet access for cloud and AI features
-- Valid Snap Cloud / Supabase configuration for online features
+- Internet access for the AI scanning, narration, and collector-card features
 
 ---
 
