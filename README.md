@@ -2,103 +2,239 @@
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-Snap_Spectacles-black.svg)
 ![Tech](https://img.shields.io/badge/Powered_by-Lens_Studio_5.15-yellow.svg)
-<h1 align="center">Closet Club</h1>
+
+<h1 align="center">Closet Club 👕✨</h1>
+
 <p align="center">
   <em>
-    An open-source AR wardrobe scanner Lens for Snap Spectacles, allowing users to scan real clothing,
-    generate collectible style cards, level up, and build a persistent AR closet.
+    Turn your bedroom mirror into an augmented reality wardrobe.
+    Scan real clothes with Spectacles, generate collectible style polaroids,
+    and build a persistent digital closet inspired by the iconic movie <strong>Clueless</strong>.
   </em>
 </p>
-<p align="center">
-<img width="853" height="480" alt="ezgif-41d2b7787fde8ca0" src="https://github.com/user-attachments/assets/921a52b2-c15d-41eb-a493-aa096eb91e52" />
 
+<p align="center">
+  Open Source • MIT License • Built with Lens Studio 5.15
+</p>
+
+<p align="center">
+  <img width="853" height="480" alt="Closet Club Demo" src="https://github.com/user-attachments/assets/921a52b2-c15d-41eb-a493-aa096eb91e52" />
+</p>
 
 ---
 
-## Overview
+# Overview
 
-**Closet Club** is an open-source Lens project designed for **Snap Spectacles**.  
-It provides a complete gameplay loop to scan clothing in the real world, generate collectible style cards, and build a persistent AR closet.
+**Closet Club** is an open-source AR fashion experience built for **Snap Spectacles**.
+
+The project was created by **Florencia Raffa** and **Guillaume DGNS**, inspired by the legendary digital wardrobe scene from *Clueless*.
+
+The concept is simple:
+
+> **Stand in front of your mirror and scan your wardrobe with Spectacles.**
+
+Users can:
+
+- 👕 Scan an entire outfit in a single pass
+- 🧥 Identify multiple garments at once
+- 👟 Capture individual pieces to build a collection item by item
+- 🃏 Turn real-world clothing into collectible style polaroids
+- 🎮 Progress through XP, levels, prestige systems, and daily streaks
+
+Closet Club explores the intersection between:
+
+- Artificial Intelligence
+- Fashion Technology
+- Wearable Computing
+- Natural Hand Interactions
+- Collectible Game Mechanics
+- Persistent Augmented Reality Experiences
 
 The project is intended as:
-- a **technical reference**
-- a **creative playground**
-- and a **starting point** for custom Spectacles collectible/gameified experiences
 
-Users are responsible for respectful and lawful use of scanned content and AI features.
+- 📚 A technical reference for Spectacles developers
+- 🧪 A creative playground for AI-powered experiences
+- 🎮 A foundation for collectible and progression systems
+- 👗 An experiment in the future of digital fashion
 
----
-
-## Features
-
-- **AI Clothing Scanning**  
-  Capture and identify real garments and outfits with the Spectacles camera, then generate a rich style card.
-
-- **Collectible Closet System**  
-  Save scanned items, manage rarity, and browse your wardrobe in a rotating carousel or a spread-out grid, in AR.
-
-- **AI Collector Cards**  
-  Generate stylized collector card artwork for your saved pieces (gpt-image-1).
-
-- **XP / Progression**  
-  Earn XP, level up, prestige, and track daily streak and trust/reputation metrics.
-
-- **Style Narration + UI Feedback**  
-  Includes a GPT stylist note, text-to-speech narration, scrolling subtitles, and immersive status feedback.
-
-- **In-Lens Music Player**  
-  Built-in playlist with play/pause and previous/next track controls.
-
-- **Guided Onboarding**  
-  A first-launch tutorial walks new users through scanning, saving, and browsing their closet.
-
-- **Multi-Language (EN / FR / ES)**  
-  Full localization with language selection on launch.
+Users remain responsible for respecting intellectual property and applicable laws when using AI-generated content and scanned materials.
 
 ---
 
-## Scripts
+# How It Works
 
-| Script | What it does |
+### 1. Stand in front of your mirror 👕
+
+Wear your Spectacles and point the camera toward your reflection.
+
+### 2. Scan your outfit 📷
+
+Capture your complete look in a single pass or focus on one specific garment.
+
+### 3. AI identifies your clothes 🤖
+
+OpenAI Vision analyzes garments and generates rich descriptions, metadata, and style information.
+
+### 4. Generate collectible polaroids 🃏
+
+Each item receives unique AI-generated artwork and a rarity level.
+
+### 5. Build your AR closet ✋
+
+Your collection lives around your wrist and can expand into a hand-controlled interactive grid.
+
+### 6. Progress and personalize 🎮
+
+Gain XP, maintain daily streaks, unlock prestige ranks, and receive AI stylist recommendations.
+
+---
+
+# Core Features
+
+### 👕 Mirror-Based Clothing Scanning
+
+Scan your full outfit in seconds or curate your wardrobe one piece at a time.
+
+### 🤖 AI Fashion Recognition
+
+OpenAI Vision identifies garments and generates detailed descriptions and metadata.
+
+### 🃏 Collectible Style Polaroids
+
+Every scanned item becomes a collectible with AI-generated visuals and rarity systems.
+
+### ✋ Natural Hand Interactions
+
+Browse your wardrobe using intuitive gestures.
+
+A simple palm-out gesture expands your collection into an interactive AR grid.
+
+### 🧥 AI Outfit Recommendations
+
+Mix and match clothing pieces, receive stylist feedback, or let the AI build the perfect look for you.
+
+### 🎮 Gamified Progression
+
+Earn XP, level up, prestige your account, and maintain daily streaks as your digital wardrobe grows.
+
+### 🔊 Style Narration & TTS
+
+AI-generated stylist commentary includes text-to-speech narration and animated subtitles.
+
+### 🎵 In-Lens Music Player
+
+Enjoy built-in playlists with play, pause, previous, and next controls.
+
+### 🌍 Multi-Language Support
+
+Full localization in:
+
+- English 🇬🇧
+- French 🇫🇷
+- Spanish 🇪🇸
+
+### 🎓 Guided Onboarding
+
+A first-launch tutorial teaches scanning, saving, browsing, outfit creation, and hand interactions.
+
+---
+
+# Scripts
+
+| Script | Description |
 |---|---|
-| **ClosetClubScanner.ts** | The brain of the app, connects all the other scripts together so they work as one. |
-| **ClothingScanner.ts** | Takes a photo with the Spectacles camera and asks AI (OpenAI Vision) to identify the clothing in it. |
-| **ClosetCardUI.ts** | Displays the item info card on screen (name, stats, rarity) and manages its loading/error states. |
-| **StyleNarrator.ts** | Reads out a fun stylist note about the scanned item using text-to-speech and scrolling subtitles. |
-| **ClosetTypes.ts** | Defines the shared data structures (what an "item" looks like in code) used by all other scripts. |
-| **CollectionManager.ts** | Saves your scanned items, manages the rotating card carousel/grid, and generates AI collector card images. |
-| **CardInteraction.ts** | Lets you grab, move, and swipe through your collection cards using your hands. |
-| **XPManager.ts** | Tracks your XP, level, daily streak, prestige, and trust, and shows the animated +XP popup when you earn points. |
-| **WelcomeManager.ts** | Shows the welcome screen at launch and lets you pick your language (FR/EN/ES) before starting. |
-| **OnboardingManager.ts** | Plays the first-launch guided tutorial (scan → save → open closet → carousel → grid → outfit). |
-| **BrandLogoLoader.ts** | Downloads and displays the correct brand logo on each item card. |
-| **MusicPlayer.ts** | Plays the in-Lens music playlist with play/pause and previous/next track controls. |
-| **Localization.ts** | Manages all the text translations so the app can display content in English, French, or Spanish. |
-| **AnalyticsManager.ts** | *(Optional)* Lightweight local session metrics, timing, and error logging. Inactive unless attached. |
-| **CloudManager.ts** | *(Optional)* Cloud-sync scaffolding (Supabase). **Disconnected in this project** — no backend is configured, so sync is inactive by default. |
+| **ClosetClubScanner.ts** | Main application controller connecting all systems together. |
+| **ClothingScanner.ts** | Captures images and sends them to OpenAI Vision for garment identification. |
+| **ClosetCardUI.ts** | Displays item metadata, rarity, and loading states. |
+| **StyleNarrator.ts** | Generates stylist commentary with TTS and animated subtitles. |
+| **ClosetTypes.ts** | Shared data structures used throughout the project. |
+| **CollectionManager.ts** | Manages saved items, carousel views, grids, and AI-generated artwork. |
+| **CardInteraction.ts** | Handles grabbing, moving, and interacting with collectible polaroids. |
+| **XPManager.ts** | Tracks levels, prestige, daily streaks, trust metrics, and XP animations. |
+| **WelcomeManager.ts** | Displays the welcome screen and language selection flow. |
+| **OnboardingManager.ts** | Controls the guided first-time user experience. |
+| **BrandLogoLoader.ts** | Downloads and displays fashion brand logos dynamically. |
+| **MusicPlayer.ts** | Manages the integrated music player system. |
+| **Localization.ts** | Handles EN/FR/ES translations across the entire application. |
+| **AnalyticsManager.ts** | *(Optional)* Local metrics, debugging, and lightweight session tracking. |
+| **CloudManager.ts** | *(Optional)* Supabase cloud synchronization scaffolding. Disabled by default. |
 
 ---
 
-## Requirements
+# Requirements
 
-- **Lens Studio** (5.15 recommended)
-- **Snap Spectacles** device for deployment/testing
-- Internet access for the AI scanning, narration, and collector-card features
+- Lens Studio **5.15** (recommended)
+- Snap Spectacles device
+- Internet connectivity for AI features
+- OpenAI API integration
+
+The following systems require network access:
+
+- Clothing recognition
+- Style narration
+- AI-generated polaroids
+- Outfit recommendations
 
 ---
 
-## Installation
+# Installation
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/floraraffa/CLUELESS-Closet.git
 ```
 
-Open the project file in Lens Studio:
+Open the project in Lens Studio:
 
 ```bash
 Closet FINAl DGNS.esproj
 ```
 
+Deploy to your Spectacles device and start building your virtual wardrobe.
+
+---
+
+# Open Source Goals
+
+Closet Club exists to explore what happens when:
+
+- Everyday rituals become AR experiences
+- Physical objects gain persistent digital identities
+- AI assists creativity and self-expression
+- Fashion becomes interactive and collectible
+- Wearable devices evolve beyond traditional screens
+
+We hope this project helps creators experiment with:
+
+- AI-powered user experiences
+- Collectible systems
+- Hand-tracked interfaces
+- Persistent virtual inventories
+- Fashion and lifestyle applications for Spectacles
+
+Feel free to fork, remix, and build entirely new concepts on top of this foundation.
+
+We would love to see what the community creates next.
+
+---
+
+# License
+
+This project is released under the **MIT License**.
+
+You are free to:
+
+- Use
+- Modify
+- Distribute
+- Commercialize
+
+Please retain attribution to the original authors.
+
+---
+
 <p align="center">
-  Developed with ❤️ by Florencia Raffa & GuillaumeDGNS
-</p>
+Made with ❤️ by <strong>Florencia Raffa</strong> & <strong>Guillaume DGNS</strong>
+<br><br>
+Inspired by <em>Clueless (1995)</em> and the future of wearable computing.
