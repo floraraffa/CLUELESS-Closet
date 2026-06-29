@@ -228,7 +228,6 @@ You are free to:
 - Use
 - Modify
 - Distribute
-- Commercialize
 
 Please retain attribution to the original authors.
 
