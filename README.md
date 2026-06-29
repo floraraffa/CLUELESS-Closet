@@ -101,5 +101,5 @@ Closet FINAl DGNS.esproj
 ```
 
 <p align="center">
-  Developed with ❤️ by GuillaumeDGNS
+  Developed with ❤️ by Florencia Raffa & GuillaumeDGNS
 </p>
