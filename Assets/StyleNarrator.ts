@@ -61,6 +61,8 @@ export class StyleNarrator extends BaseScriptComponent {
     onMuteStateChanged: ((muted: boolean) => void) | null = null;
     /** Called when review/fetch generation starts (text + TTS generation phase). */
     onReviewGenerationStarted: (() => void) | null = null;
+    /** Fired with the final outfit feedback text and the AI's own match %. */
+    onOutfitFeedbackReady: ((text: string, aiPercent?: number) => void) | null = null;
     /** Called when review/fetch generation ends (success or failure). */
     onReviewGenerationFinished: (() => void) | null = null;
     /** Called when audible TTS playback starts. */
@@ -321,8 +323,8 @@ export class StyleNarrator extends BaseScriptComponent {
             return;
         }
 
-        if (percentText && typeof matchPercent === 'number' && isFinite(matchPercent)) {
-            this.setExternalText(percentText, Math.round(matchPercent) + '%');
+        if (percentText) {
+            this.setExternalText(percentText, '…');
         }
         if (outfitText) {
             this.setExternalText(outfitText, t('outfit_feedback_loading'));
@@ -337,12 +339,32 @@ export class StyleNarrator extends BaseScriptComponent {
             if (!suggestion || suggestion.trim().length === 0) {
                 suggestion = this.buildFallbackOutfitFeedback(outfitItems);
             }
+            // La IA manda su propio % al inicio como [[NN]]: se extrae,
+            // se muestra (pisa la pre-cuenta estructural) y se limpia del texto.
+            let aiPercent: number | undefined = undefined;
+            const pctMatch = suggestion.match(/^\s*\[\[(\d{1,3})\]\]\s*/);
+            if (pctMatch) {
+                aiPercent = Math.max(0, Math.min(100, parseInt(pctMatch[1], 10)));
+                suggestion = suggestion.substring(pctMatch[0].length).trim();
+                if (percentText) this.setExternalText(percentText, aiPercent + '%');
+                print('StyleNarrator: [OUTFIT] AI match ' + aiPercent + '% (structural was '
+                    + (typeof matchPercent === 'number' ? Math.round(matchPercent) : '?') + '%)');
+            }
+            if (aiPercent === undefined && percentText && typeof matchPercent === 'number' && isFinite(matchPercent)) {
+                // La IA no trajo su número: respaldo con el estructural
+                this.setExternalText(percentText, Math.round(matchPercent) + '%');
+            }
+            if (this.onOutfitFeedbackReady) this.onOutfitFeedbackReady(suggestion, aiPercent);
             if (outfitText) this.setExternalText(outfitText, suggestion);
             if (outfitText) await this.speakDescriptionToExternalText(suggestion, outfitText);
             else await this.speakDescription(suggestion);
         } catch (error) {
             print('StyleNarrator: Outfit feedback error: ' + error);
             const fallback = this.buildFallbackOutfitFeedback(outfitItems);
+            if (percentText && typeof matchPercent === 'number' && isFinite(matchPercent)) {
+                this.setExternalText(percentText, Math.round(matchPercent) + '%');
+            }
+            if (this.onOutfitFeedbackReady) this.onOutfitFeedbackReady(fallback);
             if (outfitText) this.setExternalText(outfitText, fallback);
             if (outfitText) await this.speakDescriptionToExternalText(fallback, outfitText);
             else await this.speakDescription(fallback);
@@ -742,7 +764,7 @@ ${langInstruction}`;
             outfitLines.push(slot + ': ' + this.formatClosetItem(outfitItems[i], i + 1));
         }
         const percentLine = (typeof matchPercent === 'number' && isFinite(matchPercent))
-            ? '\nMatch percentage: ' + Math.round(matchPercent) + '%'
+            ? '\nStructural pre-score (hint only, judge freely): ' + Math.round(matchPercent) + '%'
             : '';
         const styleContext = this.onGetStyleContext ? (this.onGetStyleContext() || '') : '';
 
@@ -757,17 +779,19 @@ PERSONA:
 
 TASK:
 - Evaluate the outfit made from the saved closet items provided.
-- Start with a clear verdict in the user's language: it matches, or it does not match.
-- If a match percentage is provided, mention it once in the first sentence.
+- Decide YOUR OWN match percentage from 0 to 100, judging color harmony, cohesion, proportions, occasion and season. Do NOT copy the structural pre-score; it is only a hint.
+- Your reply MUST start with the exact token [[NN]] where NN is your percentage in digits (e.g. [[42]]). No text before it.
+- After the token, start with a clear verdict in the user's language: it matches, or it does not match.
+- Mention your percentage once in the first sentence. Your words and your percentage must agree: a bad combination gets a LOW percentage.
 - If it does not match, explicitly say that it does not match and explain why (color, proportion, slot placement, occasion, cohesion).
 - Treat the slot label as intentional placement. If shoes are placed as a top, or a top is placed as shoes, say it does not match because the slot placement is wrong.
-- If colors clash or the match percentage is under 60%, be constructively critical (in character), give a low-match verdict, and suggest 2-3 better color directions.
+- If colors clash or your percentage is under 60, be constructively critical (in character), give a low-match verdict, and suggest 2-3 better color directions.
 - Give one concise, in-character improvement if it can be better.
 
 RULES:
 - Use ONLY the listed closet items; do not invent garments (a generic styling suggestion is fine only if truly needed).
 - NEVER comment on the user's body, size, attractiveness, gender, age, ethnicity, or any sensitive trait — judge the CLOTHES and the setting only.
-- Reply as a natural spoken note full of personality, 60-120 words.
+- Reply as a natural spoken note full of personality, 40-60 words. NEVER exceed 60 words — punchy and quotable beats long.
 - No markdown, no headings, no bullets.
 ${langInstruction}`;
 
@@ -782,7 +806,7 @@ ${langInstruction}`;
                 { role: 'user', content: userPrompt },
             ],
             model: 'gpt-4o',
-            max_tokens: 400,
+            max_tokens: 160,
             temperature: 0.85,
         });
 

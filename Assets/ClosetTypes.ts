@@ -116,6 +116,7 @@ export interface SavedVehicleData extends VehicleData {
     serial: string;            // Unique card serial e.g. "CLUE-7F3A-B2C1-49E8"
     dateScanned: string;       // Formatted scan date e.g. "Feb 15, 2026"
     cityScanned: string;       // City where the vehicle was scanned (from device location)
+    favorite?: boolean;        // Marked as favorite (synced with the web)
 }
 
 // =====================================================================

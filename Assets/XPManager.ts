@@ -148,6 +148,7 @@ export class XPManager extends BaseScriptComponent {
     private userCardChildrenResolved: boolean = false;
     private prestigeButtonConnected: boolean = false;
     private cachedUsername: string = '';
+    private cachedWebCode: string = '';
 
     // Trust score — stored inside profile (no separate key)
 
@@ -557,6 +558,53 @@ export class XPManager extends BaseScriptComponent {
         return this.cachedUsername;
     }
 
+    /**
+     * Applies the user's Bitmoji to the profile card. Looks for a descendant
+     * of User Profile Info named like "Bitmoji" / "Avatar" / "Profile Pic"
+     * with an Image component. No-op if the scene has no such slot.
+     */
+    setProfileAvatar(tex: Texture): void {
+        if (!tex || !this.userCardInfo) return;
+        const target = this.findDescendantByNames(this.userCardInfo,
+            ['bitmoji', 'avatar', 'profile pic', 'profile picture', 'user photo']);
+        if (!target) {
+            print('XPManager: [AVATAR] No Bitmoji/Avatar image slot found in profile card');
+            return;
+        }
+        try {
+            const img = target.getComponent('Component.Image') as Image;
+            if (img && img.mainPass) {
+                img.mainPass.baseTex = tex;
+                target.enabled = true;
+                print('XPManager: [AVATAR] Bitmoji applied to "' + target.name + '"');
+            }
+        } catch (e) {
+            print('XPManager: [AVATAR] Could not apply Bitmoji: ' + e);
+        }
+    }
+
+    private findDescendantByNames(parent: SceneObject, needles: string[]): SceneObject | null {
+        const count = parent.getChildrenCount();
+        for (let i = 0; i < count; i++) {
+            const child = parent.getChild(i);
+            if (!child) continue;
+            const name = child.name.toLowerCase();
+            for (const needle of needles) {
+                if (name.indexOf(needle) >= 0) return child;
+            }
+            const found = this.findDescendantByNames(child, needles);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    /** Shows the personal web pairing code permanently on the profile card. */
+    setWebCode(code: string): void {
+        if (!code || code === this.cachedWebCode) return;
+        this.cachedWebCode = code;
+        this.refreshUserCardUI();
+    }
+
     refreshLanguageTexts(): void {
         this.refreshUserCardUI();
         this.updateTrustDisplays();
@@ -685,7 +733,8 @@ export class XPManager extends BaseScriptComponent {
     private forceTextBlack(textComp: Text | null): void {
         if (!textComp) return;
         try {
-            textComp.textFill.color = new vec4(1, 1, 1, 1);
+            // vec4 colors are 0-1 floats: (0,0,0,1) = black, (1,1,1,1) = white.
+            textComp.textFill.color = new vec4(0, 0, 0, 1);
         } catch (e) { /* ignore - some platforms don't support textFill */ }
     }
 
@@ -790,6 +839,10 @@ export class XPManager extends BaseScriptComponent {
             let bonusText = tf('style_level_line', { level: levelDef.level, name: levelDef.name });
             if (this.profile.prestige > 0) {
                 bonusText += '\n' + formatPrestigeStars(this.profile.prestige) + ' ' + t('prestige_label') + ' ' + this.profile.prestige;
+            }
+            if (this.cachedWebCode.length > 0) {
+                bonusText += '\nWebsite: closetclub.netlify.app'
+                    + '\n' + t('web_code_label') + ' ' + this.cachedWebCode;
             }
             this.bonusInfoText.text = bonusText;
             this.forceTextBlack(this.bonusInfoText);

@@ -207,6 +207,12 @@ export class CollectionManager extends BaseScriptComponent {
     onCombineLook: ((data: SavedVehicleData, closetItems: SavedVehicleData[], cardReviewText?: Text) => void) | null = null;
     /** Called when AskAI is pressed for the currently composed outfit slots. */
     onAskOutfitFeedback: ((outfitItems: SavedVehicleData[], slotLabels?: string[], outfitText?: Text | null, percentText?: Text | null, matchPercent?: number) => void) | null = null;
+    /**
+     * Called whenever the user manually composes an outfit (drops a garment
+     * into a slot) and it has ≥2 items: live match % without any AI call.
+     * The orchestrator uses this to persist the combination to the web.
+     */
+    onOutfitComposed: ((outfitItems: SavedVehicleData[], matchPercent: number) => void) | null = null;
     /** Called when review generation starts (audio+text fetch begins). */
     onReviewGenerationStarted: (() => void) | null = null;
     /** Called when a card is successfully saved to the collection (for XP attribution). */
@@ -223,8 +229,11 @@ export class CollectionManager extends BaseScriptComponent {
     onCloudSyncVehicle: ((vehicle: SavedVehicleData) => void) | null = null;
     /** Called to upload a card image to cloud storage. */
     onCloudUploadImage: ((serial: string, base64: string) => void) | null = null;
+    /** Sube el cambio de favorito de una prenda a la nube. */
+    onCloudSetFavorite: ((serial: string, favorite: boolean) => void) | null = null;
     /** Called to delete a vehicle from cloud. */
-    onCloudDeleteVehicle: ((serial: string) => void) | null = null;
+    // NOTE: intentionally no onCloudDeleteVehicle — deleting a card on the
+    // lens never removes it from the web catalog (web is the permanent copy).
     /** Called to sync full collection to cloud (on startup). */
     onCloudSyncFullCollection: ((vehicles: SavedVehicleData[]) => void) | null = null;
     /** Called to reset (delete all) vehicles from cloud. */
@@ -279,6 +288,7 @@ export class CollectionManager extends BaseScriptComponent {
     private askOutfitButtonConnected: boolean = false;
     private composeOutfitButtonConnected: boolean = false;
     private aiPickButtonConnected: boolean = false;
+    private clearOutfitButtonConnected: boolean = false;
     private combineButtonSuppressDropIndex: number = -1;
     private combineButtonSuppressDropUntil: number = 0;
     private garmentPrevPageButtonConnected: boolean = false;
@@ -772,12 +782,12 @@ export class CollectionManager extends BaseScriptComponent {
             if (serial.length > 0) this.rememberDeletedSerial(serial);
         }
 
-        // Cloud reset: deletes vehicles and storage images
+        // Local reset only: the orchestrator resets XP/onboarding via this
+        // callback, but the web catalog is never wiped from the lens — items
+        // are removed from the web directly on the web.
         if (this.onCloudResetCollection) {
-            print('CollectionManager: [RESET] Triggering cloud reset (' + count + ' vehicles + gallery + images)');
+            print('CollectionManager: [RESET] Local reset (' + count + ' vehicles) — web catalog untouched');
             this.onCloudResetCollection();
-        } else {
-            print('CollectionManager: [RESET] WARNING — no cloud reset callback wired');
         }
 
         // Destroy all card SceneObjects
@@ -867,14 +877,44 @@ export class CollectionManager extends BaseScriptComponent {
             this.deleteTargetCardIndex = -1;
             return;
         }
+        this.deleteSavedItemAtIndex(idx, true);
+        this.deleteTargetCardIndex = -1;
+    }
+
+    /**
+     * Purges items that were deleted on the WEB (tombstones): "the web rules".
+     * Removes them from the device silently so they never re-upload.
+     */
+    purgeWebDeletedSerials(serials: string[]): void {
+        if (!serials || serials.length === 0) return;
+        const dead: { [serial: string]: boolean } = {};
+        for (const s of serials) { if (s) dead[s] = true; }
+
+        let purged = 0;
+        for (let i = this.savedVehicles.length - 1; i >= 0; i--) {
+            const s = this.savedVehicles[i]?.serial || '';
+            if (s && dead[s]) {
+                this.deleteSavedItemAtIndex(i, false);
+                purged++;
+            }
+        }
+        if (purged > 0) {
+            print('CollectionManager: [WEB] Purged ' + purged + ' item(s) deleted on the web');
+        }
+    }
+
+    /** Core local delete shared by the confirm dialog and the web purge. */
+    private deleteSavedItemAtIndex(idx: number, announce: boolean): void {
+        if (idx < 0 || idx >= this.savedVehicles.length) return;
 
         const name = this.savedVehicles[idx]?.brand_model || '?';
         const savedAt = this.savedVehicles[idx]?.savedAt;
         const serial = this.savedVehicles[idx]?.serial;
         if (serial && serial.length > 0) this.rememberDeletedSerial(serial);
 
-        // Cloud delete (fire-and-forget)
-        if (serial && this.onCloudDeleteVehicle) this.onCloudDeleteVehicle(serial);
+        // Local-only delete: the web catalog keeps the item permanently.
+        // rememberDeletedSerial() above prevents the cloud copy from being
+        // re-imported on merge. Removing it from the web happens on the web.
 
         // Destroy SceneObject
         const card = this.collectionCardObjects[idx];
@@ -920,10 +960,11 @@ export class CollectionManager extends BaseScriptComponent {
         }
         this.updateDeleteButtonVisibility();
         this.updateCollectionButtonLabel();
-        this.deleteTargetCardIndex = -1;
 
-        if (this.onShowDescription) this.onShowDescription(tf('card_deleted', { name: name }));
-        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
+        if (announce) {
+            if (this.onShowDescription) this.onShowDescription(tf('card_deleted', { name: name }));
+            if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(2.5);
+        }
     }
 
     private onConfirmDeleteCancel(): void {
@@ -1535,14 +1576,30 @@ export class CollectionManager extends BaseScriptComponent {
     getCardImageBase64(savedAt: number): string | null {
         if (!savedAt) return null;
         try {
-            const cutoutKey = this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString();
-            const cutoutB64 = global.persistentStorageSystem.store.getString(cutoutKey);
+            const cutoutB64 = this.getGeneratedCardImageBase64(savedAt);
             if (cutoutB64 && cutoutB64.length > 0) return cutoutB64;
 
             const storageKey = this.IMAGE_KEY_PREFIX + savedAt.toString();
             const b64 = global.persistentStorageSystem.store.getString(storageKey);
             if (!b64 || b64.length === 0) return null;
             return b64;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns ONLY the AI-generated cutout image (never the raw scan photo).
+     * The web catalog must show the generated card image, so cloud uploads
+     * use this getter; if generation hasn't finished yet it returns null and
+     * the upload happens later from the cutout-generation callback.
+     */
+    getGeneratedCardImageBase64(savedAt: number): string | null {
+        if (!savedAt) return null;
+        try {
+            const cutoutKey = this.GARMENT_CUTOUT_KEY_PREFIX + savedAt.toString();
+            const cutoutB64 = global.persistentStorageSystem.store.getString(cutoutKey);
+            return cutoutB64 && cutoutB64.length > 0 ? cutoutB64 : null;
         } catch (e) {
             return null;
         }
@@ -2609,11 +2666,10 @@ export class CollectionManager extends BaseScriptComponent {
             Base64.encodeTextureAsync(
                 texture,
                 (b64: string) => {
+                    // Local only: the raw scan photo is the retry source for cutout
+                    // generation. The web catalog receives exclusively the generated
+                    // cutout image (uploaded via onCloudUploadImage when it's ready).
                     try { global.persistentStorageSystem.store.putString(storageKey, b64); } catch (e) { /* ignore */ }
-                    // Cloud upload (fire-and-forget)
-                    if (serial && this.onCloudUploadImage) {
-                        this.onCloudUploadImage(serial, b64);
-                    }
                 },
                 () => { /* encode failed */ },
                 CompressionQuality.LowQuality,
@@ -3143,12 +3199,164 @@ export class CollectionManager extends BaseScriptComponent {
         }
     }
 
+    // =====================================================================
+    // MY CLOSET GRID — category / page buttons (hooked by name anywhere in scene)
+    // =====================================================================
+    private gridBarObject: SceneObject | null = null;
+    private gridTitleObject: SceneObject | null = null;
+    private gridPageTextComp: Text | null = null;
+    private gridBarButtonsConnected: { [key: string]: boolean } = {};
+    private gridBarNextScanTime: number = 0;
+    private gridPrevBtnObj: SceneObject | null = null;
+    private gridNextBtnObj: SceneObject | null = null;
+    private gridCatButtonObjs: { [key: string]: SceneObject } = {};
+    private gridCatBaseScales: { [key: string]: vec3 } = {};
+    private gridFilterTextComp: Text | null = null;
+
+    /**
+     * Hooks the MY CLOSET grid buttons wherever the user placed them
+     * ('Show All', 'Show Top', ... 'Show Prev'/'Show Next'). No container needed;
+     * an optional 'Closet Grid Bar' object auto-hides outside grid mode, and an
+     * optional 'Grid Page' text shows "1 / 3". Scans at most every 2s until done.
+     */
+    private hookGridCategoryBar(): void {
+        if (!this.cardInteraction) return;
+        if (getTime() < this.gridBarNextScanTime) return;
+        this.gridBarNextScanTime = getTime() + 2.0;
+
+        const defs: Array<{ key: string; names: string[]; action: () => void }> = [
+            { key: 'all', names: ['Show All', 'Show all', 'ShowAll', 'Cat All'], action: () => this.onGridCategoryPressed('all') },
+            { key: 'top', names: ['Show Top', 'Show Tops', 'ShowTop', 'Cat Top'], action: () => this.onGridCategoryPressed('top') },
+            { key: 'outerwear', names: ['Show Jacket', 'Show Jackets', 'ShowJacket', 'Show Outerwear', 'Cat Outerwear'], action: () => this.onGridCategoryPressed('outerwear') },
+            { key: 'bottom', names: ['Show Bottom', 'Show Bottoms', 'ShowBottom', 'Cat Bottom'], action: () => this.onGridCategoryPressed('bottom') },
+            { key: 'shoes', names: ['Show Shoes', 'ShowShoes', 'Cat Shoes'], action: () => this.onGridCategoryPressed('shoes') },
+            { key: 'dress', names: ['Show Dress', 'ShowDress', 'Cat Dress'], action: () => this.onGridCategoryPressed('dress') },
+            { key: 'accessory', names: ['Show Accessory', 'Show Accessories', 'ShowAccessory', 'Cat Accessory'], action: () => this.onGridCategoryPressed('accessory') },
+            { key: 'look', names: ['Show Look', 'Show Looks', 'ShowLook', 'Cat Look'], action: () => this.onGridCategoryPressed('look') },
+            { key: 'favorite', names: ['Show Fav', 'Show Favs', 'Show Favorite', 'Show Favorites', 'Show Favourites', 'ShowFav'], action: () => this.onGridCategoryPressed('favorite') },
+            { key: 'next', names: ['Show Next', 'Grid Next', 'Page Next'], action: () => this.cardInteraction.gridNextPage() },
+            { key: 'prev', names: ['Show Prev', 'Grid Prev', 'Page Prev'], action: () => this.cardInteraction.gridPrevPage() },
+        ];
+
+        const nameToDef: { [name: string]: number } = {};
+        let pendingButtons = 0;
+        for (let d = 0; d < defs.length; d++) {
+            if (this.gridBarButtonsConnected[defs[d].key]) continue;
+            pendingButtons++;
+            for (let j = 0; j < defs[d].names.length; j++) nameToDef[defs[d].names[j]] = d;
+        }
+        if (pendingButtons === 0) return;
+
+        let barChanged = false;
+        let pagerChanged = false;
+        let catChanged = false;
+        const visit = (obj: SceneObject, depth: number): void => {
+            if (!obj || depth > 20) return;
+            const objName = obj.name;
+
+            if (!this.gridBarObject && (objName === 'Closet Grid Bar' || objName === 'Grid Bar' || objName === 'Category Bar')) {
+                this.gridBarObject = obj;
+                barChanged = true;
+            }
+            if (!this.gridTitleObject && (objName === 'Closet Grid Title' || objName === 'Grid Title' || objName === 'My Closet Title' || objName === 'MY CLOSET')) {
+                this.gridTitleObject = obj;
+                barChanged = true;
+            }
+            if (!this.gridFilterTextComp && (objName === 'Grid Filter' || objName === 'Grid Filter Text' || objName === 'Showing Text' || objName === 'Showing' || objName === 'Grid Showing')) {
+                this.gridFilterTextComp = this.findFirstTextIn(obj);
+                if (this.gridFilterTextComp) catChanged = true;
+            }
+            if (!this.gridPageTextComp && (objName === 'Grid Page' || objName === 'Grid Page Text' || objName === 'Page Text')) {
+                this.gridPageTextComp = this.findFirstTextIn(obj);
+                if (this.gridPageTextComp) barChanged = true;
+            }
+            const defIdx = nameToDef[objName];
+            if (defIdx !== undefined && !this.gridBarButtonsConnected[defs[defIdx].key]) {
+                if (this.connectButtonFallback(obj, defs[defIdx].action, 'GridCat_' + defs[defIdx].key)) {
+                    this.gridBarButtonsConnected[defs[defIdx].key] = true;
+                    if (defs[defIdx].key === 'prev') { this.gridPrevBtnObj = obj; pagerChanged = true; }
+                    else if (defs[defIdx].key === 'next') { this.gridNextBtnObj = obj; pagerChanged = true; }
+                    else {
+                        this.gridCatButtonObjs[defs[defIdx].key] = obj;
+                        this.gridCatBaseScales[defs[defIdx].key] = obj.getTransform().getLocalScale();
+                        catChanged = true;
+                    }
+                    print('CollectionManager: [GRID] button connected: ' + defs[defIdx].key);
+                }
+            }
+
+            const childCount = obj.getChildrenCount();
+            for (let c = 0; c < childCount; c++) visit(obj.getChild(c), depth + 1);
+        };
+
+        try {
+            const rootCount = global.scene.getRootObjectsCount();
+            for (let i = 0; i < rootCount; i++) visit(global.scene.getRootObject(i), 0);
+        } catch (e) { /* scene not ready */ }
+
+        if (barChanged) {
+            this.cardInteraction.setGridBarObject(this.gridBarObject, this.gridPageTextComp, this.gridTitleObject);
+            print('CollectionManager: [GRID] bar/page text registered');
+        }
+        if (pagerChanged) {
+            this.cardInteraction.setGridPagerButtons(this.gridPrevBtnObj, this.gridNextBtnObj);
+            print('CollectionManager: [GRID] pager buttons registered');
+        }
+        if (catChanged) this.updateGridCategoryVisuals();
+    }
+
+    private onGridCategoryPressed(key: string): void {
+        if (this.cardInteraction) this.cardInteraction.setGridCategory(key);
+        this.updateGridCategoryVisuals();
+    }
+
+    private gridCategoryLabel(key: string): string {
+        const labels: { [k: string]: string } = {
+            all: 'All', top: 'Tops', outerwear: 'Jackets', bottom: 'Bottoms',
+            shoes: 'Shoes', dress: 'Dresses', accessory: 'Accessories',
+            look: 'Looks', favorite: 'Favorites',
+        };
+        return labels[key] || key;
+    }
+
+    /** Highlights the selected category button (bordeaux text + slightly bigger) and updates the "Showing:" label. */
+    private updateGridCategoryVisuals(): void {
+        const current = this.cardInteraction ? this.cardInteraction.getGridCategory() : 'all';
+        for (const key in this.gridCatButtonObjs) {
+            const btn = this.gridCatButtonObjs[key];
+            if (!btn) continue;
+            const selected = key === current;
+            const base = this.gridCatBaseScales[key];
+            if (base) {
+                const s = selected ? 1.15 : 1.0;
+                btn.getTransform().setLocalScale(new vec3(base.x * s, base.y * s, base.z * s));
+            }
+            const txt = this.findFirstTextIn(btn);
+            if (txt) {
+                try {
+                    txt.textFill.color = selected ? new vec4(0.42, 0.08, 0.07, 1) : new vec4(0, 0, 0, 1);
+                } catch (e) { /* no textFill */ }
+            }
+        }
+        if (this.gridFilterTextComp) {
+            try {
+                this.gridFilterTextComp.text = 'Showing: ' + this.gridCategoryLabel(current);
+            } catch (e) { /* text destroyed */ }
+        }
+    }
+
     private hookOutfitBuilderButtons(): void {
+        this.hookGridCategoryBar();
+
         const outfitRoot = this.getOutfitTesterContainer(true);
         if (!outfitRoot) return;
 
         if (!this.askOutfitButtonConnected) {
             const askButton = this.findFirstSceneObjectByNames(outfitRoot, [
+                'Rate Look',
+                'RateLook',
+                'Rate Look Button',
+                'rate look',
                 'AskAI',
                 'AskAI ',
                 'askai',
@@ -3158,7 +3366,7 @@ export class CollectionManager extends BaseScriptComponent {
                 'Ask AI Button',
                 'Ask Outfit',
                 'Ask Outfit Button',
-            ]) || this.findButtonByVisibleText(outfitRoot, ['askai', 'ask ai'], 0);
+            ]) || this.findButtonByVisibleText(outfitRoot, ['rate look', 'askai', 'ask ai', 'calificar', 'noter'], 0);
 
             if (askButton && this.connectButtonFallback(askButton, () => this.onAskOutfitPressed(), 'AskAIOutfit')) {
                 this.askOutfitButtonConnected = true;
@@ -3207,6 +3415,39 @@ export class CollectionManager extends BaseScriptComponent {
                 print('CollectionManager: [OUTFIT] AI Pick button connected');
             }
         }
+
+        if (!this.clearOutfitButtonConnected) {
+            const clearButton = this.findFirstSceneObjectByNames(outfitRoot, [
+                'Clean',
+                'Clean Button',
+                'Clear',
+                'Clear Button',
+                'Limpiar',
+                'clean',
+                'clear',
+            ]) || this.findButtonByVisibleText(outfitRoot, ['clean', 'clear', 'limpiar', 'nettoyer'], 0);
+
+            if (clearButton && this.connectButtonFallback(clearButton, () => this.onClearOutfitPressed(), 'ClearOutfit')) {
+                this.clearOutfitButtonConnected = true;
+                print('CollectionManager: [OUTFIT] Clean button connected');
+            }
+        }
+    }
+
+    /** Vacía todas las casillas del outfit tester para armar un look nuevo. */
+    private onClearOutfitPressed(): void {
+        this.resolveOutfitSlotObjects();
+        for (let i = 0; i < this.getOutfitSlotCount(); i++) {
+            this.outfitSlotToSavedIndex[i] = -1;
+            this.restoreOutfitSlotDefault(i);
+        }
+        this.saveOutfitSlotsToStorage();
+        this.setOutfitText(this.getOutfitPercentText(), '');
+        this.setOutfitText(this.getOutfitFeedbackText(), '');
+        this.clearOutfitSessionFeedback();
+        print('CollectionManager: [OUTFIT] Slots cleared by user');
+        if (this.onShowDescription) this.onShowDescription(t('outfit_cleared'));
+        if (this.onHideDescriptionAfterDelay) this.onHideDescriptionAfterDelay(1.8);
     }
 
     private tryAssignDraggedCardToOutfitSlot(cardIndex: number, cardObj: SceneObject): boolean {
@@ -3294,7 +3535,31 @@ export class CollectionManager extends BaseScriptComponent {
         print('CollectionManager: [OUTFIT] Assigned saved card #' + (savedIndex + 1)
             + ' to ' + this.getOutfitSlotLabel(slotIndex));
         this.clearOutfitSessionFeedback();
+        // Live match %: manual composition shows the score immediately (and
+        // persists it to the web) without needing Rate Look / AI Pick.
+        // announce=false paths (restore from storage, AI autofill) only
+        // refresh the display — AI Pick rates and syncs on its own.
+        this.refreshOutfitMatchPercent(announce);
         return true;
+    }
+
+    /**
+     * Recomputes and displays the outfit match % from the current slots.
+     * Does NOT call the AI narrator — that stays behind Rate Look / AskAI.
+     * With syncToCloud, the combination is also saved to the web catalog.
+     */
+    private refreshOutfitMatchPercent(syncToCloud: boolean): void {
+        const outfit = this.getCurrentOutfitSelection();
+        const percentText = this.getOutfitPercentText();
+        if (!outfit.items || outfit.items.length < 2) return;
+
+        const matchPercent = this.getOutfitMatchPercent(outfit.items, outfit.slotLabels);
+        // Feedback instantáneo: puntaje estructural al colocar cada prenda.
+        // El veredicto de la IA (texto + voz + % final) llega con Rate Look.
+        this.setOutfitText(percentText, matchPercent + '%');
+        if (syncToCloud && this.onOutfitComposed) {
+            this.onOutfitComposed(outfit.items, matchPercent);
+        }
     }
 
     private applyOutfitSlotsToVisuals(): void {
@@ -3402,7 +3667,7 @@ export class CollectionManager extends BaseScriptComponent {
         const outfitText = this.getOutfitFeedbackText();
         const percentText = this.getOutfitPercentText();
         this.setOutfitText(outfitText, t('outfit_feedback_loading'));
-        this.setOutfitText(percentText, matchPercent + '%');
+        this.setOutfitText(percentText, '…');
 
         if (this.onAskOutfitFeedback) {
             this.onAskOutfitFeedback(items, outfit.slotLabels, outfitText, percentText, matchPercent);
@@ -5099,6 +5364,7 @@ export class CollectionManager extends BaseScriptComponent {
                 user_note: v.user_note || '',
                 scene: v.scene || '',
                 savedAt: v.savedAt, imageGenerated: v.imageGenerated || false,
+                favorite: v.favorite === true,
                 serial: v.serial || '',
                 dateScanned: v.dateScanned || '',
                 cityScanned: v.cityScanned || '',
@@ -5168,6 +5434,11 @@ export class CollectionManager extends BaseScriptComponent {
             }
             if (needsResave) this.saveCollectionToStorage();
 
+            // BRAZALETE ORGANIZADO (Etapa A): las cards se agrupan por
+            // categoría en el carrusel — tops juntos, después abrigos,
+            // bottoms, calzado, vestidos, accesorios y looks.
+            this.sortSavedVehiclesByCategory();
+
             this.ensureCollectionRoot();
 
             for (let i = 0; i < this.savedVehicles.length; i++) {
@@ -5216,6 +5487,25 @@ export class CollectionManager extends BaseScriptComponent {
         } catch (e) {
             print('CollectionManager: Load error: ' + e);
         }
+    }
+
+    // Orden de secciones del brazalete
+    private readonly CATEGORY_ORDER: string[] = ['top', 'outerwear', 'bottom', 'shoes', 'dress', 'accessory', 'look'];
+
+    private categoryRank(v: SavedVehicleData): number {
+        const cat = (v.category || v.type || '').toLowerCase();
+        const idx = this.CATEGORY_ORDER.indexOf(cat);
+        return idx >= 0 ? idx : this.CATEGORY_ORDER.length;
+    }
+
+    /** Agrupa el closet por categoría (y más recientes primero dentro de cada grupo). */
+    private sortSavedVehiclesByCategory(): void {
+        this.savedVehicles.sort((a, b) => {
+            const ra = this.categoryRank(a);
+            const rb = this.categoryRank(b);
+            if (ra !== rb) return ra - rb;
+            return (b.savedAt || 0) - (a.savedAt || 0);
+        });
     }
 
     /** Returns the saved vehicles array (for cloud sync). */
@@ -5523,6 +5813,224 @@ export class CollectionManager extends BaseScriptComponent {
         }
         this.setCardRetryVisible(cardObj, needsRetry);
         if (needsRetry) this.hookCardRetryButton(cardObj);
+        this.refreshCardFavoriteVisual(cardObj, savedIndex);
+    }
+
+    // =====================================================================
+    // FAVORITE BUTTON — corazón por card, sincronizado con la web
+    // =====================================================================
+
+    private favoriteButtonHookedCards: SceneObject[] = [];
+
+    private findCardFavoriteButton(cardObj: SceneObject): SceneObject | null {
+        if (!cardObj) return null;
+        return findChildByName(cardObj, 'Favorite Button')
+            || findChildByName(cardObj, 'Fav Button')
+            || findChildByName(cardObj, 'Heart Button')
+            || findChildByName(cardObj, 'Favorite');
+    }
+
+    /** Refresca corazón lleno/vacío y engancha el botón (una vez por card). */
+    private refreshCardFavoriteVisual(cardObj: SceneObject, savedIndex: number): void {
+        if (!cardObj) return;
+        const button = this.findCardFavoriteButton(cardObj);
+        if (!button) return;
+        button.enabled = true;
+        this.hookCardFavoriteButton(cardObj, button);
+        const data = savedIndex >= 0 && savedIndex < this.savedVehicles.length
+            ? this.savedVehicles[savedIndex] : null;
+        this.applyFavoriteVisual(button, !!(data && data.favorite === true));
+    }
+
+    private applyFavoriteVisual(button: SceneObject, fav: boolean): void {
+        // Texto: corazón lleno/vacío si el botón tiene un Text en su árbol
+        try {
+            const textComp = this.findFirstTextIn(button);
+            if (textComp) textComp.text = fav ? '\u2665' : '\u2661';
+        } catch (e) { /* ignore */ }
+        // Alternativa visual: hijo "On"/"Filled" que se prende al ser favorito
+        const on = findChildByName(button, 'On') || findChildByName(button, 'Filled');
+        if (on) on.enabled = fav;
+    }
+
+    private findFirstTextIn(obj: SceneObject): Text | null {
+        try {
+            const tc = obj.getComponent('Component.Text') as Text;
+            if (tc) return tc;
+        } catch (e) { /* ignore */ }
+        for (let i = 0; i < obj.getChildrenCount(); i++) {
+            const child = obj.getChild(i);
+            if (!child) continue;
+            const found = this.findFirstTextIn(child);
+            if (found) return found;
+        }
+        return null;
+    }
+
+    private hookCardFavoriteButton(cardObj: SceneObject, button: SceneObject): void {
+        if (this.favoriteButtonHookedCards.indexOf(cardObj) >= 0) return;
+        const connected = this.connectButtonFallbackRecursive(button, () => {
+            this.onFavoritePressed(cardObj);
+        }, 'FavoriteCard', 0);
+        if (connected) {
+            this.favoriteButtonHookedCards.push(cardObj);
+            print('CollectionManager: [FAV] Favorite button hooked on card');
+        }
+    }
+
+    private onFavoritePressed(cardObj: SceneObject): void {
+        const idx = this.collectionCardObjects.indexOf(cardObj);
+        if (idx < 0 || idx >= this.savedVehicles.length) return;
+        const data = this.savedVehicles[idx];
+        data.favorite = data.favorite !== true;
+        this.saveCollectionToStorage();
+        const button = this.findCardFavoriteButton(cardObj);
+        if (button) this.applyFavoriteVisual(button, data.favorite === true);
+        print('CollectionManager: [FAV] ' + (data.item_name || data.brand_model)
+            + ' -> ' + (data.favorite ? 'favorito' : 'no favorito'));
+        if (data.serial && this.onCloudSetFavorite) {
+            this.onCloudSetFavorite(data.serial, data.favorite === true);
+        }
+    }
+
+    /** Quita un serial de la lista local de borrados (para restauraciones). */
+    private forgetDeletedSerial(serial: string): void {
+        const idx = this.deletedSerials.indexOf(serial);
+        if (idx >= 0) {
+            this.deletedSerials.splice(idx, 1);
+            this.saveDeletedSerials();
+        }
+    }
+
+    /**
+     * Restaura prendas pedidas desde la web ("Enviar al lente"): reconstruye
+     * la card en el closet local a partir de la fila de la nube. La imagen
+     * llega después vía applyRestoredImage(). Devuelve cuántas restauró.
+     */
+    restoreFromCloudRows(rows: any[]): number {
+        if (!rows || rows.length === 0) return 0;
+        let restored = 0;
+        for (const cv of rows) {
+            if (!cv || !cv.serial) continue;
+            if (this.findSavedVehicleIndexBySerial(cv.serial) >= 0) continue; // ya está
+            this.forgetDeletedSerial(cv.serial);
+
+            const data: SavedVehicleData = {
+                clothing_found: true,
+                mode: (cv.mode as any) || 'single_item',
+                scan_context: (cv.scan_context as any) || 'unknown',
+                brand: cv.brand || '',
+                brand_model: cv.brand_model || cv.item_name || 'Item',
+                item_name: cv.item_name || cv.brand_model || 'Item',
+                type: cv.type || cv.category || '',
+                category: cv.category || cv.type || '',
+                subcategory: cv.subcategory || '',
+                year: cv.year || '',
+                collection: cv.collection || '',
+                collection_year: cv.collection_year || '',
+                quality: cv.quality || '',
+                color: cv.color || '',
+                material: cv.material || '',
+                pattern: cv.pattern || '',
+                fit: cv.fit || '',
+                condition: cv.condition || '',
+                confidence: cv.confidence || 0,
+                style_tags: cv.style_tags || [],
+                occasion_tags: cv.occasion_tags || [],
+                season_tags: cv.season_tags || [],
+                items: cv.items || [],
+                look_summary: cv.look_summary || '',
+                suggested_pairings: cv.suggested_pairings || [],
+                pairing_note: cv.pairing_note || '',
+                feedback: cv.feedback || '',
+                ai_note: cv.ai_note || '',
+                user_note: cv.user_note || '',
+                top_speed: cv.top_speed || 1,
+                acceleration: cv.acceleration || 1,
+                braking: cv.braking || 1,
+                traction: cv.traction || 1,
+                comfort: cv.comfort || 1,
+                rarity: cv.rarity || 2,
+                rarity_label: cv.rarity_label || getRarityLabel(cv.rarity || 2),
+                scene: cv.scene || '',
+                savedAt: cv.saved_at || Date.now(),
+                imageGenerated: false,
+                serial: cv.serial,
+                dateScanned: cv.date_scanned || '',
+                cityScanned: cv.city_scanned || '',
+                favorite: cv.favorite === true,
+            };
+
+            const cardObj = this.instantiateCollectorCard(data);
+            if (!cardObj) continue;
+            cardObj.enabled = false;
+            this.savedVehicles.push(data);
+            this.collectionCardObjects.push(cardObj);
+            this.cardStates.push(this.STATE_IN_COLLECTION);
+            this.cardImageReady.push(false);
+            this.cardFrameHooked.push(false);
+            this.reviewButtonHooked.push(false);
+            restored++;
+            print('CollectionManager: [RESTORE] Recuperada desde la web — ' + data.item_name);
+        }
+
+        if (restored > 0) {
+            this.saveCollectionToStorage();
+            this.rebuildGarmentPlaceholdersFromStorage();
+            this.updateGarmentPlaceholderVisibility();
+            if (this.isCollectionOpen) {
+                this.layoutCircularCards();
+                this.showOutfitBuilderContainer();
+            }
+            this.updateCollectionButtonLabel();
+        }
+        return restored;
+    }
+
+    /** Aplica la imagen descargada de la web a una prenda restaurada. */
+    applyRestoredImage(serial: string, texture: Texture): void {
+        const idx = this.findSavedVehicleIndexBySerial(serial);
+        if (idx < 0 || !texture) return;
+        const data = this.savedVehicles[idx];
+        const card = this.collectionCardObjects[idx];
+        // La imagen ya está: marcar generada YA (evita que un refresh
+        // intermedio vuelva a mostrar el botón "Retry Image Gen")
+        data.imageGenerated = true;
+        if (card) {
+            this.applyCardImage(card, texture);
+            this.markCardGenerationResult(card, true);
+        }
+        this.saveGarmentCutoutTextureToStorage(data.savedAt, texture, (saved: boolean) => {
+            if (saved) {
+                this.saveCollectionToStorage();
+                print('CollectionManager: [RESTORE] Imagen persistida — ' + (data.item_name || data.serial));
+            }
+        });
+    }
+
+    /** Aplica al closet local los favoritos que vienen de la nube (la web manda al conectar). */
+    applyCloudFavorites(rows: Array<{ serial?: string; favorite?: boolean }>): void {
+        if (!rows || rows.length === 0) return;
+        let changed = 0;
+        for (const row of rows) {
+            if (!row || !row.serial) continue;
+            const idx = this.findSavedVehicleIndexBySerial(row.serial);
+            if (idx < 0) continue;
+            const fav = row.favorite === true;
+            if ((this.savedVehicles[idx].favorite === true) !== fav) {
+                this.savedVehicles[idx].favorite = fav;
+                changed++;
+                const card = this.collectionCardObjects[idx];
+                if (card) {
+                    const b = this.findCardFavoriteButton(card);
+                    if (b) this.applyFavoriteVisual(b, fav);
+                }
+            }
+        }
+        if (changed > 0) {
+            this.saveCollectionToStorage();
+            print('CollectionManager: [FAV] ' + changed + ' favorito(s) sincronizados desde la web');
+        }
     }
 
     /** Connects the card's "Retry Image Gen" button to re-run generation (once per card). */

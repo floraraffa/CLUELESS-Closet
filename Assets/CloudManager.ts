@@ -88,7 +88,28 @@ export interface CloudVehicle {
     date_scanned: string;
     image_url: string;
     saved_at: number;
+    favorite?: boolean;
     created_at?: string;
+}
+
+/**
+ * A saved outfit combination: which garments were combined and the
+ * match percentage the lens computed when the user rated the look.
+ */
+export interface CloudOutfit {
+    id?: number;
+    user_id: string;
+    serial_key: string;       // Sorted item serials joined with '+' (dedupe key)
+    name: string;
+    item_serials: string[];
+    item_names: string[];
+    match_percent: number;
+    ai_feedback?: string;
+    occasion?: string;
+    season?: string;
+    favorite?: boolean;
+    created_at?: string;
+    updated_at?: string;
 }
 
 // =====================================================================
@@ -114,6 +135,10 @@ export class CloudManager extends BaseScriptComponent {
     onProfileSynced: ((profile: CloudUserProfile) => void) | null = null;
     onCollectionSynced: ((count: number) => void) | null = null;
     onShowMessage: ((text: string) => void) | null = null;
+    /** Fired with this user's web pairing code (existing or newly created). */
+    onPairingCode: ((code: string) => void) | null = null;
+    /** Fired with the user's Bitmoji as a Texture (device only). */
+    onBitmojiTexture: ((tex: Texture) => void) | null = null;
     /** Returns the local display name to store on the user's own cloud profile. */
     onGetUsername: (() => string) | null = null;
 
@@ -123,6 +148,7 @@ export class CloudManager extends BaseScriptComponent {
     private readonly STORAGE_BUCKET = 'closet-images';
     private readonly TABLE_PROFILES = 'user_profiles';
     private readonly TABLE_VEHICLES = 'closet_items';
+    private readonly TABLE_OUTFITS = 'outfits';
 
     // =====================================================================
     // INTERNAL STATE
@@ -235,6 +261,67 @@ export class CloudManager extends BaseScriptComponent {
     private onAuthSuccess(): void {
         if (this.onAuthenticated) this.onAuthenticated(this.userId);
         this.fetchAndUploadBitmoji().catch(() => {});
+        this.ensureWebPairingCode().catch(() => {});
+    }
+
+    // =====================================================================
+    // WEB PAIRING CODE — Personal code so this user can open the web closet
+    // =====================================================================
+
+    /**
+     * Ensures this lens user has a personal web pairing code in web_tokens.
+     * Created once per user; on later sessions the existing code is reused.
+     * The code is printed to the log and announced once on creation so the
+     * user can link the web (closetclub.netlify.app) to their own closet.
+     */
+    async ensureWebPairingCode(): Promise<string> {
+        if (!this.isReady()) return '';
+
+        try {
+            const { data } = await this.client
+                .from('web_tokens')
+                .select('token')
+                .eq('user_id', this.userId)
+                .limit(1);
+
+            if (data && data.length > 0) {
+                print('CloudManager: [WEB] Pairing code ready — ' + data[0].token);
+                if (this.onPairingCode) this.onPairingCode(data[0].token);
+                return data[0].token;
+            }
+
+            const code = this.generatePairingCode();
+            const { error } = await this.client
+                .from('web_tokens')
+                .insert({ token: code, user_id: this.userId, label: 'lens auto' });
+
+            if (error) {
+                print('CloudManager: [WEB] Pairing code insert error: ' + JSON.stringify(error));
+                return '';
+            }
+
+            print('CloudManager: [WEB] Pairing code created — ' + code);
+            if (this.onPairingCode) this.onPairingCode(code);
+            if (this.onShowMessage) {
+                this.onShowMessage('closetclub.netlify.app · ' + code);
+            }
+            return code;
+        } catch (e) {
+            print('CloudManager: [WEB] Pairing code exception: ' + e);
+            return '';
+        }
+    }
+
+    /** Readable personal code, e.g. "CLUB-K4T7-9XM2" (no 0/O/1/I). */
+    private generatePairingCode(): string {
+        const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+        let block1 = '';
+        let block2 = '';
+        for (let i = 0; i < 4; i++) {
+            block1 += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+            block2 += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+        }
+        return 'CLUB-' + block1 + '-' + block2;
     }
 
     // =====================================================================
@@ -295,6 +382,12 @@ export class CloudManager extends BaseScriptComponent {
                 last_login: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             };
+
+            // Editor preview uses a simulated user ("Preview 1") — never let it
+            // overwrite the real Snapchat display name written by the device.
+            try {
+                if (global.deviceInfoSystem.isEditor()) delete profileData.display_name;
+            } catch (e) { /* ignore */ }
 
             const { data, error } = await this.client
                 .from(this.TABLE_PROFILES)
@@ -667,6 +760,152 @@ export class CloudManager extends BaseScriptComponent {
     }
 
     // =====================================================================
+    // OUTFIT SYNC — Saved combinations with match percentage
+    // =====================================================================
+
+    /**
+     * Saves an outfit combination to the cloud with its match percentage.
+     * The same set of garments (regardless of slot order) upserts into one
+     * row, so re-rating a look updates its match % instead of duplicating.
+     */
+    async syncOutfit(items: SavedVehicleData[], matchPercent: number, aiFeedback: string = ''): Promise<boolean> {
+        if (!this.isReady() || !items || items.length < 2) return false;
+
+        try {
+            const withSerial = items.filter(i => i && typeof i.serial === 'string' && i.serial.length > 0);
+            if (withSerial.length < 2) {
+                print('CloudManager: Outfit sync skipped — items missing serials');
+                return false;
+            }
+
+            const serials = withSerial.map(i => i.serial).sort();
+            const names = withSerial.map(i => i.item_name || i.brand_model || 'Item');
+            const outfitData: any = {
+                user_id: this.userId,
+                serial_key: serials.join('+'),
+                name: names.slice(0, 3).join(' + '),
+                item_serials: serials,
+                item_names: names,
+                match_percent: Math.round(Math.max(0, Math.min(100, matchPercent))),
+                updated_at: new Date().toISOString(),
+            };
+            // La nota de la IA solo se escribe cuando existe: el guardado
+            // rápido (al colocar prendas) nunca borra una nota ya guardada.
+            if (aiFeedback && aiFeedback.length > 0) {
+                outfitData.ai_feedback = aiFeedback;
+            }
+
+            const { error } = await this.client
+                .from(this.TABLE_OUTFITS)
+                .upsert(outfitData, { onConflict: 'user_id,serial_key' });
+
+            if (error) {
+                print('CloudManager: Outfit sync error: ' + JSON.stringify(error));
+                return false;
+            }
+
+            print('CloudManager: Outfit synced — ' + outfitData.name + ' (' + outfitData.match_percent + '%)');
+            return true;
+        } catch (e) {
+            print('CloudManager: Outfit sync exception: ' + e);
+            return false;
+        }
+    }
+
+    /** Updates the favorite flag of one garment in the cloud. */
+    async setFavorite(serial: string, favorite: boolean): Promise<boolean> {
+        if (!this.isReady() || !serial) return false;
+        try {
+            const { error } = await this.client
+                .from(this.TABLE_VEHICLES)
+                .update({ favorite: favorite })
+                .eq('user_id', this.userId)
+                .eq('serial', serial);
+            if (error) {
+                print('CloudManager: [FAV] Update error: ' + JSON.stringify(error));
+                return false;
+            }
+            print('CloudManager: [FAV] ' + serial + ' -> ' + (favorite ? 'favorite' : 'not favorite'));
+            return true;
+        } catch (e) {
+            print('CloudManager: [FAV] Exception: ' + e);
+            return false;
+        }
+    }
+
+    /** Restore requests queued from the web ("Enviar al lente"). */
+    async fetchRestoreRequests(): Promise<string[]> {
+        if (!this.isReady()) return [];
+        try {
+            const { data, error } = await this.client
+                .from('restore_requests')
+                .select('serial')
+                .eq('user_id', this.userId);
+            if (error) {
+                print('CloudManager: [RESTORE] Fetch error: ' + JSON.stringify(error));
+                return [];
+            }
+            return (data || []).map((r: any) => r.serial as string);
+        } catch (e) {
+            print('CloudManager: [RESTORE] Exception: ' + e);
+            return [];
+        }
+    }
+
+    async clearRestoreRequests(serials: string[]): Promise<void> {
+        if (!this.isReady() || !serials || serials.length === 0) return;
+        try {
+            await this.client
+                .from('restore_requests')
+                .delete()
+                .eq('user_id', this.userId)
+                .in('serial', serials);
+        } catch (e) {
+            print('CloudManager: [RESTORE] Clear exception: ' + e);
+        }
+    }
+
+    /** Serials deleted on the WEB — the lens must purge them locally. */
+    async fetchWebDeletedSerials(): Promise<string[]> {
+        if (!this.isReady()) return [];
+        try {
+            const { data, error } = await this.client
+                .from('deleted_serials')
+                .select('serial')
+                .eq('user_id', this.userId);
+            if (error) {
+                print('CloudManager: [WEB] Tombstones fetch error: ' + JSON.stringify(error));
+                return [];
+            }
+            return (data || []).map((r: any) => r.serial as string);
+        } catch (e) {
+            print('CloudManager: [WEB] Tombstones exception: ' + e);
+            return [];
+        }
+    }
+
+    async fetchOutfits(): Promise<CloudOutfit[]> {
+        if (!this.isReady()) return [];
+
+        try {
+            const { data, error } = await this.client
+                .from(this.TABLE_OUTFITS)
+                .select('*')
+                .eq('user_id', this.userId)
+                .order('match_percent', { ascending: false });
+
+            if (error) {
+                print('CloudManager: Fetch outfits error: ' + JSON.stringify(error));
+                return [];
+            }
+            return (data || []) as CloudOutfit[];
+        } catch (e) {
+            print('CloudManager: Fetch outfits exception: ' + e);
+            return [];
+        }
+    }
+
+    // =====================================================================
     // IMAGE STORAGE
     // =====================================================================
 
@@ -778,6 +1017,13 @@ export class CloudManager extends BaseScriptComponent {
                 return '';
             }
 
+            // Entrega el Bitmoji como textura para la card de perfil
+            try {
+                this.remoteMediaModule.loadResourceAsImageTexture(resource,
+                    (tex: Texture) => { if (this.onBitmojiTexture) this.onBitmojiTexture(tex); },
+                    () => { /* avatar optional */ });
+            } catch (e) { /* ignore */ }
+
             const bytes = await this.downloadBitmojiBytes(resource);
             if (!bytes || bytes.length === 0) {
                 print('CloudManager: [BITMOJI] Could not download Bitmoji bytes');
@@ -880,3 +1126,4 @@ export class CloudManager extends BaseScriptComponent {
         });
     }
 }
+

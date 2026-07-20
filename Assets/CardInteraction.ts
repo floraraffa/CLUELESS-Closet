@@ -147,6 +147,26 @@ export class CardInteraction extends BaseScriptComponent {
     @hint('Concave curve depth (cm): how far the grid edges wrap toward you. 0 = flat. Default 8.')
     gridCurveDepth: number = 8.0;
 
+    @input
+    @hint('Rows per page in the MY CLOSET grid. Page size = columns x rows. Default 2.')
+    gridPageRows: number = 2;
+
+    @input
+    @hint('Gap (cm) between the last grid row and the category bar panel. Default 14.')
+    gridBarDropOffset: number = 14.0;
+
+    @input
+    @hint('Card scale in the MY CLOSET panel. Default 0.45.')
+    gridPanelCardScale: number = 0.45;
+
+    @input
+    @hint('Horizontal spacing (cm) between MY CLOSET panel cards. Default 18.')
+    gridPanelSpacingX: number = 18.0;
+
+    @input
+    @hint('Vertical spacing (cm) between MY CLOSET panel cards. Default 22.')
+    gridPanelSpacingY: number = 22.0;
+
     // =====================================================================
     // CONSTANTS
     // =====================================================================
@@ -204,6 +224,15 @@ export class CardInteraction extends BaseScriptComponent {
     private handProvider: any = null;
     private leftHand: any = null;
     private gridMode: boolean = false;
+    private gridCategory: string = 'all';
+    private gridPage: number = 0;
+    private gridPageCount: number = 1;
+    private gridOriginSmoothed: vec3 | null = null;
+    private gridBarObject: SceneObject | null = null;
+    private gridTitleObject: SceneObject | null = null;
+    private gridPrevButton: SceneObject | null = null;
+    private gridNextButton: SceneObject | null = null;
+    private gridPageText: any = null;
     private gridLostTrackingFrames: number = 0;
 
     // =====================================================================
@@ -390,6 +419,68 @@ export class CardInteraction extends BaseScriptComponent {
     /** True while the open-palm grid is active (read by CollectionManager if needed). */
     isGridMode(): boolean {
         return this.gridMode;
+    }
+
+    /** Selects which category the MY CLOSET grid shows ('all' shows everything). */
+    setGridCategory(cat: string): void {
+        const c = ((cat || 'all') + '').toLowerCase();
+        if (c !== this.gridCategory) {
+            this.gridCategory = c;
+            this.gridPage = 0;
+        }
+    }
+
+    getGridCategory(): string {
+        return this.gridCategory;
+    }
+
+    gridNextPage(): void {
+        this.gridPage = Math.min(this.gridPage + 1, Math.max(0, this.gridPageCount - 1));
+    }
+
+    gridPrevPage(): void {
+        this.gridPage = Math.max(0, this.gridPage - 1);
+    }
+
+    /** Category-bar / title panels (user-authored) anchored to the grid; pageText shows "1/3". */
+    setGridBarObject(obj: SceneObject | null, pageText: any, titleObj: SceneObject | null): void {
+        this.gridBarObject = obj;
+        this.gridPageText = pageText;
+        this.gridTitleObject = titleObj;
+    }
+
+    /** Prev/Next buttons — auto-hidden when there's nowhere to page to. */
+    setGridPagerButtons(prevBtn: SceneObject | null, nextBtn: SceneObject | null): void {
+        if (prevBtn) this.gridPrevButton = prevBtn;
+        if (nextBtn) this.gridNextButton = nextBtn;
+    }
+
+    /** Panel design: 4 cards per row max (extra Inspector columns are capped). */
+    private gridPanelColumns(): number {
+        return Math.max(1, Math.min(4, this.gridColumns));
+    }
+
+    private cardMatchesGridFilter(i: number): boolean {
+        if (this.gridCategory === 'all') return true;
+        if (this.gridCategory === 'favorite') {
+            const vf: any = this.savedVehicles ? this.savedVehicles[i] : null;
+            return !!(vf && vf.favorite === true);
+        }
+        const v: any = this.savedVehicles ? this.savedVehicles[i] : null;
+        const cat = v ? ((v.category || v.type || '') + '').toLowerCase() : '';
+        if (cat === this.gridCategory) return true;
+        // Tolerate AI variants of the canonical category names.
+        const aliases: { [key: string]: string[] } = {
+            top: ['tops', 'shirt', 't-shirt', 'tshirt', 'blouse', 'sweater', 'hoodie'],
+            bottom: ['bottoms', 'pants', 'trousers', 'jeans', 'skirt', 'shorts'],
+            shoes: ['shoe', 'footwear', 'sneakers', 'boots', 'sandals', 'loafers'],
+            outerwear: ['jacket', 'jackets', 'coat', 'layer', 'blazer', 'cardigan'],
+            accessory: ['accessories', 'bag', 'hat', 'cap', 'belt', 'scarf', 'jewelry', 'sunglasses', 'glasses'],
+            dress: ['dresses', 'gown'],
+            look: ['looks', 'outfit', 'full look', 'full_look'],
+        };
+        const list = aliases[this.gridCategory];
+        return list ? list.indexOf(cat) >= 0 : false;
     }
 
     hookCardFrameEvents(cardObj: SceneObject, cardIndex: number): void {
@@ -674,7 +765,34 @@ export class CardInteraction extends BaseScriptComponent {
         let gridRight: vec3 | null = null;
         let gridUp: vec3 | null = null;
         let gridToUser: vec3 | null = null;
-        const gridRows = Math.max(1, Math.ceil(inCollectionCount / Math.max(1, this.gridColumns)));
+        // MY CLOSET panel: only the selected category's current page is laid out;
+        // every other in-collection card hides (carousel branch re-enables on exit).
+        const gridDisplaySlot: number[] = [];
+        let gridPageCardCount = 0;
+        if (this.gridMode) {
+            // Fixed panel: 4 per row, gridPageRows rows per page — always paginated.
+            const pageSize = Math.max(1, this.gridPanelColumns() * Math.max(1, this.gridPageRows));
+            const matchOrder: number[] = [];
+            for (let gi = 0; gi < n; gi++) {
+                gridDisplaySlot[gi] = -1;
+                const stG = this.cardStates[gi] || this.STATE_IN_COLLECTION;
+                if (stG !== this.STATE_IN_COLLECTION) continue;
+                if (!this.collectionCardObjects[gi]) continue;
+                // Never filter out a card whose buttons aren't hooked yet (hooker skips disabled cards).
+                const hookedG = this.reviewButtonHooked.length === 0 || this.reviewButtonHooked[gi];
+                if (this.cardMatchesGridFilter(gi) || !hookedG) matchOrder.push(gi);
+            }
+            this.gridPageCount = Math.max(1, Math.ceil(matchOrder.length / pageSize));
+            if (this.gridPage > this.gridPageCount - 1) this.gridPage = this.gridPageCount - 1;
+            const pageStart = this.gridPage * pageSize;
+            for (let s = 0; s < pageSize && pageStart + s < matchOrder.length; s++) {
+                gridDisplaySlot[matchOrder[pageStart + s]] = s;
+                gridPageCardCount++;
+            }
+        }
+        const gridRows = this.gridMode
+            ? Math.max(1, this.gridPageRows)
+            : Math.max(1, Math.ceil(inCollectionCount / Math.max(1, this.gridColumns)));
         if (this.gridMode) {
             const palm = this.leftHand && typeof this.leftHand.getPalmCenter === 'function'
                 ? this.leftHand.getPalmCenter() : null;
@@ -693,14 +811,29 @@ export class CardInteraction extends BaseScriptComponent {
                     gridRight = right;
                     gridUp = up;
                     // Push the wall away from your eyes (beyond the palm) + tunable X/Y/Z offset.
+                    // +17: panel sits deeper so it doesn't crowd the user (was +10; +20% total depth).
                     gridOrigin = palm
-                        .add(tuFlat.uniformScale(-this.gridForwardOffset - this.gridOffsetZ))
+                        .add(tuFlat.uniformScale(-this.gridForwardOffset - this.gridOffsetZ - 17))
                         .add(right.uniformScale(this.gridOffsetX))
                         .add(up.uniformScale(this.gridOffsetY));
                     gridReady = true;
                 }
             }
         }
+        // Damp hand tremor: the raw palm anchor jitters frame to frame, which made
+        // the whole panel vibrate. Smooth it before laying anything out.
+        if (this.gridMode && gridReady) {
+            this.gridOriginSmoothed = this.gridOriginSmoothed
+                ? vec3.lerp(this.gridOriginSmoothed, gridOrigin as vec3, 0.12)
+                : (gridOrigin as vec3);
+            gridOrigin = this.gridOriginSmoothed;
+        } else {
+            this.gridOriginSmoothed = null;
+        }
+
+        // One shared rotation for the whole wall — cards stay coplanar instead of
+        // individually billboarding (which made them look like different depths).
+        const gridWallRot: quat | null = gridReady ? this.getCardBillboardRotation(gridOrigin as vec3) : null;
 
         // In grid mode, ALL shown cards (in-array + grabbed + placed) share ONE
         // depth-sorted render order by distance to the user, so an out-of-array card
@@ -721,6 +854,51 @@ export class CardInteraction extends BaseScriptComponent {
             for (let r = 0; r < all.length; r++) {
                 gridDepthOffsetByIndex[all[r].idx] = r * this.RENDER_DEPTH_STEP;
             }
+        }
+
+        // Category bar below the panel + optional title above, both nudged a few cm
+        // toward the user so they read IN FRONT of the card wall, never behind it.
+        const panelHalfHeight = ((Math.max(1, this.gridPageRows) - 1) / 2) * this.gridPanelSpacingY;
+        if (this.gridBarObject) {
+            if (this.gridMode && gridReady) {
+                this.gridBarObject.enabled = true;
+                const barPos = (gridOrigin as vec3)
+                    .add((gridUp as vec3).uniformScale(-panelHalfHeight - this.gridBarDropOffset))
+                    .add((gridToUser as vec3).uniformScale(6));
+                const barT = this.gridBarObject.getTransform();
+                barT.setWorldPosition(vec3.lerp(barT.getWorldPosition(), barPos, lerpSpeed));
+                barT.setWorldRotation(quat.slerp(barT.getWorldRotation(), gridWallRot as quat, lerpSpeed));
+            } else {
+                this.gridBarObject.enabled = false;
+            }
+        }
+        if (this.gridTitleObject) {
+            if (this.gridMode && gridReady) {
+                this.gridTitleObject.enabled = true;
+                const titlePos = (gridOrigin as vec3)
+                    .add((gridUp as vec3).uniformScale(panelHalfHeight + this.gridBarDropOffset))
+                    .add((gridToUser as vec3).uniformScale(6));
+                const titleT = this.gridTitleObject.getTransform();
+                titleT.setWorldPosition(vec3.lerp(titleT.getWorldPosition(), titlePos, lerpSpeed));
+                titleT.setWorldRotation(quat.slerp(titleT.getWorldRotation(), gridWallRot as quat, lerpSpeed));
+            } else {
+                this.gridTitleObject.enabled = false;
+            }
+        }
+        // Prev/Next only when there's actually another page in that direction,
+        // and the "1 / 3" indicator only when there is more than one page.
+        if (this.gridPrevButton) {
+            this.gridPrevButton.enabled = this.gridMode && gridReady && this.gridPage > 0;
+        }
+        if (this.gridNextButton) {
+            this.gridNextButton.enabled = this.gridMode && gridReady && this.gridPage < this.gridPageCount - 1;
+        }
+        if (this.gridMode && gridReady && this.gridPageText) {
+            try {
+                this.gridPageText.text = this.gridPageCount > 1
+                    ? (this.gridPage + 1) + ' / ' + this.gridPageCount
+                    : '';
+            } catch (e) { /* text destroyed */ }
         }
 
         for (let i = 0; i < n; i++) {
@@ -748,32 +926,32 @@ export class CardInteraction extends BaseScriptComponent {
                 this.applyCardRenderOffset(i, this.gridMode ? (gridDepthOffsetByIndex[i] || 0) : (outRenderOffsetByIndex[i] !== undefined ? outRenderOffsetByIndex[i] : topOffset));
 
             } else if (this.gridMode && gridReady) {
-                // GRID (open-palm) mode — fan into a hand-anchored curved grid facing the user.
-                const displayIndex = circleIdx;
+                // GRID (open-palm) mode — MY CLOSET panel: current category page only.
                 circleIdx++;
+                const displayIndex = gridDisplaySlot[i] !== undefined ? gridDisplaySlot[i] : -1;
+                if (displayIndex < 0) {
+                    card.enabled = false;
+                    continue;
+                }
 
-                const col = displayIndex % this.gridColumns;
-                const row = Math.floor(displayIndex / this.gridColumns);
-                const x = (col - (this.gridColumns - 1) / 2) * this.gridSpacingX;
-                const y = ((gridRows - 1) / 2 - row) * this.gridSpacingY;
-                // Concave wall: edges wrap toward the user.
-                const normX = this.gridColumns > 1
-                    ? (col - (this.gridColumns - 1) / 2) / ((this.gridColumns - 1) / 2) : 0;
-                const curve = normX * normX * this.gridCurveDepth;
+                const panelCols = this.gridPanelColumns();
+                const col = displayIndex % panelCols;
+                const row = Math.floor(displayIndex / panelCols);
+                const x = (col - (panelCols - 1) / 2) * this.gridPanelSpacingX;
+                const y = ((gridRows - 1) / 2 - row) * this.gridPanelSpacingY;
+                // Flat aligned wall — every card on the same plane, same depth.
                 const targetPos = (gridOrigin as vec3)
                     .add((gridRight as vec3).uniformScale(x))
-                    .add((gridUp as vec3).uniformScale(y))
-                    .add((gridToUser as vec3).uniformScale(curve));
+                    .add((gridUp as vec3).uniformScale(y));
 
                 const curW = transform.getWorldPosition();
                 transform.setWorldPosition(vec3.lerp(curW, targetPos, lerpSpeed));
 
                 const curScaleG = transform.getLocalScale();
-                const newSG = curScaleG.x + (this.gridCardScale - curScaleG.x) * lerpSpeed;
+                const newSG = curScaleG.x + (this.gridPanelCardScale - curScaleG.x) * lerpSpeed;
                 transform.setLocalScale(new vec3(newSG, newSG, newSG));
 
-                const billboardRotG = this.getCardBillboardRotation(transform.getWorldPosition());
-                transform.setWorldRotation(quat.slerp(transform.getWorldRotation(), billboardRotG, lerpSpeed));
+                transform.setWorldRotation(quat.slerp(transform.getWorldRotation(), gridWallRot as quat, lerpSpeed));
 
                 // Unified depth-sorted render order across array + out cards.
                 card.enabled = true;

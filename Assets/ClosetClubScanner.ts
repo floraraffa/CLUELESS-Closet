@@ -28,7 +28,7 @@ import { CollectionManager } from './CollectionManager';
 import { CardInteraction } from './CardInteraction';
 import { XPManager } from './XPManager';
 import { WelcomeManager } from './WelcomeManager';
-import { CloudManager } from './CloudManager';
+import { CloudManager, CloudVehicle } from './CloudManager';
 import { AnalyticsManager } from './AnalyticsManager';
 import { MusicPlayer } from './MusicPlayer';
 import { OnboardingManager } from './OnboardingManager';
@@ -199,6 +199,8 @@ export class ClosetClubScanner extends BaseScriptComponent {
     private activeSfxTrack: AudioTrackAsset | null = null;
     private oneShotQueue: AudioTrackAsset[] = [];
     private suppressNextNegativeProgressSfx: boolean = false;
+    /** Último outfit calificado (para adjuntarle la nota de la IA al guardarlo). */
+    private lastRatedOutfit: { items: SavedVehicleData[]; percent: number } | null = null;
 
     // =====================================================================
     // LIFECYCLE
@@ -310,6 +312,29 @@ export class ClosetClubScanner extends BaseScriptComponent {
             };
             this.collectionManager.onAskOutfitFeedback = (outfitItems: VehicleData[], slotLabels?: string[], outfitText?: Text | null, percentText?: Text | null, matchPercent?: number) => {
                 if (this.vehicleNarrator) this.vehicleNarrator.triggerOutfitFeedback(outfitItems, slotLabels, outfitText, percentText, matchPercent);
+                // Persist the rated combination (with its match %) to the cloud
+                // so the web inventory can list saved outfits. Fire-and-forget.
+                if (this.cloudManager && this.cloudManager.isReady() && typeof matchPercent === 'number') {
+                    this.lastRatedOutfit = { items: outfitItems as any, percent: matchPercent };
+                    this.cloudManager.syncOutfit(outfitItems as any, matchPercent);
+                }
+            };
+            // Cuando la IA termina su nota, se adjunta al outfit guardado (upsert)
+            if (this.vehicleNarrator) {
+                this.vehicleNarrator.onOutfitFeedbackReady = (text: string, aiPercent?: number) => {
+                    if (this.lastRatedOutfit && this.cloudManager && this.cloudManager.isReady() && text && text.length > 0) {
+                        // El % de la IA (si vino) pisa la pre-cuenta estructural
+                        if (typeof aiPercent === 'number') this.lastRatedOutfit.percent = aiPercent;
+                        this.cloudManager.syncOutfit(this.lastRatedOutfit.items, this.lastRatedOutfit.percent, text);
+                    }
+                };
+            }
+            // Manual composition (drag & drop into slots): live match % without
+            // AI — persist the combination to the web the moment it's scored.
+            this.collectionManager.onOutfitComposed = (outfitItems: SavedVehicleData[], matchPercent: number) => {
+                if (this.cloudManager && this.cloudManager.isReady()) {
+                    this.cloudManager.syncOutfit(outfitItems, matchPercent);
+                }
             };
             this.collectionManager.onShowCardStatus = (text: string) => {
                 if (this.vehicleCardUI) this.vehicleCardUI.showCardStatus(text);
@@ -485,10 +510,20 @@ export class ClosetClubScanner extends BaseScriptComponent {
 
             // Sync full collection to cloud on auth
             if (this.collectionManager) {
-                const vehicles = this.collectionManager.getSavedVehicles();
-                if (vehicles.length > 0) {
-                    this.cloudManager!.syncFullCollection(vehicles);
-                }
+                // "La web manda": lo borrado en la web se purga de los Specs
+                // ANTES de subir, así nunca se re-sube ni reaparece.
+                this.cloudManager!.fetchWebDeletedSerials().then((deadSerials) => {
+                    if (!this.collectionManager || !this.cloudManager) return;
+                    if (deadSerials.length > 0) {
+                        this.collectionManager.purgeWebDeletedSerials(deadSerials);
+                    }
+                    const vehicles = this.collectionManager.getSavedVehicles();
+                    if (vehicles.length > 0) {
+                        this.cloudManager.syncFullCollection(vehicles).then(() => {
+                            this.backfillMissingCloudImages(vehicles);
+                        });
+                    }
+                });
             }
         };
 
@@ -504,10 +539,21 @@ export class ClosetClubScanner extends BaseScriptComponent {
             print('ClosetClubScanner: [CLOUD] Collection synced — ' + count + ' vehicles');
         };
 
+        // El código web personal queda fijo en la card de perfil
+        this.cloudManager.onPairingCode = (code: string) => {
+            if (this.xpManager) this.xpManager.setWebCode(code);
+        };
+
+        // El Bitmoji del usuario se aplica a la imagen de la card de perfil
+        this.cloudManager.onBitmojiTexture = (tex: Texture) => {
+            if (this.xpManager) this.xpManager.setProfileAvatar(tex);
+        };
+
         this.cloudManager.onShowMessage = (text: string) => {
             if (this.vehicleNarrator) {
                 this.vehicleNarrator.showDescriptionText(text);
-                this.vehicleNarrator.hideDescriptionAfterDelay(3.0);
+                // 6s: enough time to read and note the web pairing code
+                this.vehicleNarrator.hideDescriptionAfterDelay(6.0);
             }
         };
 
@@ -517,7 +563,10 @@ export class ClosetClubScanner extends BaseScriptComponent {
                 if (this.cloudManager && this.cloudManager.isReady()) {
                     this.cloudManager.syncVehicle(vehicle).then((ok: boolean) => {
                         if (!ok || !this.cloudManager || !this.collectionManager) return;
-                        const imageB64 = this.collectionManager.getCardImageBase64(vehicle.savedAt);
+                        // Web catalog only ever receives the generated cutout image.
+                        // If it's not ready yet, the cutout-generation callback
+                        // uploads it via onCloudUploadImage once it finishes.
+                        const imageB64 = this.collectionManager.getGeneratedCardImageBase64(vehicle.savedAt);
                         if (imageB64 && imageB64.length > 0) {
                             this.cloudManager.uploadCardImage(vehicle.serial, imageB64);
                         }
@@ -531,9 +580,9 @@ export class ClosetClubScanner extends BaseScriptComponent {
                 }
             };
 
-            this.collectionManager.onCloudDeleteVehicle = (serial: string) => {
+            this.collectionManager.onCloudSetFavorite = (serial: string, favorite: boolean) => {
                 if (this.cloudManager && this.cloudManager.isReady()) {
-                    this.cloudManager.deleteCloudVehicle(serial);
+                    this.cloudManager.setFavorite(serial, favorite);
                 }
             };
 
@@ -544,7 +593,7 @@ export class ClosetClubScanner extends BaseScriptComponent {
                         for (let i = 0; i < vehicles.length; i++) {
                             const vehicle = vehicles[i];
                             if (!vehicle || !vehicle.serial || !vehicle.savedAt) continue;
-                            const imageB64 = this.collectionManager.getCardImageBase64(vehicle.savedAt);
+                            const imageB64 = this.collectionManager.getGeneratedCardImageBase64(vehicle.savedAt);
                             if (imageB64 && imageB64.length > 0) {
                                 this.cloudManager.uploadCardImage(vehicle.serial, imageB64);
                             }
@@ -554,12 +603,11 @@ export class ClosetClubScanner extends BaseScriptComponent {
             };
 
             this.collectionManager.onCloudResetCollection = () => {
-                if (this.cloudManager && this.cloudManager.isReady()) {
-                    this.cloudManager.resetCloudCollection();
-                }
+                // Local-only reset: the web catalog is permanent. Items and
+                // images stay in the cloud; removing them happens on the web.
                 if (this.xpManager) {
                     this.xpManager.fullReset();
-                    print('ClosetClubScanner: [RESET] Local profile reset to level 1');
+                    print('ClosetClubScanner: [RESET] Local profile reset to level 1 — web catalog untouched');
                 }
                 // Replay the first-launch tutorial after a full reset.
                 if (this.onboardingManager) this.onboardingManager.resetOnboarding();
@@ -586,6 +634,83 @@ export class ClosetClubScanner extends BaseScriptComponent {
         };
 
         print('ClosetClubScanner: CloudManager wired');
+    }
+
+    /**
+     * "Enviar al lente": restaura las prendas pedidas desde la web —
+     * reconstruye la card, descarga su imagen y limpia el pedido.
+     */
+    private async processRestoreRequests(cloudRows: CloudVehicle[]): Promise<void> {
+        if (!this.cloudManager || !this.collectionManager) return;
+        try {
+            const requests = await this.cloudManager.fetchRestoreRequests();
+            if (!requests || requests.length === 0) return;
+            print('ClosetClubScanner: [RESTORE] ' + requests.length + ' pedido(s) desde la web');
+
+            const bySerial: { [s: string]: CloudVehicle } = {};
+            for (const row of cloudRows) { if (row.serial) bySerial[row.serial] = row; }
+
+            const rows: CloudVehicle[] = [];
+            for (const s of requests) { if (bySerial[s]) rows.push(bySerial[s]); }
+
+            const restored = this.collectionManager.restoreFromCloudRows(rows as any);
+
+            // Descargar las imágenes de las restauradas (secuencial, best-effort)
+            for (const row of rows) {
+                if (row.image_url && row.image_url.length > 0) {
+                    const tex = await this.cloudManager.downloadCardImage(row.image_url);
+                    if (tex) this.collectionManager.applyRestoredImage(row.serial, tex);
+                }
+            }
+
+            await this.cloudManager.clearRestoreRequests(requests);
+
+            if (restored > 0 && this.vehicleNarrator) {
+                this.vehicleNarrator.showDescriptionText(tf('restored_from_web', { count: restored }));
+                this.vehicleNarrator.hideDescriptionAfterDelay(5.0);
+            }
+        } catch (e) {
+            print('ClosetClubScanner: [RESTORE] Error: ' + e);
+        }
+    }
+
+    /**
+     * Backfill: uploads locally-stored generated cutout images for catalog
+     * rows whose image_url is still empty in the cloud. Covers items scanned
+     * BEFORE the cloud connection existed — their cutouts live on the device
+     * but were never uploaded (the retry queue skips items already marked
+     * imageGenerated). Fire-and-forget, runs once per authentication.
+     */
+    private async backfillMissingCloudImages(vehicles: SavedVehicleData[]): Promise<void> {
+        if (!this.cloudManager || !this.cloudManager.isReady() || !this.collectionManager) return;
+
+        try {
+            const cloudRows = await this.cloudManager.fetchCloudCollection();
+            // Favoritos: lo marcado en la web se refleja en el lente
+            this.collectionManager.applyCloudFavorites(cloudRows as any);
+            // "Enviar al lente": restaurar prendas pedidas desde la web
+            await this.processRestoreRequests(cloudRows);
+            const missingImage = new Set<string>();
+            for (const row of cloudRows) {
+                if (row.serial && (!row.image_url || row.image_url.length === 0)) {
+                    missingImage.add(row.serial);
+                }
+            }
+            if (missingImage.size === 0) return;
+
+            let uploaded = 0;
+            for (const v of vehicles) {
+                if (!v || !v.serial || !v.savedAt || !missingImage.has(v.serial)) continue;
+                const b64 = this.collectionManager.getGeneratedCardImageBase64(v.savedAt);
+                if (!b64 || b64.length === 0) continue;
+                const url = await this.cloudManager.uploadCardImage(v.serial, b64);
+                if (url && url.length > 0) uploaded++;
+            }
+            print('ClosetClubScanner: [CLOUD] Image backfill — ' + uploaded + '/'
+                + missingImage.size + ' missing card images uploaded');
+        } catch (e) {
+            print('ClosetClubScanner: [CLOUD] Image backfill error: ' + e);
+        }
     }
 
     // =====================================================================
