@@ -156,6 +156,10 @@ export class CardInteraction extends BaseScriptComponent {
     gridBarDropOffset: number = 14.0;
 
     @input
+    @hint('MY CLOSET panel: horizontal offset (cm) where the combine panel docks beside the grid. Negative = left side. Default 58.')
+    gridCombineSideOffset: number = 58.0;
+
+    @input
     @hint('Card scale in the MY CLOSET panel. Default 0.45.')
     gridPanelCardScale: number = 0.45;
 
@@ -197,6 +201,8 @@ export class CardInteraction extends BaseScriptComponent {
     /** Fires when a card is returned to the carousel (clears the description subtitle). */
     onCardReturnedToCollection: ((serial: string) => void) | null = null;
     /** Lets CollectionManager consume a dropped card as an outfit-slot assignment. */
+    /** Fired the moment the user grabs a card (frame drag or pinch assist). */
+    onCardGrabStarted: (() => void) | null = null;
     onCardDroppedOnOutfitSlot: ((cardIndex: number, cardObj: SceneObject) => boolean) | null = null;
 
     // =====================================================================
@@ -232,6 +238,7 @@ export class CardInteraction extends BaseScriptComponent {
     private gridTitleObject: SceneObject | null = null;
     private gridPrevButton: SceneObject | null = null;
     private gridNextButton: SceneObject | null = null;
+    private gridCombinePanel: SceneObject | null = null;
     private gridPageText: any = null;
     private gridLostTrackingFrames: number = 0;
 
@@ -449,6 +456,11 @@ export class CardInteraction extends BaseScriptComponent {
         this.gridTitleObject = titleObj;
     }
 
+    /** Combine (outfit tester) panel — docked beside the grid while it's open in grid mode. */
+    setGridCombinePanel(obj: SceneObject | null): void {
+        if (obj) this.gridCombinePanel = obj;
+    }
+
     /** Prev/Next buttons — auto-hidden when there's nowhere to page to. */
     setGridPagerButtons(prevBtn: SceneObject | null, nextBtn: SceneObject | null): void {
         if (prevBtn) this.gridPrevButton = prevBtn;
@@ -566,6 +578,7 @@ export class CardInteraction extends BaseScriptComponent {
         this.grabbedPreviousState = this.cardStates[cardIndex] || this.STATE_IN_COLLECTION;
         this.cardStates[cardIndex] = this.STATE_PICKED;
         this.grabbedCardIndex = cardIndex;
+        if (this.onCardGrabStarted) this.onCardGrabStarted();
 
         print('CardInteraction: Grab card #' + cardIndex + ' (' + name + ')');
         if (this.onShowDescription) this.onShowDescription(name);
@@ -900,6 +913,17 @@ export class CardInteraction extends BaseScriptComponent {
         if (this.gridNextButton) {
             this.gridNextButton.enabled = this.gridMode && gridReady && this.gridPage < this.gridPageCount - 1;
         }
+        // Combine panel: while open in grid mode it docks beside the grid so the
+        // two panels coexist instead of overlapping. Outside grid mode it's free.
+        if (this.gridCombinePanel && this.gridCombinePanel.enabled && this.gridMode && gridReady) {
+            const combinePos = (gridOrigin as vec3)
+                .add((gridRight as vec3).uniformScale(this.gridCombineSideOffset))
+                .add((gridToUser as vec3).uniformScale(4));
+            const combT = this.gridCombinePanel.getTransform();
+            combT.setWorldPosition(vec3.lerp(combT.getWorldPosition(), combinePos, lerpSpeed));
+            combT.setWorldRotation(quat.slerp(combT.getWorldRotation(), gridWallRot as quat, lerpSpeed));
+        }
+
         if (this.gridMode && gridReady && this.gridPageText) {
             try {
                 this.gridPageText.text = this.gridPageCount > 1
@@ -1044,6 +1068,7 @@ export class CardInteraction extends BaseScriptComponent {
             const nearest = this.findNearestGrabbableCard(pinchCenter, this.pinchGrabRadiusCm);
             if (nearest >= 0) {
                 this.assistDragging = true;
+                if (this.onCardGrabStarted) this.onCardGrabStarted();
                 this.onCardTranslationStart(nearest);
             }
         }

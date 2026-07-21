@@ -119,6 +119,14 @@ a flat, steady grid (4 per row, paginated), a category bar
 prev/next paging that only appears when needed, and a "Showing:" label.
 The selected filter is highlighted in bordeaux — very Cher Horowitz.
 
+### 🧭 Panels That Coexist — UX polish
+
+The Outfit Tester no longer pops open on its own: tap **Combine** in your closet
+(or simply grab a card — the panel appears, ready to receive it). While the
+MY CLOSET grid is deployed, the combine panel docks beside it: grid in the
+center, combiner to the side, category bar below — nothing overlaps. The
+onboarding walks you through your web access code before opening the closet.
+
 ### 💯 Honest Match Scores
 
 The AI stylist now decides the outfit match percentage itself and it is stored with each

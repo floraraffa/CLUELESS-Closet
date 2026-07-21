@@ -956,7 +956,7 @@ export class CollectionManager extends BaseScriptComponent {
         this.updateGarmentPlaceholderVisibility();
         if (this.isCollectionOpen) {
             this.layoutCircularCards();
-            this.showOutfitBuilderContainer();
+            if (this.combineOpen) this.showOutfitBuilderContainer();
         }
         this.updateDeleteButtonVisibility();
         this.updateCollectionButtonLabel();
@@ -1428,7 +1428,10 @@ export class CollectionManager extends BaseScriptComponent {
 
         this.layoutCircularCards();
         this.resetOutfitTesterSlots();
-        this.showOutfitBuilderContainer();
+        // UX: the combine panel no longer opens by default — only if the user
+        // had it open (Show Combine button / Combine Look / AI Pick set the intent).
+        if (this.combineOpen) this.showOutfitBuilderContainer();
+        else this.hideGarmentPlaceholderContainer();
         this.startCollectionUpdateLoop();
 
         // Hook Frame events for unhooked cards
@@ -1653,6 +1656,14 @@ export class CollectionManager extends BaseScriptComponent {
                 this.cardStates, this.cardFrameHooked, this.collectionRoot,
                 this.reviewButtonHooked
             );
+            // UX: grabbing a card while the closet is open reveals the combine panel,
+            // so you can drop it straight into a slot.
+            this.cardInteraction.onCardGrabStarted = () => {
+                const outfitRootG = this.getOutfitTesterContainer(false);
+                if (this.isCollectionOpen && (!outfitRootG || !outfitRootG.enabled)) {
+                    this.showOutfitBuilderContainer();
+                }
+            };
             this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
                 return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
             };
@@ -1679,6 +1690,14 @@ export class CollectionManager extends BaseScriptComponent {
                 this.cardStates, this.cardFrameHooked, this.collectionRoot,
                 this.reviewButtonHooked
             );
+            // UX: grabbing a card while the closet is open reveals the combine panel,
+            // so you can drop it straight into a slot.
+            this.cardInteraction.onCardGrabStarted = () => {
+                const outfitRootG = this.getOutfitTesterContainer(false);
+                if (this.isCollectionOpen && (!outfitRootG || !outfitRootG.enabled)) {
+                    this.showOutfitBuilderContainer();
+                }
+            };
             this.cardInteraction.onCardDroppedOnOutfitSlot = (cardIndex: number, cardObj: SceneObject) => {
                 return this.tryAssignDraggedCardToOutfitSlot(cardIndex, cardObj);
             };
@@ -3135,6 +3154,8 @@ export class CollectionManager extends BaseScriptComponent {
     private showOutfitBuilderContainer(): void {
         const outfitRoot = this.getOutfitTesterContainer(true);
         if (!outfitRoot) return;
+        this.combineOpen = true;
+        if (this.cardInteraction) this.cardInteraction.setGridCombinePanel(outfitRoot);
         this.enterGarmentOutfitMode();
 
         if (this.garmentPlaceholderContainer && this.garmentPlaceholderContainer !== outfitRoot) {
@@ -3205,6 +3226,8 @@ export class CollectionManager extends BaseScriptComponent {
     // =====================================================================
     private gridBarObject: SceneObject | null = null;
     private gridTitleObject: SceneObject | null = null;
+    /** True while the user WANTS the combine (outfit tester) panel open. */
+    private combineOpen: boolean = false;
     private gridPageTextComp: Text | null = null;
     private gridBarButtonsConnected: { [key: string]: boolean } = {};
     private gridBarNextScanTime: number = 0;
@@ -3235,6 +3258,7 @@ export class CollectionManager extends BaseScriptComponent {
             { key: 'accessory', names: ['Show Accessory', 'Show Accessories', 'ShowAccessory', 'Cat Accessory'], action: () => this.onGridCategoryPressed('accessory') },
             { key: 'look', names: ['Show Look', 'Show Looks', 'ShowLook', 'Cat Look'], action: () => this.onGridCategoryPressed('look') },
             { key: 'favorite', names: ['Show Fav', 'Show Favs', 'Show Favorite', 'Show Favorites', 'Show Favourites', 'ShowFav'], action: () => this.onGridCategoryPressed('favorite') },
+            { key: 'combine', names: ['Show Combine', 'ShowCombine', 'Show Match', 'Combine Panel', 'Show Outfit Tester'], action: () => this.onToggleCombinePressed() },
             { key: 'next', names: ['Show Next', 'Grid Next', 'Page Next'], action: () => this.cardInteraction.gridNextPage() },
             { key: 'prev', names: ['Show Prev', 'Grid Prev', 'Page Prev'], action: () => this.cardInteraction.gridPrevPage() },
         ];
@@ -3277,6 +3301,7 @@ export class CollectionManager extends BaseScriptComponent {
                     this.gridBarButtonsConnected[defs[defIdx].key] = true;
                     if (defs[defIdx].key === 'prev') { this.gridPrevBtnObj = obj; pagerChanged = true; }
                     else if (defs[defIdx].key === 'next') { this.gridNextBtnObj = obj; pagerChanged = true; }
+                    else if (defs[defIdx].key === 'combine') { /* toggle button — no category visuals */ }
                     else {
                         this.gridCatButtonObjs[defs[defIdx].key] = obj;
                         this.gridCatBaseScales[defs[defIdx].key] = obj.getTransform().getLocalScale();
@@ -3304,6 +3329,20 @@ export class CollectionManager extends BaseScriptComponent {
             print('CollectionManager: [GRID] pager buttons registered');
         }
         if (catChanged) this.updateGridCategoryVisuals();
+    }
+
+    /** Show Combine button: opens/closes the outfit tester on demand. */
+    private onToggleCombinePressed(): void {
+        const outfitRoot = this.getOutfitTesterContainer(true);
+        const visible = !!(outfitRoot && outfitRoot.enabled);
+        if (visible) {
+            this.combineOpen = false;
+            this.hideGarmentPlaceholderContainer();
+            print('CollectionManager: [COMBINE] Panel closed via Show Combine');
+        } else {
+            this.showOutfitBuilderContainer();
+            print('CollectionManager: [COMBINE] Panel opened via Show Combine');
+        }
     }
 
     private onGridCategoryPressed(key: string): void {
@@ -4395,6 +4434,7 @@ export class CollectionManager extends BaseScriptComponent {
             }
             if (this.deepSearchAndHookClose(root, () => {
                 print('CollectionManager: Outfit tester close pressed');
+                this.combineOpen = false;
                 this.hideGarmentPlaceholderContainer();
             }, this.garmentViewMode === 'outfit' ? 'OutfitTester' : 'GarmentPlaceholder')) {
                 this._closeHooked.add(root);
@@ -5990,7 +6030,7 @@ export class CollectionManager extends BaseScriptComponent {
             this.updateGarmentPlaceholderVisibility();
             if (this.isCollectionOpen) {
                 this.layoutCircularCards();
-                this.showOutfitBuilderContainer();
+                if (this.combineOpen) this.showOutfitBuilderContainer();
             }
             this.updateCollectionButtonLabel();
         }

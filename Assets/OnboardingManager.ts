@@ -11,12 +11,13 @@
  *   2. SKIP_ANNOUNCE— announce the Skip button / "say Skip Tutorial out loud"
  *   3. SCAN         — frame a garment + pinch the Scan button (Pinch hint)
  *   4. SAVE         — result card shown → press "Save the look"
- *   5. CONGRATS     — first piece saved
- *   6. CLOSET       — open the closet on the right wrist
- *   7. CAROUSEL     — swipe right hand up to rotate (counter-clockwise only)
- *   8. GRID         — open palm outward to spread cards into a grid
- *   9. OUTFIT       — the Outfit Tester + AI outfit suggestions
- *  10. DONE         — flag set, tutorial UI hidden
+ *   5. CONGRATS     — first piece saved (to the closet AND the web)
+ *   6. PROFILE      — ring-finger profile: your personal web access code
+ *   7. CLOSET       — open the closet on the right wrist
+ *   8. CAROUSEL     — swipe right hand up to rotate (counter-clockwise only)
+ *   9. GRID         — open palm outward to spread cards into a grid
+ *  10. OUTFIT       — the Outfit Tester + AI outfit suggestions
+ *  11. DONE         — flag set, tutorial UI hidden
  *
  * This script is intentionally self-contained: ClosetClubScanner simply NOTIFIES
  * it (notifyLanguageAccepted / notifyScanStarted / notifyScanEnded /
@@ -47,6 +48,7 @@ const STEP_CAROUSEL = 6;
 const STEP_GRID = 7;
 const STEP_OUTFIT = 8;
 const STEP_DONE = 9;
+const STEP_PROFILE = 10; // entre CONGRATS y CLOSET (orden por transiciones, no por numero)
 
 @component
 export class OnboardingManager extends BaseScriptComponent {
@@ -405,7 +407,14 @@ export class OnboardingManager extends BaseScriptComponent {
         if (this.step !== STEP_SAVE && this.step !== STEP_SCAN) return;
         this.hideHint();
         this.step = STEP_CONGRATS;
-        this.say(t('onb_congrats'), () => this.enterClosetStep());
+        this.say(t('onb_congrats'), () => this.enterProfileStep());
+    }
+
+    private enterProfileStep(): void {
+        if (!this.active) return;
+        this.step = STEP_PROFILE;
+        this.hideHint();
+        this.say(t('onb_profile'), () => this.enterClosetStep());
     }
 
     private enterClosetStep(): void {

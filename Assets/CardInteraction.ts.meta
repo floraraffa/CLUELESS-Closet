@@ -37,6 +37,7 @@
     gridBarDropOffset: false
     gridCardScale: false
     gridColumns: false
+    gridCombineSideOffset: false
     gridCurveDepth: false
     gridForwardOffset: false
     gridGestureEnterAngle: false
@@ -98,6 +99,7 @@
       gridCurveDepth: !<float> 6.000000
       gridPageRows: !<float> 2.000000
       gridBarDropOffset: !<float> 14.000000
+      gridCombineSideOffset: !<float> 58.000000
       gridPanelCardScale: 0.550000
       gridPanelSpacingX: !<float> 18.000000
       gridPanelSpacingY: !<float> 22.000000
@@ -135,6 +137,7 @@
     - '// @input float gridCurveDepth = 8 {"hint":"Concave curve depth (cm): how far the grid edges wrap toward you. 0 = flat. Default 8."}'
     - '// @input float gridPageRows = 2 {"hint":"Rows per page in the MY CLOSET grid. Page size = columns x rows. Default 2."}'
     - '// @input float gridBarDropOffset = 14 {"hint":"Gap (cm) between the last grid row and the category bar panel. Default 14."}'
+    - '// @input float gridCombineSideOffset = 58 {"hint":"MY CLOSET panel: horizontal offset (cm) where the combine panel docks beside the grid. Negative = left side. Default 58."}'
     - '// @input float gridPanelCardScale = 0.45 {"hint":"Card scale in the MY CLOSET panel. Default 0.45."}'
     - '// @input float gridPanelSpacingX = 18 {"hint":"Horizontal spacing (cm) between MY CLOSET panel cards. Default 18."}'
     - '// @input float gridPanelSpacingY = 22 {"hint":"Vertical spacing (cm) between MY CLOSET panel cards. Default 22."}'

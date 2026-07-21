@@ -166,9 +166,9 @@ const STRINGS = {
   },
   step5_t: { es: 'Armá outfits', en: 'Compose outfits', fr: 'Compose des tenues' },
   step5_d: {
-    es: 'Combiná tus prendas en los slots del lente y mirá el porcentaje de match al instante. Cada look que armás queda registrado con su puntaje.',
-    en: 'Combine your garments in the lens slots and see the match percentage instantly. Every look you build is saved with its score.',
-    fr: 'Combine tes vêtements dans les emplacements de la lens et vois le pourcentage de match instantanément. Chaque look est enregistré avec son score.',
+    es: 'Tocá el botón Combine en tu closet para abrir el probador de outfits: combiná tus prendas en los slots y mirá el porcentaje de match al instante. Cada look que armás queda registrado con su puntaje.',
+    en: 'Tap the Combine button in your closet to open the outfit tester: mix your garments in the slots and see the match percentage instantly. Every look you build is saved with its score.',
+    fr: 'Touche le bouton Combine dans ton dressing pour ouvrir le testeur de tenues : combine tes vêtements dans les emplacements et vois le pourcentage de match instantanément. Chaque look est enregistré avec son score.',
   },
   step6_t: { es: 'Tu perfil y tu código', en: 'Your profile & your code', fr: 'Ton profil et ton code' },
   step6_d: {

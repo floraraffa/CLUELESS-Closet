@@ -60,14 +60,19 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
         es: "Escaneemos tu primera prenda. Encuadra una prenda en la ventana de la cámara y pellizca el botón Escanear.",
     },
     onb_save:               {
-        en: 'Nice! Here is your garment card with its AI rating. Press "Save the look" to keep it in your closet.',
-        fr: 'Bien joué ! Voici la fiche de votre vêtement avec sa note IA. Appuyez sur « Sauvegarder le look » pour le garder dans votre dressing.',
-        es: '¡Genial! Aquí está la card de tu prenda con su valoración IA. Pulsa "Guardar el look" para guardarla en tu armario.',
+        en: 'Nice! Here is your garment card with its AI rating. Press "Save the look" — it saves to your closet and uploads itself to your web catalog.',
+        fr: 'Bien joué ! Voici la fiche de votre vêtement avec sa note IA. Appuyez sur « Sauvegarder le look » — elle se garde dans votre dressing et s\'envoie toute seule sur votre catalogue web.',
+        es: '¡Genial! Aquí está la card de tu prenda con su valoración IA. Pulsa "Guardar el look" — se guarda en tu armario y se sube sola a tu catálogo web.',
     },
     onb_congrats:           {
-        en: 'Congratulations! Your first piece is saved to your closet.',
-        fr: 'Félicitations ! Votre première pièce est sauvegardée dans votre dressing.',
-        es: '¡Felicidades! Tu primera prenda está guardada en tu armario.',
+        en: 'Congratulations! Your first piece is saved to your closet — and it is already in your web catalog too.',
+        fr: 'Félicitations ! Votre première pièce est sauvegardée dans votre dressing — et déjà dans votre catalogue web.',
+        es: '¡Felicidades! Tu primera prenda está guardada en tu armario — y ya aparece también en tu catálogo web.',
+    },
+    onb_profile:            {
+        en: 'One more thing before your closet: turn your left palm toward you and tap the profile icon on your ring finger. There you will find your personal code — use it to open and manage your closet on the web.',
+        fr: 'Encore une chose avant votre dressing : tournez la paume gauche vers vous et touchez l\'icône de profil sur votre annulaire. Vous y trouverez votre code personnel — utilisez-le pour ouvrir et gérer votre dressing sur le web.',
+        es: 'Una cosa más antes de tu armario: gira la palma izquierda hacia ti y toca el ícono de perfil en tu dedo anular. Ahí vas a encontrar tu código personal — usalo para abrir y gestionar tu armario en la web.',
     },
     onb_closet_intro:       {
         en: 'Your saved cards live in a carousel around your left wrist. Press the closet button on your left wrist to open it.',
@@ -85,9 +90,9 @@ const S: { [key: string]: { en: string; fr: string; es: string } } = {
         es: 'Ahora abre la mano, con la palma hacia afuera, para desplegar todas tus cards en una cuadrícula. Vamos, inténtalo...',
     },
     onb_outfit:             {
-        en: 'Opening your closet also opens the Outfit Tester, with a slot for each part of your body. Fill the slots yourself, or let the AI build an outfit that matches the season, time, location, and trends.',
-        fr: 'Ouvrir votre dressing ouvre aussi l\'Outfit Tester, avec un emplacement pour chaque partie du corps. Remplissez les emplacements vous-même, ou laissez l\'IA composer une tenue cohérente avec la saison, l\'heure, le lieu et les tendances.',
-        es: 'Abrir tu armario también abre el Outfit Tester, con un slot para cada parte del cuerpo. Llena los slots tú mismo, o deja que la IA arme un outfit acorde a la temporada, la hora, la ubicación y las tendencias.',
+        en: 'Tap Combine in your closet to open the Outfit Tester, with a slot for each part of your body. Fill the slots yourself, or let the AI build an outfit that matches the season, time, location, and trends.',
+        fr: 'Touchez Combine dans votre dressing pour ouvrir l\'Outfit Tester, avec un emplacement pour chaque partie du corps. Remplissez les emplacements vous-même, ou laissez l\'IA composer une tenue cohérente avec la saison, l\'heure, le lieu et les tendances.',
+        es: 'Toca Combine en tu armario para abrir el Outfit Tester, con un slot para cada parte del cuerpo. Llena los slots tú mismo, o deja que la IA arme un outfit acorde a la temporada, la hora, la ubicación y las tendencias.',
     },
     onb_done:               {
         en: "That's it, you're all set! Enjoy the Closet Club.",
