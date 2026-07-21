@@ -490,6 +490,7 @@ Rules:
 - Do not identify private sensitive traits of a person. Focus only on visible clothing and styling.
 - Use "scan_context" values: worn, flat_lay, hanger, rack, mannequin, unknown.
 - Use category values: top, bottom, shoes, outerwear, accessory, dress, look, unknown.
+- Rompers, jumpsuits, overalls and any one-piece garment: use category "dress" with subcategory "one-piece" (never top or bottom).
 - Use "brand_model" and "item_name" as the same user-facing display title.
 - If there is visible brand text/logo, put it in "brand"; otherwise leave brand as an empty string.
 - "year" is the visible or inferred era/year. Use exact year only if visible on label/tag/print; otherwise use ranges like "2020s", "vintage 1990s", or "".

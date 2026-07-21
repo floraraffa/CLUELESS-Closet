@@ -476,11 +476,18 @@ export class CardInteraction extends BaseScriptComponent {
             shoes: ['shoe', 'footwear', 'sneakers', 'boots', 'sandals', 'loafers'],
             outerwear: ['jacket', 'jackets', 'coat', 'layer', 'blazer', 'cardigan'],
             accessory: ['accessories', 'bag', 'hat', 'cap', 'belt', 'scarf', 'jewelry', 'sunglasses', 'glasses'],
-            dress: ['dresses', 'gown'],
+            dress: ['dresses', 'gown', 'romper', 'jumpsuit', 'overall', 'overalls', 'one-piece', 'one piece', 'onepiece', 'mono', 'enterito'],
             look: ['looks', 'outfit', 'full look', 'full_look'],
         };
         const list = aliases[this.gridCategory];
-        return list ? list.indexOf(cat) >= 0 : false;
+        if (list && list.indexOf(cat) >= 0) return true;
+        // One-piece garments join the dress filter no matter which field carries the word.
+        if (this.gridCategory === 'dress' && v) {
+            const txt = ((v.subcategory || '') + ' ' + (v.item_name || '') + ' ' + (v.brand_model || '')).toLowerCase();
+            if (txt.indexOf('romper') >= 0 || txt.indexOf('jumpsuit') >= 0 || txt.indexOf('overall') >= 0
+                || txt.indexOf('one-piece') >= 0 || txt.indexOf('one piece') >= 0 || txt.indexOf('enterito') >= 0) return true;
+        }
+        return false;
     }
 
     hookCardFrameEvents(cardObj: SceneObject, cardIndex: number): void {

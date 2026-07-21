@@ -689,7 +689,7 @@
 - !<SceneObject/06d2f739-551d-4f8e-ae54-0fabc05ad03e>
   PrefabRemaps:
     []
-  Name: Show Dress
+  Name: Show Dress/One-Piece
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
@@ -6922,12 +6922,13 @@
   Enabled: true
   ScriptAsset: !<reference> 309ae08f-e7c0-4bb3-a4a4-699895827e88
   ScriptInputsDefault:
-    {}
+    enableCloudSync: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
       snapCloudRequirements: !<MappingBased.AssignableType> c1a9bb31-b164-4c6a-8d31-ab63bd4402d9
+      enableCloudSync: true
   ScriptTypes:
     "":
       {}
@@ -13174,7 +13175,7 @@
   MeshShadowMode: None
   ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
   ShadowDensity: 1.000000
-  Text: Show Dress
+  Text: Show Dress One-Piece
   Editable: false
   ShowEditingPreview: true
   TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
@@ -13238,8 +13239,8 @@
     CornerRadius: 0.000000
   AdvancedLayout: !<TextAdvancedLayout>
     ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
-    LetterSpacing: 0.000000
-    LineSpacing: 1.000000
+    LetterSpacing: 0.040000
+    LineSpacing: 0.670000
     CapitalizationOverride: None
   DepthTest: false
   TwoSided: false

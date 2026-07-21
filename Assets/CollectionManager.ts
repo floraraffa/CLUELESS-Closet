@@ -2309,6 +2309,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private getLookFamily(text: string): string {
+        if (this.hasLookWord(text, ['romper', 'jumpsuit', 'overall', 'one-piece', 'one piece', 'enterito'])) return 'dress';
         if (this.isLookBottomLike(text)) return 'bottom';
         if (this.isLookTopLike(text)) return 'top';
         if (this.isLookShoeLike(text)) return 'shoe';
@@ -2437,7 +2438,7 @@ export class CollectionManager extends BaseScriptComponent {
     }
 
     private isLookDressLike(text: string): boolean {
-        return this.hasLookWord(text, ['dress', 'vestido']);
+        return this.hasLookWord(text, ['dress', 'vestido', 'romper', 'jumpsuit', 'overall', 'one-piece', 'enterito']);
     }
 
     private isLookFullOutfit(text: string): boolean {
@@ -3230,7 +3231,7 @@ export class CollectionManager extends BaseScriptComponent {
             { key: 'outerwear', names: ['Show Jacket', 'Show Jackets', 'ShowJacket', 'Show Outerwear', 'Cat Outerwear'], action: () => this.onGridCategoryPressed('outerwear') },
             { key: 'bottom', names: ['Show Bottom', 'Show Bottoms', 'ShowBottom', 'Cat Bottom'], action: () => this.onGridCategoryPressed('bottom') },
             { key: 'shoes', names: ['Show Shoes', 'ShowShoes', 'Cat Shoes'], action: () => this.onGridCategoryPressed('shoes') },
-            { key: 'dress', names: ['Show Dress', 'ShowDress', 'Cat Dress'], action: () => this.onGridCategoryPressed('dress') },
+            { key: 'dress', names: ['Show Dress/One-Piece', 'Show Dress One-Piece', 'Show Dress/One Piece', 'Show One-Piece', 'Show OnePiece', 'Show Dress', 'ShowDress', 'Cat Dress'], action: () => this.onGridCategoryPressed('dress') },
             { key: 'accessory', names: ['Show Accessory', 'Show Accessories', 'ShowAccessory', 'Cat Accessory'], action: () => this.onGridCategoryPressed('accessory') },
             { key: 'look', names: ['Show Look', 'Show Looks', 'ShowLook', 'Cat Look'], action: () => this.onGridCategoryPressed('look') },
             { key: 'favorite', names: ['Show Fav', 'Show Favs', 'Show Favorite', 'Show Favorites', 'Show Favourites', 'ShowFav'], action: () => this.onGridCategoryPressed('favorite') },
@@ -3313,7 +3314,7 @@ export class CollectionManager extends BaseScriptComponent {
     private gridCategoryLabel(key: string): string {
         const labels: { [k: string]: string } = {
             all: 'All', top: 'Tops', outerwear: 'Jackets', bottom: 'Bottoms',
-            shoes: 'Shoes', dress: 'Dresses', accessory: 'Accessories',
+            shoes: 'Shoes', dress: 'Dress/One-Piece', accessory: 'Accessories',
             look: 'Looks', favorite: 'Favorites',
         };
         return labels[key] || key;
@@ -4234,6 +4235,9 @@ export class CollectionManager extends BaseScriptComponent {
             data.brand_model || '',
         ].join(' ').toLowerCase();
 
+        // One-piece garments (romper/jumpsuit/overall) dress the whole body -> Top slot,
+        // checked FIRST so words like "denim" can't drag them into the Bottom slot.
+        if (this.hasLookWord(text, ['romper', 'jumpsuit', 'overall', 'one-piece', 'one piece', 'enterito'])) return 1;
         if (this.hasLookWord(text, ['hat', 'cap', 'beanie', 'bucket', 'headwear', 'head', 'gorra', 'sombrero'])) return 0;
         if (this.isLookAccessoryLike(text) || this.hasLookWord(text, ['glasses', 'sunglasses', 'bag', 'belt', 'scarf', 'jewelry', 'accessories', 'accesorio', 'accesorios'])) return 0;
         if (this.isLookShoeLike(text)) return 3;
@@ -5493,7 +5497,13 @@ export class CollectionManager extends BaseScriptComponent {
     private readonly CATEGORY_ORDER: string[] = ['top', 'outerwear', 'bottom', 'shoes', 'dress', 'accessory', 'look'];
 
     private categoryRank(v: SavedVehicleData): number {
-        const cat = (v.category || v.type || '').toLowerCase();
+        let cat = (v.category || v.type || '').toLowerCase();
+        // Enteritos (one-piece) viven con los vestidos, detectados en cualquier campo.
+        if (cat === 'romper' || cat === 'jumpsuit' || cat === 'overall' || cat === 'overalls' || cat === 'one-piece') cat = 'dress';
+        else {
+            const txtR = ((v.subcategory || '') + ' ' + (v.item_name || '') + ' ' + (v.brand_model || '')).toLowerCase();
+            if (txtR.indexOf('romper') >= 0 || txtR.indexOf('jumpsuit') >= 0 || txtR.indexOf('one-piece') >= 0 || txtR.indexOf('enterito') >= 0) cat = 'dress';
+        }
         const idx = this.CATEGORY_ORDER.indexOf(cat);
         return idx >= 0 ? idx : this.CATEGORY_ORDER.length;
     }

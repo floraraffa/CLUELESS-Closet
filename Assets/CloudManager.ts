@@ -127,6 +127,10 @@ export class CloudManager extends BaseScriptComponent {
     @allowUndefined
     snapCloudRequirements: SnapCloudRequirements;
 
+    @input
+    @hint('Kill switch: untick to run fully OFFLINE (no Supabase init). Use if the cloud module crashes the lens on device.')
+    enableCloudSync: boolean = true;
+
     // =====================================================================
     // CALLBACKS — Set by orchestrator
     // =====================================================================
@@ -182,6 +186,10 @@ export class CloudManager extends BaseScriptComponent {
     // =====================================================================
 
     private async initialize(): Promise<void> {
+        if (!this.enableCloudSync) {
+            print('CloudManager: cloud sync DISABLED via Inspector — running offline');
+            return;
+        }
         if (this.isInitializing) return;
         this.isInitializing = true;
 

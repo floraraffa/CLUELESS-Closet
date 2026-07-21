@@ -26,6 +26,7 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
+    enableCloudSync: false
     snapCloudRequirements: false
   ScriptTypesHidden:
     {}
@@ -37,8 +38,10 @@
     []
   DefaultScriptInputs:
     - snapCloudRequirements: !<MappingBased.AssignableType> 00000000-0000-0000-0000-000000000000
+      enableCloudSync: true
   ScriptTypes:
     -
       {}
   InputLines:
     - '// @input AssignableType snapCloudRequirements {"hint":"SnapCloudRequirements script reference (holds SupabaseProject config)"}'
+    - '// @input bool enableCloudSync = true {"hint":"Kill switch: untick to run fully OFFLINE (no Supabase init). Use if the cloud module crashes the lens on device."}'

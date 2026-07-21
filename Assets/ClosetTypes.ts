@@ -385,7 +385,7 @@ export function formatCarType(type: string): string {
         shoes: 'Shoes',
         outerwear: 'Outerwear',
         accessory: 'Accessory',
-        dress: 'Dress',
+        dress: 'Dress/One-Piece',
         look: 'Full Look',
         unknown: 'Unknown',
     };

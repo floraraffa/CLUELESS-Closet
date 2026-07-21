@@ -20,7 +20,7 @@ const STRINGS = {
   cat_shoes:     { es: 'Calzado', en: 'Shoes', fr: 'Chaussures' },
   cat_outerwear: { es: 'Abrigo', en: 'Outerwear', fr: 'Veste' },
   cat_accessory: { es: 'Accesorio', en: 'Accessory', fr: 'Accessoire' },
-  cat_dress:     { es: 'Vestido', en: 'Dress', fr: 'Robe' },
+  cat_dress:     { es: 'Vestido/One-Piece', en: 'Dress/One-Piece', fr: 'Robe/One-Piece' },
   cat_look:      { es: 'Look completo', en: 'Full Look', fr: 'Look complet' },
 
   vis_public:  { es: 'Público', en: 'Public', fr: 'Public' },

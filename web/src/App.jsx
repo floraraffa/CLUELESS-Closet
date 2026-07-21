@@ -5,6 +5,10 @@ import { LANGS, detectLang, saveLang, translate } from './i18n.js';
 import specsHero from './assets/specs-hero.jpg';
 
 const CATEGORY_KEYS = ['top', 'bottom', 'shoes', 'outerwear', 'accessory', 'dress', 'look'];
+
+// Enteritos (romper/jumpsuit/overall/one-piece) viven en la categoría vestidos.
+const normalizeCat = (c) => (c === 'romper' || c === 'jumpsuit' || c === 'overall' || c === 'overalls' || c === 'one-piece') ? 'dress' : c;
+
 const CATEGORY_EMOJI = {
   top: '👕', bottom: '👖', shoes: '👟', outerwear: '🧥',
   accessory: '👜', dress: '👗', look: '✨',
@@ -87,7 +91,7 @@ function ItemDetail({ item, onClose, t, onSendToLens }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const cat = (item.category || item.type || '').toLowerCase();
+  const cat = normalizeCat((item.category || item.type || '').toLowerCase());
   const catLabel = CATEGORY_KEYS.includes(cat) ? t('cat_' + cat) : (cat || '—');
 
   const rows = [
@@ -195,7 +199,7 @@ function ItemDetail({ item, onClose, t, onSendToLens }) {
 // Tarjeta de prenda
 // ---------------------------------------------------------------------
 function ItemCard({ item, onToggleFavorite, onDelete, onOpen, t, readOnly }) {
-  const cat = (item.category || item.type || '').toLowerCase();
+  const cat = normalizeCat((item.category || item.type || '').toLowerCase());
   const catLabel = CATEGORY_KEYS.includes(cat) ? t('cat_' + cat) : (cat || '—');
   return (
     <div className="cardz">
@@ -271,7 +275,7 @@ function OutfitCard({ outfit, onToggleFavorite, onDelete, onOpenItem, t, lang, i
   const garments = (outfit.item_serials || []).map((serial, i) => {
     const item = itemsBySerial[serial] || null;
     const name = item?.item_name || item?.brand_model || (outfit.item_names || [])[i] || '?';
-    const cat = (item?.category || item?.type || '').toLowerCase();
+    const cat = normalizeCat((item?.category || item?.type || '').toLowerCase());
     return { serial, name, cat, image_url: item?.image_url || '', item };
   });
 
@@ -538,7 +542,7 @@ export default function App() {
   const categoryCounts = useMemo(() => {
     const counts = {};
     for (const i of items) {
-      const c = (i.category || i.type || '').toLowerCase();
+      const c = normalizeCat((i.category || i.type || '').toLowerCase());
       if (c) counts[c] = (counts[c] || 0) + 1;
     }
     return counts;
@@ -548,7 +552,7 @@ export default function App() {
     const q = search.trim().toLowerCase();
     return items.filter((i) => {
       if (onlyFavs && !i.favorite) return false;
-      if (category && (i.category || i.type || '').toLowerCase() !== category) return false;
+      if (category && normalizeCat((i.category || i.type || '').toLowerCase()) !== category) return false;
       if (season && !(i.season_tags || []).includes(season)) return false;
       if (occasion && !(i.occasion_tags || []).includes(occasion)) return false;
       if (rarity && String(i.rarity) !== rarity) return false;

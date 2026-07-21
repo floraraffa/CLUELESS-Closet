@@ -216,7 +216,14 @@ export class ClosetCardUI extends BaseScriptComponent {
         }
 
         if (this.brandModelText) this.brandModelText.text = displayName;
-        if (this.carTypeText) this.carTypeText.text = formatCarType(data.category || data.type);
+        if (this.carTypeText) {
+            let typeLabel = formatCarType(data.category || data.type);
+            const onePieceStr = (((data.subcategory || '') + ' ' + (data.category || data.type || '') + ' ' + (data.item_name || '') + ' ' + (data.brand_model || '')) + '').toLowerCase();
+            const isOnePiece = onePieceStr.indexOf('romper') >= 0 || onePieceStr.indexOf('jumpsuit') >= 0
+                || onePieceStr.indexOf('overall') >= 0 || onePieceStr.indexOf('one-piece') >= 0 || onePieceStr.indexOf('one piece') >= 0;
+            if (isOnePiece) typeLabel = 'Dress/One-Piece';
+            this.carTypeText.text = typeLabel;
+        }
         if (this.carYearText) this.carYearText.text = detailParts.length > 0 ? detailParts.join(' / ') : (data.subcategory || data.year || '');
 
         // Rarity display (★★★☆☆ Uncommon)
