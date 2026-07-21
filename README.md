@@ -21,6 +21,8 @@
 </p>
 
 <p align="center">
+  <strong>🕶️ Try it on your Spectacles → <a href="https://www.spectacles.com/lens/2709490ffb00419ab451a68aa34b01d4?type=SNAPCODE&metadata=01">Closet Club Lens</a></strong>
+  <br>
   <strong>🌐 Live web catalog → <a href="https://closetclub.netlify.app">closetclub.netlify.app</a></strong>
 </p>
 
@@ -265,7 +267,12 @@ The following systems require network access:
 
 # Installation
 
-### Lens
+### Just want to try it?
+
+No setup needed — open the Lens directly on your Spectacles:
+**[Closet Club on spectacles.com](https://www.spectacles.com/lens/2709490ffb00419ab451a68aa34b01d4?type=SNAPCODE&metadata=01)**
+
+### Lens (build it yourself)
 
 Clone the repository:
 
