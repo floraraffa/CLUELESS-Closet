@@ -9126,7 +9126,7 @@
   PrefabRemaps:
     []
   Name: Closet Grid Bar
-  Enabled: true
+  Enabled: false
   Layers: 1
   LocalTransform: !<TransformEntity>
     Position: {x: -50.722870, y: 10.438875, z: 0.000000}

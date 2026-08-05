@@ -618,6 +618,16 @@ export default function App() {
               </figcaption>
             </figure>
 
+            <div className="lens-cta-wrap">
+              <a
+                className="lens-cta"
+                href="https://www.spectacles.com/lens/2709490ffb00419ab451a68aa34b01d4?type=SNAPCODE&metadata=01"
+                target="_blank" rel="noreferrer"
+              >
+                {t('lens_cta')}
+              </a>
+            </div>
+
             <div className="steps">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                 <div key={n} className="step-card">
@@ -696,6 +706,16 @@ export default function App() {
                 ))}
               </div>
             )}
+            <div className="lens-cta-wrap">
+              <a
+                className="lens-cta"
+                href="https://www.spectacles.com/lens/2709490ffb00419ab451a68aa34b01d4?type=SNAPCODE&metadata=01"
+                target="_blank" rel="noreferrer"
+              >
+                {t('lens_cta')}
+              </a>
+              <p className="lens-cta-sub">{t('lens_cta_sub')}</p>
+            </div>
             <div className="landing-foot">
               <button className="signout" onClick={() => setShowAbout(true)}>
                 {t('about_link')}

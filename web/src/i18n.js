@@ -23,6 +23,17 @@ const STRINGS = {
   cat_dress:     { es: 'Vestido/One-Piece', en: 'Dress/One-Piece', fr: 'Robe/One-Piece' },
   cat_look:      { es: 'Look completo', en: 'Full Look', fr: 'Look complet' },
 
+  lens_cta: {
+    es: '🕶️ Probá el lente en tus Specs',
+    en: '🕶️ Get the lens on your Specs',
+    fr: '🕶️ Essaie la lens sur tes Specs',
+  },
+  lens_cta_sub: {
+    es: 'Escaneá tu ropa y sumate al club — tu closet aparece acá.',
+    en: 'Scan your clothes and join the club — your closet shows up here.',
+    fr: 'Scanne tes vêtements et rejoins le club — ton dressing apparaît ici.',
+  },
+
   vis_public:  { es: 'Público', en: 'Public', fr: 'Public' },
   vis_private: { es: 'Privado', en: 'Private', fr: 'Privé' },
   private_badge: { es: 'Privado', en: 'Private', fr: 'Privé' },
